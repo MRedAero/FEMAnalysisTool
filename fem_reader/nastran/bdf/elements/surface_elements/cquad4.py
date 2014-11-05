@@ -2,6 +2,7 @@ __author__ = 'Michael Redmond'
 
 from ...fields import *
 from ...base_cards.simple_card import SimpleCard
+from .... import cards
 
 
 # noinspection PyPep8Naming
@@ -56,8 +57,12 @@ class CQUAD4(SimpleCard):
 
         if data is not None:
             self.field_width = data[0]
-            for i in xrange(1, data):
+            for i in xrange(1, len(data)):
                 self.items[i-1].__set__(self.items[i-1], data[i])
+
+    @property
+    def ID(self):
+        return self._EID.__get__(self, self._EID)
 
     @property
     def EID(self):
@@ -168,3 +173,6 @@ class CQUAD4(SimpleCard):
     @T4.setter
     def T4(self, value):
         self._T4.__set__(self._T4, value)
+
+
+cards['CQUAD4'] = CQUAD4

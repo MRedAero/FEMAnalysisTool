@@ -33,6 +33,10 @@ class IntegerOrDouble(object):
             return self._double_field
 
     def __set__(self, instance, value):
+        if isinstance(value, str) and value.replace(' ', '') == '':
+            value = None
+            return
+
         value = convert_field(value)
 
         assert (not isinstance(value, str))

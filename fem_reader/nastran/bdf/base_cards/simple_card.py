@@ -36,4 +36,4 @@ class SimpleCard(object):
         if current_line != ' '*8:
             result += current_line + '\n'
 
-        return result
+        return result.rstrip()

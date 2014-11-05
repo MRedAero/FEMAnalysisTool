@@ -51,6 +51,10 @@ class Double(ValidateRange):
             if '.' not in value:
                 raise TypeError('Double must have a decimal point! (%s)' % value)
 
+            value = value.strip()
+
+            value = value[0] + value[1:].replace('-', 'E-').replace('+', 'E+')
+
             try:
                 value = float(value)
             except Exception:

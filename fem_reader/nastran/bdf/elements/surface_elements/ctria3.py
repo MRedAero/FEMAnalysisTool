@@ -2,6 +2,7 @@ __author__ = 'Michael Redmond'
 
 from ...fields import *
 from ...base_cards.simple_card import SimpleCard
+from .... import cards
 
 
 # noinspection PyPep8Naming
@@ -54,8 +55,12 @@ class CTRIA3(SimpleCard):
 
         if data is not None:
             self.field_width = data[0]
-            for i in xrange(1, data):
+            for i in xrange(1, len(data)):
                 self.items[i-1].__set__(self.items[i-1], data[i])
+
+    @property
+    def ID(self):
+        return self._EID.__get__(self, self._EID)
 
     @property
     def EID(self):
@@ -150,3 +155,6 @@ class CTRIA3(SimpleCard):
     @T3.setter
     def T3(self, value):
         self._T3.__set__(self._T3, value)
+
+
+cards['CTRIA3'] = CTRIA3

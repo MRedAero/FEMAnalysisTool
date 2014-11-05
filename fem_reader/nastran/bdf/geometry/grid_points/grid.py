@@ -2,6 +2,7 @@ __author__ = 'Michael Redmond'
 
 from ...fields import *
 from ...base_cards.simple_card import SimpleCard
+from .... import cards
 
 
 # noinspection PyPep8Naming
@@ -22,7 +23,7 @@ class GRID(SimpleCard):
                 ]
 
     card_name = 'GRID'
-    category = 'grids'
+    category = 'nodes'
 
     def __init__(self, data=None):
         super(GRID, self).__init__()
@@ -42,7 +43,7 @@ class GRID(SimpleCard):
 
         if data is not None:
             self.field_width = data[0]
-            for i in xrange(1, data):
+            for i in xrange(1, len(data)):
                 self.items[i-1].__set__(self.items[i-1], data[i])
 
     @property
@@ -108,3 +109,6 @@ class GRID(SimpleCard):
     @SEID.setter
     def SEID(self, value):
         self._SEID.__set__(self._SEID, value)
+
+
+cards['GRID'] = GRID
