@@ -17,8 +17,10 @@ class SimpleCard(object):
     def __str__(self):
         if self.field_width == 16:
             card_name = self.card_name + r'*'
+            cont = r'*       '
         else:
             card_name = self.card_name
+            cont = r'        '
 
         current_line = '%-8s' % card_name
 
@@ -29,11 +31,16 @@ class SimpleCard(object):
         for i in xrange(len(self.items)):
             if len(current_line) >= 72:
                 result += current_line + '\n'
-                current_line = ' '*8
+                current_line = cont
 
             current_line += format % self.items[i].__str__()
 
-        if current_line != ' '*8:
+        if current_line != cont:
             result += current_line + '\n'
 
-        return result.rstrip()
+        result = result.rstrip()
+
+        while result[-1:] == r'*':
+            result = result[:-1].rstrip()
+
+        return result
