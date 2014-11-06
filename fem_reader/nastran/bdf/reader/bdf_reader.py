@@ -93,20 +93,24 @@ class BDFReader(object):
 
             if goto == 2:
                 #print 'goto = 2'
-                card = line[0:8].strip().replace(r'*', '')
+                card = line[0:8].strip()
+
+                if r'*' in card:
+                    field_width = 16
+                else:
+                    field_width = 8
+
+                card = card.replace(r'*', '')
 
                 #print card
 
                 if card in self._card_keys:
-                    card_line = '%-64s' % line[8:64]
+                    card_line = '%-64s' % line[8:72]
 
-                    if r'*' in card:
-                        field_width = 16
-                    else:
-                        field_width = 8
+                    bdf_line = i
 
                     try:
-                        cont = line[72:].strip()
+                        cont = line[72:81].strip()
                     except Exception:
                         cont = ''
 
@@ -117,13 +121,13 @@ class BDFReader(object):
                         line = remove_comments(lines[j])
 
                         if line[0:8].strip() == cont:
-                            card_line += '%-64s' % line[8:64]
+                            card_line += '%-64s' % line[8:72]
                             continuations += 1
                         else:
                             break
 
                         try:
-                            cont = line[72:].strip()
+                            cont = line[72:81].strip()
                         except Exception:
                             cont = ''
 
@@ -136,7 +140,11 @@ class BDFReader(object):
 
                 data.insert(0, field_width)
 
-                new_data = cards[card](data)
+                try:
+                    new_data = cards[card](data)
+                except Exception:
+                    print 'BDF %s: line %d: field_width = %d\n%s' % (filename, bdf_line+1, field_width, card_line)
+                    raise
 
                 self._data_keys[new_data.category][new_data.ID] = new_data
 
@@ -159,9 +167,8 @@ def parse_string_fixed_width(in_str, width):
 
 
 def remove_comments(line):
-    try:
-        index = line.find(r'$')
-    except Exception:
+    index = line.find(r'$')
+    if index < 1:
         index = len(line)
 
     return line[0:index]
