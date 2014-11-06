@@ -20,15 +20,22 @@ def convert_field(value):
 
     if '.' in value:
         try:
-            value = float(value)
-            return value
-        except TypeError:
-            raise TypeError('Field has decimal but is not a float! (%s)' % str(value))
+            return float(value)
+        except (TypeError, ValueError):
+            if not ('E-' in value or 'E+' in value) and ('-' in value or '+' in value):
+                value = value.strip()
+                value = value[0] + value[1:].replace('-', 'E-', ).replace('+', 'E+')
+            try:
+                value = float(value)
+                return value
+            except TypeError:
+                raise TypeError('Field has decimal but is not a float! (%s)' % str(value))
 
     try:
         value = int(value)
         return value
-    except TypeError:
+    except (TypeError, ValueError):
+            # return a string since it could not be converted to a float or integer
             return value
 
 

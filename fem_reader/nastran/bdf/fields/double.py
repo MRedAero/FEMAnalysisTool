@@ -46,19 +46,9 @@ class Double(ValidateRange):
                         self._value = '__DEFAULT__'
                         return
                     else:
-                        raise ValueError('Integer field cannot be blank!')
+                        raise ValueError('Double field cannot be blank!')
 
-            if '.' not in value:
-                raise TypeError('Double must have a decimal point! (%s)' % value)
-
-            value = value.strip()
-
-            value = value[0] + value[1:].replace('-', 'E-').replace('+', 'E+')
-
-            try:
-                value = float(value)
-            except Exception:
-                raise TypeError("Cannot convert '%s' to double!" % value)
+            value = convert_field(value)
 
         assert isinstance(value, float)
 

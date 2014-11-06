@@ -3,6 +3,7 @@ __author__ = 'Michael Redmond'
 
 from collections import OrderedDict
 from ... import cards
+from ..utilities import convert_field
 
 
 class BDF(object):
@@ -129,9 +130,9 @@ class BDFReader(object):
             if goto == 3:
                 #print 'goto = 3'
                 if ',' in card_line:
-                    data = parse_string(card_line, ',')
+                    data = map(convert_field, parse_string(card_line, ','))
                 else:
-                    data = parse_string_fixed_width(card_line, field_width)
+                    data = map(convert_field, parse_string_fixed_width(card_line, field_width))
 
                 data.insert(0, field_width)
 

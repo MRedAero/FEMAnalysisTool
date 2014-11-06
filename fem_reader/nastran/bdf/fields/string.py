@@ -1,22 +1,21 @@
 __author__ = 'Michael Redmond'
 
 
-from .validate_range import ValidateRange
 from ..utilities import convert_field
 
 
 # noinspection PyUnusedLocal
-class Integer(ValidateRange):
-    """Integer field of a Nastran BDF card.
+class String(object):
+    """String field of a Nastran BDF card.
 
     """
 
-    def __init__(self, parent=None, index=None, min_value=None, max_value=None, ignore_min=False,
-                 ignore_max=False, can_be_blank=False):
-        super(Integer, self).__init__(min_value, max_value, ignore_min, ignore_max)
+    def __init__(self, parent=None, index=None, allowable_data=None, can_be_blank=False):
+        super(String, self).__init__()
 
         self.parent = parent
         self.index = index
+        self.allowable_data = allowable_data
         self.can_be_blank = can_be_blank
         self._value = '__UNDEFINED__'
 
@@ -36,23 +35,21 @@ class Integer(ValidateRange):
         return self._value
 
     def __set__(self, instance, value):
-        if isinstance(value, str):
-            if value.replace(' ', '') == '':
-                if self.can_be_blank:
-                    self._value = '__BLANK__'
+        assert isinstance(value, str)
+
+        if value.replace(' ', '') == '':
+            if self.can_be_blank:
+                self._value = '__BLANK__'
+                return
+            else:
+                if self.default is not None:
+                    self._value = '__DEFAULT__'
                     return
                 else:
-                    if self.default is not None:
-                        self._value = '__DEFAULT__'
-                        return
-                    else:
-                        raise ValueError('Integer field cannot be blank!')
+                    raise ValueError('Integer field cannot be blank!')
 
-            value = convert_field(value)
-
-        assert isinstance(value, int)
-
-        self.validate_range(value)
+        if self.allowable_data is not None:
+            assert (value in self.allowable_data)
 
         self._value = value
 
@@ -68,19 +65,13 @@ class Integer(ValidateRange):
             else:
                 value = self.default
 
-        str_value = str(value)
-
-        #if len(str_value) <= self.parent.field_width:
-        #    format = '%' + str(self.parent.field_width) + 's'
-        #    return format % str_value
-
         _format = '%' + str(self.parent.field_width) + 's'
-        return _format % str_value
+        return _format % value
 
     @property
     def default(self):
         default = self.parent.defaults[self.index]
         if default is dict:
-            return default['int']
+            return default['string']
         else:
             return default

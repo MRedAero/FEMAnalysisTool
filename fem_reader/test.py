@@ -14,6 +14,8 @@ for i in xrange(len(grids)):
 elements = bdf.elements.keys()
 
 for i in xrange(len(elements)):
-    print bdf.elements[elements[i]]
+    element = bdf.elements[elements[i]]
+    if element.card_name == 'CBEAM':
+        print bdf.elements[elements[i]]
 
 
