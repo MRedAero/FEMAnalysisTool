@@ -40,6 +40,7 @@ class BDFReader(object):
 
         if self._data is None:
             self._data = BDF()
+            # noinspection PyDictCreation
             self._data_keys = {}
             self._data_keys['elements'] = self._data.__getattribute__('elements')
             self._data_keys['nodes'] = self._data.__getattribute__('nodes')
@@ -55,7 +56,7 @@ class BDFReader(object):
 
         continuations = 0
 
-        goto = 0
+        #goto = 0
 
         self._level += 1
 
@@ -87,6 +88,7 @@ class BDFReader(object):
 
             if goto == 1:
                 #print 'goto = 1'
+                # noinspection PyUnboundLocalVariable
                 include_file = include_line.split("'")[1]
                 self.read_bdf(include_file)
                 continue
@@ -109,6 +111,7 @@ class BDFReader(object):
 
                     bdf_line = i
 
+                    # noinspection PyBroadException
                     try:
                         cont = line[72:81].strip()
                     except Exception:
@@ -126,6 +129,7 @@ class BDFReader(object):
                         else:
                             break
 
+                        # noinspection PyBroadException
                         try:
                             cont = line[72:81].strip()
                         except Exception:
@@ -141,14 +145,16 @@ class BDFReader(object):
                 data.insert(0, field_width)
 
                 try:
+                    # noinspection PyUnboundLocalVariable
                     new_data = cards[card](data)
                 except Exception:
+                    # noinspection PyUnboundLocalVariable
                     print 'BDF %s: line %d: field_width = %d\n%s' % (filename, bdf_line+1, field_width, card_line)
                     raise
 
                 self._data_keys[new_data.category][new_data.ID] = new_data
 
-                goto = 0
+                #goto = 0
 
         self._level -= 1
 
@@ -162,6 +168,7 @@ def parse_string(in_str, parse):
 
 import re
 
+
 def parse_string_fixed_width(in_str, width):
     return re.findall('.{%d}' % width, in_str)
 
@@ -172,4 +179,3 @@ def remove_comments(line):
         index = len(line)
 
     return line[0:index]
-

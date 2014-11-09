@@ -12,14 +12,14 @@ class Blank(object):
         self._value = ''
 
     # noinspection PyUnusedLocal
-    def __get__(self, instance, owner):
+    def get_value(self, instance, owner):
         if instance is None:
             return self
 
         return self._value
 
     # noinspection PyUnusedLocal
-    def __set__(self, instance, value):
+    def set_value(self, instance, value):
         if not isinstance(value, str):
             raise TypeError("Blank field must be a string but received '%s'!" % (str(value)))
 

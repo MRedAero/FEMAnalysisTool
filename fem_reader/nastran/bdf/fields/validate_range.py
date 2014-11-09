@@ -1,14 +1,21 @@
 __author__ = 'Michael Redmond'
 
 
-class ValidateRange(object):
+from .generic_field import GenericField
+
+
+class ValidateRange(GenericField):
     """Abstract class for Double and Integer fields to validate ranges.  This class is NOT a field but is meant
     to be subclassed by Double and Integer classes.
 
     """
 
-    def __init__(self, min_value=None, max_value=None, ignore_min=False, ignore_max=False):
-        super(ValidateRange, self).__init__()
+    __slots__ = ('_min', '_max', '_ignore_min', '_ignore_max')
+
+    def __init__(self, parent_cls, name, value=None, min_value=None,
+                 max_value=None, ignore_min=False, ignore_max=False):
+
+        super(ValidateRange, self).__init__(parent_cls, name, value)
 
         self._min = min_value
         self._max = max_value

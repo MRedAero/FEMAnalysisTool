@@ -1,17 +1,20 @@
 __author__ = 'Michael Redmond'
 
 
-from ..utilities import convert_field
+from .generic_field import GenericField
 
 
 # noinspection PyUnusedLocal
-class String(object):
+class String(GenericField):
     """String field of a Nastran BDF card.
 
     """
 
-    def __init__(self, parent=None, index=None, allowable_data=None, can_be_blank=False):
-        super(String, self).__init__()
+    __slots__ = ('parent', 'index', 'allowable_data', 'can_be_blank')
+
+    def __init__(self, parent, parent_cls, name, index=None, allowable_data=None, can_be_blank=False):
+
+        super(String, self).__init__(parent_cls, name, None)
 
         self.parent = parent
         self.index = index
@@ -19,22 +22,7 @@ class String(object):
         self.can_be_blank = can_be_blank
         self._value = '__UNDEFINED__'
 
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-
-        if self._value == '__UNDEFINED__' or self._value == '__BLANK__':
-            if self.default is not None:
-                return self.default
-            else:
-                return ''
-
-        if self._value == '__DEFAULT__':
-            return self.default
-
-        return self._value
-
-    def __set__(self, instance, value):
+    def _set_value(self, instance, value):
         assert isinstance(value, str)
 
         if value.replace(' ', '') == '':
@@ -46,7 +34,7 @@ class String(object):
                     self._value = '__DEFAULT__'
                     return
                 else:
-                    raise ValueError('Integer field cannot be blank!')
+                    raise ValueError('String field cannot be blank!')
 
         if self.allowable_data is not None:
             assert (value in self.allowable_data)
@@ -56,20 +44,29 @@ class String(object):
     def __str__(self):
         value = self._value
 
-        if value == '__BLANK__':
-            return ' '*self.parent.field_width
+        try:
+            field_width = self.parent.field_width
+        except AttributeError:
+            field_width = 8
 
-        if value == '__UNDEFINED__':
-            if self.default is None:
-                return ' '*self.parent.field_width
-            else:
-                value = self.default
+        if value == '__BLANK__' or value == '__UNDEFINED__':
+            return ' '*field_width
 
-        _format = '%' + str(self.parent.field_width) + 's'
+        _format = '%' + str(field_width) + 's'
         return _format % value
 
     @property
     def default(self):
+        # noinspection PyBroadException
+        try:
+            return self.default_override()
+        except Exception:
+            pass
+
+        return self._default
+
+    @property
+    def _default(self):
         default = self.parent.defaults[self.index]
         if default is dict:
             return default['string']
