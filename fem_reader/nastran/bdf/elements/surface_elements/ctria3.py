@@ -11,150 +11,75 @@ class CTRIA3(SimpleCard):
 
     """
 
+    card_name = 'CTRIA3'
+    category = 'elements'
+
     defaults = [None,  # EID
                 None,  # PID
                 None,  # G1
                 None,  # G2
                 None,  # G3
-                {'double': 0., 'int': 0},  # ThetaOrMCID
-                0.,    # ZOFFS
-                '',    # Blank
-                '',    # Blank
+                {'double': 0., 'int': 0},  # THETAorMCID
+                0.,  # ZOFFS
+                '',  # Blank
+                '',  # Blank
                 None,  # TFLAG
                 1.,  # T1
                 1.,  # T2
                 1.,  # T3
-    ]
+                ]
 
-    card_name = 'CTRIA3'
-    category = 'elements'
+    __slots__ = ('EID', 'PID', 'G1', 'G2', 'G3', 'THETAorMCID', 'ZOFFS', 'TFLAG', 'T1', 'T2', 'T3',
+                 '_EID', '_PID', '_G1', '_G2', '_G3', '_THETAorMCID', '_ZOFFS', '_Blank1', '_Blank2',
+                 '_TFLAG', '_T1', '_T2', '_T3', 'ID', 'THETA', 'MCID')
 
+    # noinspection PyUnresolvedReferences
     def __init__(self, data=None):
         super(CTRIA3, self).__init__()
 
-        self._EID = Integer(self, 0, 0, 100000000, True, True)
-        self._PID = Integer(self, 1, 0, 100000000, True, True, can_be_blank=True)
-        self._G1 = Integer(self, 2, 0, 100000000, True, True)
-        self._G2 = Integer(self, 3, 0, 100000000, True, True)
-        self._G3 = Integer(self, 4, 0, 100000000, True, True)
-        theta = Double(self, 5, can_be_blank=True)
-        mcid = Integer(self, 5, can_be_blank=True)
-        self._ThetaOrMCID = IntegerOrDouble(self, mcid, theta)
-        self._ZOFFS = Double(self, 6, can_be_blank=True)
+        self._EID = Integer(self, CTRIA3, 'EID', 0, 0, 100000000, True, True)
+        self._PID = Integer(self, CTRIA3, 'PID', 1, 0, 100000000, True, True, can_be_blank=True)
+        self._PID.default_override = lambda: self.EID
+
+        self._G1 = Integer(self, CTRIA3, 'G1', 2, 0, 100000000, True, True)
+        self._G2 = Integer(self, CTRIA3, 'G2', 3, 0, 100000000, True, True)
+        self._G3 = Integer(self, CTRIA3, 'G3', 4, 0, 100000000, True, True)
+
+        double_args = {'name': 'THETA',
+                           'min_value': None,
+                           'max_value': None,
+                           'ignore_min': False,
+                           'ignore_max': False,
+                           'can_be_blank': True}
+
+        integer_args = {'name': 'MCID',
+                        'min_value': None,
+                        'max_value': None,
+                        'ignore_min': False,
+                        'ignore_max': False,
+                        'can_be_blank': True}
+
+        self._THETAorMCID = IntegerOrDouble(self, CTRIA3, 'THETAorMCID', 5, integer_args, double_args)
+
+        self._ZOFFS = Double(self, CTRIA3, 'ZOFFS', 6, can_be_blank=True)
         self._Blank1 = Blank()
         self._Blank2 = Blank()
-        self._TFLAG = Integer(self, 9, 0, 1, can_be_blank=True)
-        self._T1 = Double(self, 10, 0., can_be_blank=True)
-        self._T2 = Double(self, 11, 0., can_be_blank=True)
-        self._T3 = Double(self, 12, 0., can_be_blank=True)
+        self._TFLAG = Integer(self, CTRIA3, 'TFLAG', 9, 0, 1, can_be_blank=True)
+        self._T1 = Double(self, CTRIA3, 'T1', 10, 0., can_be_blank=True)
+        self._T2 = Double(self, CTRIA3, 'T2', 11, 0., can_be_blank=True)
+        self._T3 = Double(self, CTRIA3, 'T3', 12, 0., can_be_blank=True)
 
         self.field_width = 8
 
-        self.items = [self._EID, self._PID, self._G1, self._G2, self._G3, self._ThetaOrMCID,
+        self.items = [self._EID, self._PID, self._G1, self._G2, self._G3, self._THETAorMCID,
                       self._ZOFFS, self._Blank1, self._Blank2, self._TFLAG, self._T1, self._T2, self._T3]
 
-        if data is not None:
-            self.field_width = data[0]
-            for i in xrange(1, len(data)):
-                self.items[i-1].__set__(self.items[i-1], data[i])
+        self.set_data(data)
 
     @property
     def ID(self):
-        return self._EID.__get__(self, self._EID)
-
-    @property
-    def EID(self):
-        return self._EID.__get__(self, self._EID)
-
-    @EID.setter
-    def EID(self, value):
-        self._EID.__set__(self._EID, value)
-
-    @property
-    def PID(self):
-        pid = self._PID.__get__(self, self.PID)
-
-        # The default value for PID is EID.
-        if pid is None:
-            return self._EID.__get__(self, self._EID)
-        else:
-            return pid
-
-    @PID.setter
-    def PID(self, value):
-        self._PID.__set__(self._PID, value)
-
-    @property
-    def G1(self):
-        return self._G1.__get__(self, self._G1)
-
-    @G1.setter
-    def G1(self, value):
-        self._G1.__set__(self._G1, value)
-
-    @property
-    def G2(self):
-        return self._G2.__get__(self, self._G2)
-
-    @G2.setter
-    def G2(self, value):
-        self._G2.__set__(self._G2, value)
-
-    @property
-    def G3(self):
-        return self._G3.__get__(self, self._G3)
-
-    @G3.setter
-    def G3(self, value):
-        self._G3.__set__(self._G3, value)
-
-    @property
-    def ThetaOrMCID(self):
-        return self._ThetaOrMCID.__get__(self, self._ThetaOrMCID)
-
-    @ThetaOrMCID.setter
-    def ThetaOrMCID(self, value):
-        self._ThetaOrMCID.__set__(self._ThetaOrMCID, value)
-
-    @property
-    def ZOFFS(self):
-        return self._ZOFFS.__get__(self, self._ZOFFS)
-
-    @ZOFFS.setter
-    def ZOFFS(self, value):
-        self._ZOFFS.__set__(self._ZOFFS, value)
-
-    @property
-    def TFLAG(self):
-        return self._TFLAG.__get__(self, self._TFLAG)
-
-    @TFLAG.setter
-    def TFLAG(self, value):
-        self._TFLAG.__set__(self._TFLAG, value)
-
-    @property
-    def T1(self):
-        return self._T1.__get__(self, self._T1)
-
-    @T1.setter
-    def T1(self, value):
-        self._T1.__set__(self._T1, value)
-
-    @property
-    def T2(self):
-        return self._T2.__get__(self, self._T2)
-
-    @T2.setter
-    def T2(self, value):
-        self._T2.__set__(self._T2, value)
-
-    @property
-    def T3(self):
-        return self._T3.__get__(self, self._T3)
-
-    @T3.setter
-    def T3(self, value):
-        self._T3.__set__(self._T3, value)
+        # noinspection PyUnresolvedReferences
+        return self.EID
 
 
 cards['CTRIA3'] = CTRIA3

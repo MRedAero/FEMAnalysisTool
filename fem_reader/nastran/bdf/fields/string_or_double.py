@@ -2,6 +2,8 @@ __author__ = 'Michael Redmond'
 
 
 from ..utilities import *
+from .string import String
+from .double import Double
 
 
 # noinspection PyUnusedLocal
@@ -10,20 +12,34 @@ class StringOrDouble(object):
 
     """
 
-    def __init__(self, parent=None, string_field=None, double_field=None):
+    def __init__(self, parent, parent_cls, name, index=None, string_args=None, double_args=None):
         super(StringOrDouble, self).__init__()
 
         self.parent = parent
-        self._string_field = string_field
+
+        self._string_field = String(parent, None, None, index, string_args['allowable_data'],
+                                    string_args['can_be_blank'])
+
         ":type : .string.String"
-        self._double_field = double_field
+
+        self._double_field = Double(parent, None, None, index, double_args['min_value'],
+                                    double_args['max_value'], double_args['ignore_min'], double_args['ignore_max'],
+                                    double_args['can_be_blank'])
         ":type : .double.Double"
+
         self._type = None
 
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
+        if parent_cls is not None:
+            if name is not None:
+                setattr(parent_cls, name, property(self.get_value, self.set_value))
 
+            if string_args['name'] is not None:
+                setattr(parent_cls, string_args['name'], property(self.get_str_value, self.set_str_value))
+
+            if double_args['name'] is not None:
+                setattr(parent_cls, double_args['name'], property(self.get_dbl_value, self.set_dbl_value))
+
+    def get_value(self, instance):
         if self._type is None:
             return self._double_field.default
 
@@ -32,7 +48,7 @@ class StringOrDouble(object):
         elif self._type is float:
             return self._double_field
 
-    def __set__(self, instance, value):
+    def set_value(self, instance, value):
         if isinstance(value, str) and value.replace(' ', '') == '':
             value = None
             return
@@ -47,6 +63,28 @@ class StringOrDouble(object):
         elif isinstance(value, float):
             self._double_field = value
             self._type = float
+
+    def get_str_value(self, instance):
+        tmp = self.get_value(instance)
+        if isinstance(tmp, str):
+            return tmp
+        else:
+            return None
+
+    def set_str_value(self, instance, value):
+        assert isinstance(value, str)
+        self.set_value(instance, value)
+
+    def get_dbl_value(self, instance):
+        tmp = self.get_value(instance)
+        if isinstance(tmp, float):
+            return tmp
+        else:
+            return None
+
+    def set_dbl_value(self, instance, value):
+        assert isinstance(value, float)
+        self.set_value(instance, value)
 
     def __str__(self):
         if self._type is None:
