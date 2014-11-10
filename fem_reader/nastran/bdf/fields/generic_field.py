@@ -19,7 +19,7 @@ class GenericField(object):
             setattr(parent_cls, name, property(self.get_value, self.set_value))
 
     # noinspection PyUnusedLocal
-    def get_value(self, instance):
+    def get_value(self, instance=None):
         if self._value == '__UNDEFINED__' or self._value == '__BLANK__':
             if self.default is not None:
                 return self.default

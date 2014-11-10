@@ -32,11 +32,12 @@ class CBEAM(SimpleCard):
                 None,  # W3B
                 None,  # SA
                 None,  # SB
-                ]
+    ]
 
     __slots__ = ('EID', 'PID', 'GA', 'GB', 'X1orG0', 'X2', 'X3', 'OFFT_BIT', 'PA', 'PB', 'W1A', 'W2A', 'W3A',
-    'W1B', 'W2B', 'W3B', 'SA', 'SB', '_EID', '_PID', '_GA', '_GB', '_X1orG0', '_X2', '_X3', '_OFFT_BIT', '_PA', '_PB',
-    '_W1A', '_W2A', '_W3A', '_W1B', '_W2B', '_W3B', '_SA', '_SB', 'ID', 'X1', 'G0', 'OFFT', 'BIT')
+                 'W1B', 'W2B', 'W3B', 'SA', 'SB', '_EID', '_PID', '_GA', '_GB', '_X1orG0', '_X2', '_X3', '_OFFT_BIT',
+                 '_PA', '_PB', '_W1A', '_W2A', '_W3A', '_W1B', '_W2B', '_W3B', '_SA', '_SB', 'ID', 'X1', 'G0', 'OFFT',
+                 'BIT')
 
     def __init__(self, data=None):
         super(CBEAM, self).__init__()
@@ -70,11 +71,11 @@ class CBEAM(SimpleCard):
                        'can_be_blank': True}
 
         double_args = {'name': 'BIT',
-                        'min_value': None,
-                        'max_value': None,
-                        'ignore_min': False,
-                        'ignore_max': False,
-                        'can_be_blank': True}
+                       'min_value': None,
+                       'max_value': None,
+                       'ignore_min': False,
+                       'ignore_max': False,
+                       'can_be_blank': True}
 
         self._OFFT_BIT = StringOrDouble(self, CBEAM, 'OFFT_BIT', 7, string_args, double_args)
 

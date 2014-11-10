@@ -34,21 +34,20 @@ class SimpleCard(object):
 
         result = ''
 
-        _format = '%+' + str(self.field_width) + 's'
+        #_format = '%+' + str(self.field_width) + 's'
 
         for i in xrange(len(self.items)):
             if len(current_line) >= 72:
-                result += current_line + '\n'
+                result += current_line + cont.strip() + '\n'
                 current_line = cont
 
-            current_line += _format % self.items[i].__str__()
+            #current_line += _format % self.items[i].__str__()
+            current_line += self.items[i].__str__()
 
         if current_line != cont:
             result += current_line + '\n'
 
-        result = result.rstrip()
-
-        while result[-1:] == r'*':
-            result = result[:-1].rstrip()
+        while result[-1] == r'*' or result[-1] == '\n':
+            result = result[:-1]
 
         return result

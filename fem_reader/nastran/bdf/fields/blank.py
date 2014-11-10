@@ -12,7 +12,7 @@ class Blank(object):
         self._value = ''
 
     # noinspection PyUnusedLocal
-    def get_value(self, instance, owner):
+    def get_value(self, instance):
         if instance is None:
             return self
 
