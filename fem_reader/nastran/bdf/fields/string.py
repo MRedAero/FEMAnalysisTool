@@ -22,7 +22,7 @@ class String(GenericField):
         self.can_be_blank = can_be_blank
         self._value = '__UNDEFINED__'
 
-    def _set_value(self, instance, value):
+    def set_value(self, instance, value):
         assert isinstance(value, str)
 
         if value.replace(' ', '') == '':
@@ -37,7 +37,10 @@ class String(GenericField):
                     raise ValueError('String field cannot be blank!')
 
         if self.allowable_data is not None:
-            assert (value in self.allowable_data)
+            try:
+                assert (value.strip() in self.allowable_data)
+            except AssertionError:
+                raise AssertionError("'%s' not an allowed value!" % value.strip())
 
         self._value = value
 
@@ -52,8 +55,7 @@ class String(GenericField):
         if value == '__BLANK__' or value == '__UNDEFINED__':
             return ' '*field_width
 
-        _format = '%' + str(field_width) + 's'
-        return _format % value
+        return value.strip().rjust(field_width, ' ')
 
     @property
     def default(self):

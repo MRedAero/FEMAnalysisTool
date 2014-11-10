@@ -42,9 +42,10 @@ class BDFReader(object):
             self._data = BDF()
             # noinspection PyDictCreation
             self._data_keys = {}
-            self._data_keys['elements'] = self._data.__getattribute__('elements')
-            self._data_keys['nodes'] = self._data.__getattribute__('nodes')
-            self._data_keys['coordinate_systems'] = self._data.__getattribute__('coordinate_systems')
+            self._data_keys['elements'] = self._data.elements
+            self._data_keys['nodes'] = self._data.nodes
+            self._data_keys['coordinate_systems'] = self._data.coordinate_systems
+            self._data_keys['properties'] = self._data.properties
             # add others
 
         lines = _file.read().split('\n')
@@ -59,6 +60,8 @@ class BDFReader(object):
         #goto = 0
 
         self._level += 1
+
+        # goto's are used so that xrange can be used instead of while statement; must faster
 
         for i in xrange(line_size):
 
@@ -86,7 +89,7 @@ class BDFReader(object):
                     continuations += 1
                     include_line += remove_comments(lines[j])
 
-            if goto == 1:
+            if goto == 1:  # can this be merged under the previous if statement?
                 #print 'goto = 1'
                 # noinspection PyUnboundLocalVariable
                 include_file = include_line.split("'")[1]
@@ -113,7 +116,7 @@ class BDFReader(object):
 
                     # noinspection PyBroadException
                     try:
-                        cont = line[72:81].strip()
+                        cont = line[72:81].strip()  # should it be 72:80?  I had a problem with this before
                     except Exception:
                         cont = ''
 
@@ -131,7 +134,7 @@ class BDFReader(object):
 
                         # noinspection PyBroadException
                         try:
-                            cont = line[72:81].strip()
+                            cont = line[72:81].strip()  # should it be 72:80?  I had a problem with this before
                         except Exception:
                             cont = ''
 
@@ -145,7 +148,7 @@ class BDFReader(object):
                 data.insert(0, field_width)
 
                 try:
-                    # noinspection PyUnboundLocalVariable
+                    # noinspection PyUnboundLocalVariable,PyCallingNonCallable
                     new_data = cards[card](data)
                 except Exception:
                     # noinspection PyUnboundLocalVariable
