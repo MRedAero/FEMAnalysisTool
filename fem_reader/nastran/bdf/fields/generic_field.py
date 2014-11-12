@@ -15,11 +15,9 @@ class GenericField(object):
 
         self.default_override = None
 
-        if parent_cls is not None and name is not None:
-            setattr(parent_cls, name, property(self.get_value, self.set_value))
-
     # noinspection PyUnusedLocal
-    def get_value(self, instance=None):
+    @property
+    def value(self):
         if self._value == '__UNDEFINED__' or self._value == '__BLANK__':
             if self.default is not None:
                 return self.default
@@ -31,7 +29,8 @@ class GenericField(object):
 
         return self._value
 
-    def set_value(self, instance, value):
+    @value.setter
+    def value(self, value):
         self._value = value
 
     @property

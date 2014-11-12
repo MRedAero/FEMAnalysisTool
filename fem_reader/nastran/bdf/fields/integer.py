@@ -38,7 +38,10 @@ class Integer(ValidateRange):
 
             value = convert_field(value)
 
-        assert isinstance(value, int)
+        try:
+            assert isinstance(value, int)
+        except AssertionError, e:
+            raise AssertionError('value must be an integer!  (%s)' % str(value))
 
         self.validate_range(value)
 

@@ -27,10 +27,10 @@ class StringList(object):
         del self.data[index]
 
     def set_value(self, index, value):
-        self.data[index].set_value(None, value)
+        self.data[index].value = value
 
     def get_value(self, index):
-        return self.data[index].get_value()
+        return self.data[index].value
 
     def get_item(self, index):
         return self.data[index]

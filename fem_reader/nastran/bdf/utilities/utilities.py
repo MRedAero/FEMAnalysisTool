@@ -18,25 +18,28 @@ def convert_field(value):
 
     assert isinstance(value, str)
 
-    if '.' in value:
-        try:
-            return float(value)
-        except (TypeError, ValueError):
-            if not ('E-' in value or 'E+' in value) and ('-' in value or '+' in value):
-                value = value.strip()
-                value = value[0] + value[1:].replace('-', 'E-', ).replace('+', 'E+')
-            try:
-                value = float(value)
-                return value
-            except TypeError:
-                raise TypeError('Field has decimal but is not a float! (%s)' % str(value))
-
+    value = value.strip()
     try:
-        value = int(value)
-        return value
-    except (TypeError, ValueError):
-            # return a string since it could not be converted to a float or integer
+        if not value:
+            # Empty
+            return ''
+        elif value[0].isalpha():
+            # Character
             return value
+        elif '.' in value:
+            # Real
+            i = value.rfind('+')
+            if i > 0 and value[i - 1] != 'E':
+                value = value[:i] + 'E' + value[i:]
+            i = value.rfind('-')
+            if i > 0 and value[i - 1] != 'E':
+                value = value[:i] + 'E' + value[i:]
+            return float(value)
+        else:
+            # Integer
+            return int(value)
+    except ValueError:
+        raise ValueError('field is not a string, double, or integer!')
 
 
 def format_double(value, field_width):

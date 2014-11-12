@@ -29,13 +29,13 @@ class DoubleList(object):
         del self.data[index]
 
     def set_value(self, index, value):
-        self.data[index].set_value(None, value)
+        self.data[index].value = value
 
     def get_item(self, index):
         return self.data[index]
 
     def get_value(self, index):
-        return self.data[index].get_value()
+        return self.data[index].value
 
     @property
     def field_width(self):
