@@ -30,17 +30,17 @@ class PCOMP(SimpleCard):
     def __init__(self, data=None):
         super(PCOMP, self).__init__()
 
-        self._PID = Integer(self, PCOMP, 'PID', 0, 0, 100000000, True, True)
+        self._PID = Integer(self, 0, 0, 100000000, True, True)
 
-        self._Z0 = Double(self, PCOMP, 'Z0', 1, can_be_blank=True)
+        self._Z0 = Double(self, 1, can_be_blank=True)
         self._Z0.default_override = lambda: -0.5 * self.thickness
 
-        self._NSM = Double(self, PCOMP, 'NSM', 2, can_be_blank=True)
-        self._SB = Double(self, PCOMP, 'SB', 3, 0., can_be_blank=True)
-        self._FT = String(self, PCOMP, 'FT', 4, ['HILL', 'HOFF', 'TSAI', 'STRN'], can_be_blank=True)
-        self._TREF = Double(self, PCOMP, 'TREF', 5, can_be_blank=True)
-        self._GE = Double(self, PCOMP, 'GE', 6, can_be_blank=True)
-        self._LAM = String(self, PCOMP, 'LAM', 7, ['SYM', 'MEM', 'BEND', 'SMEAR', 'SMCORE'], can_be_blank=True)
+        self._NSM = Double(self, 2, can_be_blank=True)
+        self._SB = Double(self, 3, 0., can_be_blank=True)
+        self._FT = String(self, 4, ['HILL', 'HOFF', 'TSAI', 'STRN'], can_be_blank=True)
+        self._TREF = Double(self, 5, can_be_blank=True)
+        self._GE = Double(self, 6, can_be_blank=True)
+        self._LAM = String(self, 7, ['SYM', 'MEM', 'BEND', 'SMEAR', 'SMCORE'], can_be_blank=True)
 
         self._MID = IntegerList(self, {'min_value': 0,
                                        'max_value': None,

@@ -11,33 +11,33 @@ class IntegerOrDouble(object):
 
     """
 
-    def __init__(self, parent, parent_cls, name, index=None, integer_args=None, double_args=None):
+    def __init__(self, parent, index=None, integer_args=None, double_args=None):
 
         super(IntegerOrDouble, self).__init__()
 
         self.parent = parent
 
-        self._integer_field = Integer(parent, None, None, index, integer_args['min_value'],
+        self._integer_field = Integer(parent, index, integer_args['min_value'],
                                       integer_args['max_value'], integer_args['ignore_min'], integer_args['ignore_max'],
                                       integer_args['can_be_blank'])
         ":type : .integer.Integer"
 
-        self._double_field = Double(parent, None, None, index, double_args['min_value'],
+        self._double_field = Double(parent, index, double_args['min_value'],
                                     double_args['max_value'], double_args['ignore_min'], double_args['ignore_max'],
                                     double_args['can_be_blank'])
         ":type : .double.Double"
 
         self._type = None
 
-        if parent_cls is not None:
-            if name is not None:
-                setattr(parent_cls, name, property(self.get_value, self.set_value))
-
-            if integer_args['name'] is not None:
-                setattr(parent_cls, integer_args['name'], property(self.get_int_value, self.set_int_value))
-
-            if double_args['name'] is not None:
-                setattr(parent_cls, double_args['name'], property(self.get_dbl_value, self.set_dbl_value))
+        #if parent_cls is not None:
+        #    if name is not None:
+        #        setattr(parent_cls, name, property(self.get_value, self.set_value))
+        #
+        #    if integer_args['name'] is not None:
+        #        setattr(parent_cls, integer_args['name'], property(self.get_int_value, self.set_int_value))
+        #
+        #    if double_args['name'] is not None:
+        #        setattr(parent_cls, double_args['name'], property(self.get_dbl_value, self.set_dbl_value))
 
     def get_value(self, instance):
         if self._type is None:

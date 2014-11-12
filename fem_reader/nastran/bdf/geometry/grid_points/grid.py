@@ -31,14 +31,14 @@ class GRID(SimpleCard):
     def __init__(self, data=None):
         super(GRID, self).__init__()
 
-        self._ID = Integer(self, GRID, 'ID', 0, 0, 100000000, True, True)
-        self._CP = Integer(self, GRID, 'CP', 1, 0, None, can_be_blank=True)
-        self._X1 = Double(self, GRID, 'X1', 2, can_be_blank=True)
-        self._X2 = Double(self, GRID, 'X2', 3, can_be_blank=True)
-        self._X3 = Double(self, GRID, 'X3', 4, can_be_blank=True)
-        self._CD = Integer(self, GRID, 'CD', 5, -1, can_be_blank=True)
-        self._PS = Integer(self, GRID, 'PS', 6, 1, 6, can_be_blank=True)
-        self._SEID = Integer(self, GRID, 'SEID', 7, 0, can_be_blank=True)
+        self._ID = Integer(self, 0, 0, 100000000, True, True)
+        self._CP = Integer(self, 1, 0, None, can_be_blank=True)
+        self._X1 = Double(self, 2, can_be_blank=True)
+        self._X2 = Double(self, 3, can_be_blank=True)
+        self._X3 = Double(self, 4, can_be_blank=True)
+        self._CD = Integer(self, 5, -1, can_be_blank=True)
+        self._PS = Integer(self, 6, 1, 6, can_be_blank=True)
+        self._SEID = Integer(self, 7, 0, can_be_blank=True)
 
         self.field_width = 8
 

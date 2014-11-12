@@ -4,7 +4,7 @@ from nastran.bdf.reader import BDFReader
 
 bdf_reader = BDFReader()
 
-bdf = bdf_reader.read_bdf(r'data\spar.bdf')
+bdf = bdf_reader.read_bdf(r'data\wing.bdf')
 
 grids = bdf.nodes.keys()
 

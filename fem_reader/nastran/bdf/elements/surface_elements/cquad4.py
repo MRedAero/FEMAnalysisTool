@@ -38,14 +38,14 @@ class CQUAD4(SimpleCard):
     def __init__(self, data=None):
         super(CQUAD4, self).__init__()
 
-        self._EID = Integer(self, CQUAD4, 'EID', 0, 0, 100000000, True, True)
-        self._PID = Integer(self, CQUAD4, 'PID', 1, 0, 100000000, True, True, can_be_blank=True)
+        self._EID = Integer(self, 0, 0, 100000000, True, True)
+        self._PID = Integer(self, 1, 0, 100000000, True, True, can_be_blank=True)
         self._PID.default_override = lambda: self.EID
 
-        self._G1 = Integer(self, CQUAD4, 'G1', 2, 0, 100000000, True, True)
-        self._G2 = Integer(self, CQUAD4, 'G2', 3, 0, 100000000, True, True)
-        self._G3 = Integer(self, CQUAD4, 'G3', 4, 0, 100000000, True, True)
-        self._G4 = Integer(self, CQUAD4, 'G4', 5, 0, 100000000, True, True)
+        self._G1 = Integer(self, 2, 0, 100000000, True, True)
+        self._G2 = Integer(self, 3, 0, 100000000, True, True)
+        self._G3 = Integer(self, 4, 0, 100000000, True, True)
+        self._G4 = Integer(self, 5, 0, 100000000, True, True)
 
         double_args = {'name': 'THETA',
                        'min_value': None,
@@ -61,15 +61,15 @@ class CQUAD4(SimpleCard):
                         'ignore_max': False,
                         'can_be_blank': True}
 
-        self._THETAorMCID = IntegerOrDouble(self, CQUAD4, 'THETAorMCID', 6, integer_args, double_args)
+        self._THETAorMCID = IntegerOrDouble(self, 6, integer_args, double_args)
 
-        self._ZOFFS = Double(self, CQUAD4, 'ZOFFS', 7, can_be_blank=True)
+        self._ZOFFS = Double(self, 7, can_be_blank=True)
         self._Blank = Blank()
-        self._TFLAG = Integer(self, CQUAD4, 'TFLAG', 9, 0, 1, can_be_blank=True)
-        self._T1 = Double(self, CQUAD4, 'T1', 10, 0., can_be_blank=True)
-        self._T2 = Double(self, CQUAD4, 'T2', 11, 0., can_be_blank=True)
-        self._T3 = Double(self, CQUAD4, 'T3', 12, 0., can_be_blank=True)
-        self._T4 = Double(self, CQUAD4, 'T4', 13, 0., can_be_blank=True)
+        self._TFLAG = Integer(self, 9, 0, 1, can_be_blank=True)
+        self._T1 = Double(self, 10, 0., can_be_blank=True)
+        self._T2 = Double(self, 11, 0., can_be_blank=True)
+        self._T3 = Double(self, 12, 0., can_be_blank=True)
+        self._T4 = Double(self, 13, 0., can_be_blank=True)
 
         self.field_width = 8
 

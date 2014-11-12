@@ -12,9 +12,9 @@ class String(GenericField):
 
     __slots__ = ('parent', 'index', 'allowable_data', 'can_be_blank')
 
-    def __init__(self, parent, parent_cls, name, index=None, allowable_data=None, can_be_blank=False):
+    def __init__(self, parent, index=None, allowable_data=None, can_be_blank=False):
 
-        super(String, self).__init__(parent_cls, name, None)
+        super(String, self).__init__(None)
 
         self.parent = parent
         self.index = index

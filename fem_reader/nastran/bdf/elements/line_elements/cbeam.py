@@ -42,10 +42,10 @@ class CBEAM(SimpleCard):
     def __init__(self, data=None):
         super(CBEAM, self).__init__()
 
-        self._EID = Integer(self, CBEAM, 'EID', 0, 0, 100000000, True, True)
-        self._PID = Integer(self, CBEAM, 'PID', 1, 0, 100000000, True, True, can_be_blank=True)
-        self._GA = Integer(self, CBEAM, 'GA', 2, 0, 100000000, True, True)
-        self._GB = Integer(self, CBEAM, 'GB', 3, 0, 100000000, True, True)
+        self._EID = Integer(self, 0, 0, 100000000, True, True)
+        self._PID = Integer(self, 1, 0, 100000000, True, True, can_be_blank=True)
+        self._GA = Integer(self, 2, 0, 100000000, True, True)
+        self._GB = Integer(self, 3, 0, 100000000, True, True)
 
         double_args = {'name': 'X1',
                        'min_value': None,
@@ -61,10 +61,10 @@ class CBEAM(SimpleCard):
                         'ignore_max': True,
                         'can_be_blank': True}
 
-        self._X1orG0 = IntegerOrDouble(self, CBEAM, 'X1orG0', 4, integer_args, double_args)
+        self._X1orG0 = IntegerOrDouble(self, 4, integer_args, double_args)
 
-        self._X2 = Double(self, CBEAM, 'X2', 5, can_be_blank=True)
-        self._X3 = Double(self, CBEAM, 'X3', 6, can_be_blank=True)
+        self._X2 = Double(self, 5, can_be_blank=True)
+        self._X3 = Double(self, 6, can_be_blank=True)
 
         string_args = {'name': 'OFFT',
                        'allowable_data': ['GGG', 'BGG', 'GGO', 'BGO', 'GOG', 'BOG', 'GOO', 'BOO'],
@@ -77,18 +77,18 @@ class CBEAM(SimpleCard):
                        'ignore_max': False,
                        'can_be_blank': True}
 
-        self._OFFT_BIT = StringOrDouble(self, CBEAM, 'OFFT_BIT', 7, string_args, double_args)
+        self._OFFT_BIT = StringOrDouble(self, 7, string_args, double_args)
 
-        self._PA = Integer(self, CBEAM, 'PA', 8, 1, 6, can_be_blank=True)
-        self._PB = Integer(self, CBEAM, 'PB', 9, 1, 6, can_be_blank=True)
-        self._W1A = Double(self, CBEAM, 'W1A', 10, can_be_blank=True)
-        self._W2A = Double(self, CBEAM, 'W2A', 11, can_be_blank=True)
-        self._W3A = Double(self, CBEAM, 'W3A', 12, can_be_blank=True)
-        self._W1B = Double(self, CBEAM, 'W1B', 13, can_be_blank=True)
-        self._W2B = Double(self, CBEAM, 'W2B', 14, can_be_blank=True)
-        self._W3B = Double(self, CBEAM, 'W3B', 15, can_be_blank=True)
-        self._SA = Integer(self, CBEAM, 'SA', 16, 0, can_be_blank=True)
-        self._SB = Integer(self, CBEAM, 'SB', 16, 0, can_be_blank=True)
+        self._PA = Integer(self, 8, 1, 6, can_be_blank=True)
+        self._PB = Integer(self, 9, 1, 6, can_be_blank=True)
+        self._W1A = Double(self, 10, can_be_blank=True)
+        self._W2A = Double(self, 11, can_be_blank=True)
+        self._W3A = Double(self, 12, can_be_blank=True)
+        self._W1B = Double(self, 13, can_be_blank=True)
+        self._W2B = Double(self, 14, can_be_blank=True)
+        self._W3B = Double(self, 15, can_be_blank=True)
+        self._SA = Integer(self, 16, 0, can_be_blank=True)
+        self._SB = Integer(self, 17, 0, can_be_blank=True)
 
         self.field_width = 8
 

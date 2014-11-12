@@ -17,7 +17,7 @@ class IntegerList(object):
         self.data = []
 
     def add(self, index, value):
-        self.data.insert(index, Integer(self, None, None, None, self.args['min_value'],
+        self.data.insert(index, Integer(self, None, self.args['min_value'],
                                         self.args['max_value'], self.args['ignore_min'],
                                         self.args['ignore_max'], self.args['can_be_blank']))
 

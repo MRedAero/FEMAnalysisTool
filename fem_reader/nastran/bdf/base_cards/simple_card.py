@@ -53,7 +53,7 @@ class SimpleCard(object):
 
         for i in xrange(len(self.items)):
             if len(current_line) >= 72:
-                if current_line[8:].strip() == '':
+                if current_line[8:64].strip() == '':
                     current_line = cont
                     break  # is this ok or will data be missing?  pretty sure no blank lines are allowed
                 result += current_line + cont.strip() + '\n'
@@ -63,7 +63,8 @@ class SimpleCard(object):
             current_line += self.items[i].__str__()
 
         if current_line != cont:
-            result += current_line + '\n'
+            if current_line[8:64].strip() != '':
+                result += current_line + '\n'
 
         while result[-1] == r'*' or result[-1] == '\n':
             result = result[:-1]

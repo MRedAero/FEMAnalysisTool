@@ -12,10 +12,10 @@ class ValidateRange(GenericField):
 
     __slots__ = ('_min', '_max', '_ignore_min', '_ignore_max')
 
-    def __init__(self, parent_cls, name, value=None, min_value=None,
+    def __init__(self, value=None, min_value=None,
                  max_value=None, ignore_min=False, ignore_max=False):
 
-        super(ValidateRange, self).__init__(parent_cls, name, value)
+        super(ValidateRange, self).__init__(value)
 
         self._min = min_value
         self._max = max_value
