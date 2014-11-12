@@ -12,32 +12,32 @@ class StringOrDouble(object):
 
     """
 
-    def __init__(self, parent, parent_cls, name, index=None, string_args=None, double_args=None):
+    def __init__(self, parent, index=None, string_args=None, double_args=None):
         super(StringOrDouble, self).__init__()
 
         self.parent = parent
 
-        self._string_field = String(parent, None, None, index, string_args['allowable_data'],
+        self._string_field = String(parent, index, string_args['allowable_data'],
                                     string_args['can_be_blank'])
 
         ":type : .string.String"
 
-        self._double_field = Double(parent, None, None, index, double_args['min_value'],
+        self._double_field = Double(parent, index, double_args['min_value'],
                                     double_args['max_value'], double_args['ignore_min'], double_args['ignore_max'],
                                     double_args['can_be_blank'])
         ":type : .double.Double"
 
         self._type = None
 
-        if parent_cls is not None:
-            if name is not None:
-                setattr(parent_cls, name, property(self.get_value, self.set_value))
-
-            if string_args['name'] is not None:
-                setattr(parent_cls, string_args['name'], property(self.get_str_value, self.set_str_value))
-
-            if double_args['name'] is not None:
-                setattr(parent_cls, double_args['name'], property(self.get_dbl_value, self.set_dbl_value))
+        #if parent_cls is not None:
+        #    if name is not None:
+        #        setattr(parent_cls, name, property(self.get_value, self.set_value))
+        #
+        #    if string_args['name'] is not None:
+        #        setattr(parent_cls, string_args['name'], property(self.get_str_value, self.set_str_value))
+        #
+        #    if double_args['name'] is not None:
+        #        setattr(parent_cls, double_args['name'], property(self.get_dbl_value, self.set_dbl_value))
 
     def get_value(self, instance):
         if self._type is None:

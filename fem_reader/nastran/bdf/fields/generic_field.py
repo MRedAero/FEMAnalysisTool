@@ -8,7 +8,7 @@ class GenericField(object):
 
     __slots__ = ('_value', 'default_override')
 
-    def __init__(self, parent_cls, name, value=None):
+    def __init__(self, value=None):
         super(GenericField, self).__init__()
 
         self._value = value

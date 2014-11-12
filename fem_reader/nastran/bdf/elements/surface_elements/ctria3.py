@@ -37,13 +37,13 @@ class CTRIA3(SimpleCard):
     def __init__(self, data=None):
         super(CTRIA3, self).__init__()
 
-        self._EID = Integer(self, CTRIA3, 'EID', 0, 0, 100000000, True, True)
-        self._PID = Integer(self, CTRIA3, 'PID', 1, 0, 100000000, True, True, can_be_blank=True)
+        self._EID = Integer(self, 0, 0, 100000000, True, True)
+        self._PID = Integer(self, 1, 0, 100000000, True, True, can_be_blank=True)
         self._PID.default_override = lambda: self.EID
 
-        self._G1 = Integer(self, CTRIA3, 'G1', 2, 0, 100000000, True, True)
-        self._G2 = Integer(self, CTRIA3, 'G2', 3, 0, 100000000, True, True)
-        self._G3 = Integer(self, CTRIA3, 'G3', 4, 0, 100000000, True, True)
+        self._G1 = Integer(self, 2, 0, 100000000, True, True)
+        self._G2 = Integer(self, 3, 0, 100000000, True, True)
+        self._G3 = Integer(self, 4, 0, 100000000, True, True)
 
         double_args = {'name': 'THETA',
                            'min_value': None,
@@ -59,15 +59,15 @@ class CTRIA3(SimpleCard):
                         'ignore_max': False,
                         'can_be_blank': True}
 
-        self._THETAorMCID = IntegerOrDouble(self, CTRIA3, 'THETAorMCID', 5, integer_args, double_args)
+        self._THETAorMCID = IntegerOrDouble(self, 5, integer_args, double_args)
 
-        self._ZOFFS = Double(self, CTRIA3, 'ZOFFS', 6, can_be_blank=True)
+        self._ZOFFS = Double(self, 6, can_be_blank=True)
         self._Blank1 = Blank()
         self._Blank2 = Blank()
-        self._TFLAG = Integer(self, CTRIA3, 'TFLAG', 9, 0, 1, can_be_blank=True)
-        self._T1 = Double(self, CTRIA3, 'T1', 10, 0., can_be_blank=True)
-        self._T2 = Double(self, CTRIA3, 'T2', 11, 0., can_be_blank=True)
-        self._T3 = Double(self, CTRIA3, 'T3', 12, 0., can_be_blank=True)
+        self._TFLAG = Integer(self, 9, 0, 1, can_be_blank=True)
+        self._T1 = Double(self, 10, 0., can_be_blank=True)
+        self._T2 = Double(self, 11, 0., can_be_blank=True)
+        self._T3 = Double(self, 12, 0., can_be_blank=True)
 
         self.field_width = 8
 

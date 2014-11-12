@@ -13,10 +13,10 @@ class Double(ValidateRange):
 
     __slots__ = ('parent', 'index', 'can_be_blank')
 
-    def __init__(self, parent, parent_cls, name, index=None, min_value=None, max_value=None, ignore_min=False,
+    def __init__(self, parent, index=None, min_value=None, max_value=None, ignore_min=False,
                  ignore_max=False, can_be_blank=False):
 
-        super(Double, self).__init__(parent_cls, name, None, min_value, max_value, ignore_min, ignore_max)
+        super(Double, self).__init__(None, min_value, max_value, ignore_min, ignore_max)
 
         self.parent = parent
         self.index = index
