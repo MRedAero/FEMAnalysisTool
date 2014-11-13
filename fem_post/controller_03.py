@@ -1,13 +1,13 @@
 
 #!/usr/bin/env python
- 
+
 import sys
 from PySide import QtCore, QtGui
 #from PyQt4 import QtCore, QtGui
 
 import vtk
-#from QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
-from tvtk.pyface.ui.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+#from tvtk.pyface.ui.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 #import win32com.client as comclt
 
@@ -150,7 +150,7 @@ class Quad4(object):
 
 
 class MainWindow(QtGui.QMainWindow):
- 
+
     def __init__(self, filename, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
 
@@ -177,7 +177,7 @@ class MainWindow(QtGui.QMainWindow):
         self.solid = 1
 
         self.idFilter = vtk.vtkIdFilter()
-        self.idFilter.SetInput(self.poly_data)
+        self.idFilter.SetInputData(self.poly_data)
         self.idFilter.SetIdsArrayName("OriginalIds")
         self.idFilter.Update()
 
@@ -189,23 +189,23 @@ class MainWindow(QtGui.QMainWindow):
 
         self.renderer = vtk.vtkRenderer()
         #self.renderer2 = vtk.vtkRenderer()
-        
-        viewport = [0.0,0.0,0.15,0.15]        
+
+        viewport = [0.0,0.0,0.15,0.15]
         #self.renderer2.SetViewport(viewport)
         #self.renderer2.Transparent()
-        
+
         self.renderWindowInteractor = QVTKRenderWindowInteractor(self.ui.frame)
         self.renderWindowInteractor.GetRenderWindow().AddRenderer(self.renderer)
         #self.renderWindowInteractor.GetRenderWindow().AddRenderer(self.renderer2)
         self.renderWindowInteractor.GetRenderWindow().SetAlphaBitPlanes(1)
-        
+
         self.ui.vl.addWidget(self.renderWindowInteractor)
 
         self.iren = vtk.vtkRenderWindowInteractor()
         self.iren = self.renderWindowInteractor.GetRenderWindow().GetInteractor()
 
         self.mapper = vtk.vtkPolyDataMapper()
-        self.mapper.SetInputConnection(self.input.GetProducerPort())
+        self.mapper.SetInputData(self.input)
         self.mapper.ScalarVisibilityOff()
 
         self.actor = vtk.vtkActor()
@@ -231,7 +231,7 @@ class MainWindow(QtGui.QMainWindow):
         pts.InsertNextPoint(30, 30, 0.0)
         scalars.InsertNextValue(1)
         vectors.InsertNextTuple3(1, 1, 0.0)
-        
+
         # Create simple PolyData for glyph table
         cs = vtk.vtkCubeSource()
         cs.SetXLength(0.5)
@@ -243,12 +243,12 @@ class MainWindow(QtGui.QMainWindow):
 
 
         point_list = vtk.vtkPoints()
-        point_list.InsertNextPoint([30, 30, 0])        
+        point_list.InsertNextPoint([30, 30, 0])
         poly_data = vtk.vtkPolyData()
         poly_data.SetPoints(point_list)
 
         idFilter = vtk.vtkIdFilter()
-        idFilter.SetInput(poly_data)
+        idFilter.SetInputData(poly_data)
         idFilter.SetIdsArrayName("OriginalIds")
         idFilter.Update()
 
@@ -256,15 +256,15 @@ class MainWindow(QtGui.QMainWindow):
         surfaceFilter.SetInputConnection(idFilter.GetOutputPort())
         surfaceFilter.Update()
 
-         
+
         # Here is where we build the glyph table
         # that will be indexed into according to the IndexMode
-        glyph.SetSource(0,cs.GetOutput())
+        glyph.SetSourceData(0,cs.GetOutput())
         #glyph.SetInputConnection(surfaceFilter.GetOutputPort())
-        glyph.SetInput(pd)
+        glyph.SetInputData(pd)
         glyph.SetIndexModeToScalar()
         glyph.SetRange(0, 1)
-        glyph.SetScaleModeToDataScalingOff() 
+        glyph.SetScaleModeToDataScalingOff()
         glyph.OrientOn()
         mapper3 = vtk.vtkPolyDataMapper()
         mapper3.SetInputConnection(glyph.GetOutputPort())
@@ -275,19 +275,19 @@ class MainWindow(QtGui.QMainWindow):
         actor3 = vtk.vtkActor()
         actor3.SetMapper(mapper3)
         #actor3.GetProperty().SetBackgroundOpacity(0.5)        
-        
-        
+
+
         gs = vtk.vtkGlyphSource2D()
         gs.SetGlyphTypeToCircle()
         gs.SetScale(25)
         gs.FilledOff()
         #gs.CrossOn()
         gs.Update()
-        
+
         # Create a table of glyphs
         glypher = vtk.vtkGlyph2D()
-        glypher.SetInput(pd)
-        glypher.SetSource(0, gs.GetOutput())
+        glypher.SetInputData(pd)
+        glypher.SetSourceData(0, gs.GetOutput())
         glypher.SetIndexModeToScalar()
         glypher.SetRange(0, 1)
         glypher.SetScaleModeToDataScalingOff()
@@ -301,21 +301,21 @@ class MainWindow(QtGui.QMainWindow):
         self.renderer.AddActor(self.actor)
         #self.renderer.AddActor(mapper)
         #self.renderer2.AddActor(actor3)
-        
-        
+
+
         self.renderer.SetBackground(self.bgcolor1)
         self.renderer.SetBackground2(self.bgcolor2)
         self.renderer.GradientBackgroundOn()
-        
+
         self.renderer.SetActiveCamera(self.camera)
         self.renderer.ResetCamera()
-        
+
         #self.camera.ZoomOff()        
-        
+
         #self.renderer2.SetActiveCamera(self.camera)
         #self.renderer2.ResetCamera()
         #self.renderer2.SetBackground(0,0,0)
-        
+
         #self.renderer2.GetProperty().SetBackgroundOpacity(0.5)
         #self.renderer2.SetLayer(1)
 
@@ -425,7 +425,7 @@ class MainWindow(QtGui.QMainWindow):
                 continue
 
             try:
-                self.element_ids.append(bdf.elements[elements[i]].ID)
+                self.element_ids.append(int(bdf.elements[elements[i]].ID))
             except IndexError:
                 break
 
@@ -471,7 +471,7 @@ class MainWindow(QtGui.QMainWindow):
         self.poly_data.SetPolys(cell_list)
         self.poly_data.SetLines(cell_list)
         #self.poly_data.SetVerts(cell_list)
-        
+
 
     def on_color1(self):
         color = QtGui.QColorDialog.getColor(QtCore.Qt.blue,self)
@@ -481,26 +481,26 @@ class MainWindow(QtGui.QMainWindow):
         self.bgcolor1 = (red, green, blue)
         self.renderer.SetBackground(self.bgcolor1)
         self.show()
-        
+
     def on_color2(self):
         color = QtGui.QColorDialog.getColor(QtCore.Qt.blue,self)
         red = color.red() / 255.
         blue = color.blue() / 255.
         green = color.green() / 255.
         self.bgcolor2 = (red, green, blue)
-        self.renderer.SetBackground2(self.bgcolor2)   
+        self.renderer.SetBackground2(self.bgcolor2)
         self.show()
-        
+
     def on_edgecolor(self):
         color = QtGui.QColorDialog.getColor(QtCore.Qt.blue,self)
         red = color.red() / 255.
         blue = color.blue() / 255.
         green = color.green() / 255.
         self.edgecolor = (red, green, blue)
-        self.actor.GetProperty().SetEdgeColor(self.edgecolor)   
+        self.actor.GetProperty().SetEdgeColor(self.edgecolor)
         self.actor.GetProperty().EdgeVisibilityOn()
         self.actor.GetProperty().SetPointSize(2)
-        self.show()        
+        self.show()
 
     def on_elementcolor(self):
         color = QtGui.QColorDialog.getColor(QtCore.Qt.blue,self)
@@ -508,29 +508,29 @@ class MainWindow(QtGui.QMainWindow):
         blue = color.blue() / 255.
         green = color.green() / 255.
         self.eidcolor = (red, green, blue)
-        self.actor.GetProperty().SetColor(self.eidcolor)   
-        self.show()           
+        self.actor.GetProperty().SetColor(self.eidcolor)
+        self.show()
 
     def on_nofillededge(self):
-        self.actor.GetProperty().EdgeVisibilityOff() 
+        self.actor.GetProperty().EdgeVisibilityOff()
         self.actor.GetProperty().SetPointSize(0.001)
-        self.show()         
+        self.show()
 
     def on_switch(self):
-        
+
         if self.bgcolor1 == (1,1,1) and self.bgcolor2 == (1,1,1):
             self.bgcolor1 = (0, 0, 1)
             self.bgcolor2 = (0.8, 0.8, 1)
             self.renderer.SetBackground(self.bgcolor1)
-            self.renderer.SetBackground2(self.bgcolor2)   
+            self.renderer.SetBackground2(self.bgcolor2)
             self.show()
         else:
             self.bgcolor1 = (1, 1, 1)
             self.bgcolor2 = (1, 1, 1)
             self.renderer.SetBackground(self.bgcolor1)
-            self.renderer.SetBackground2(self.bgcolor2)   
+            self.renderer.SetBackground2(self.bgcolor2)
             self.show()
-            
+
     def on_toggleperspective(self):
 
         if self.perspective == 0:
@@ -551,22 +551,22 @@ class MainWindow(QtGui.QMainWindow):
         except IOError as err:
             print err
 
-        if picfile == []: return                        
-                        
-        print picfile[0]                        
+        if picfile == []: return
+
+        print picfile[0]
 
         # screenshot code:
         w2if = vtk.vtkWindowToImageFilter()
         w2if.SetInput(self.renderWindowInteractor.GetRenderWindow())
         w2if.Update()
-         
+
         writer = vtk.vtkPNGWriter()
         writer.SetFileName(picfile[0])
         writer.SetInput(w2if.GetOutput())
-        writer.Write()        
+        writer.Write()
 
     def on_copyimg(self):
-        
+
         # Take a screenshot:
         w2if = vtk.vtkWindowToImageFilter()
         w2if.SetInput(self.renderWindowInteractor.GetRenderWindow())
@@ -574,13 +574,13 @@ class MainWindow(QtGui.QMainWindow):
 
         # screenshot is a vtk object
         image = w2if.GetOutput()
-        
+
         # write a temp image file
         writer = vtk.vtkPNGWriter()
         writer.SetFileName("tempfile.png")
         writer.SetInput(image)
-        writer.Write()            
-        
+        writer.Write()
+
         # read the temp image file
         ### This works... copying image from file to clipboard
         self.clipboard = QtGui.QApplication.clipboard()
@@ -588,17 +588,17 @@ class MainWindow(QtGui.QMainWindow):
         #data.setImageData(QtGui.QImage(r'D:\PGM\01_DEV\VTK\MVC\1.png'))
         data.setImageData(QtGui.QImage("tempfile.png"))
         self.clipboard.setMimeData(data)
-    
+
         # remove the tempfile
-        os.remove("tempfile.png")    
-    
+        os.remove("tempfile.png")
+
         # how to covert vtkobject image to Qimage??    
-    
-    
+
+
     def on_togglewire(self):
 
         pass
-        
+
         # self.wsh= comclt.Dispatch("WScript.Shell")
         # self.wsh.AppActivate("Notepad") # select another application
         #
@@ -611,7 +611,7 @@ class MainWindow(QtGui.QMainWindow):
         #     self.wsh.SendKeys("s")
         #     self.solid = 1
         #     self.show()
-            
+
 
 
 class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
@@ -679,7 +679,7 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         if self._left_mouse_down or self._right_mouse_down or self._middle_mouse_down:
             self.should_it_render = True
             selected = vtk.vtkUnstructuredGrid()
-            self.selectedMapper.SetInput(selected)
+            self.selectedMapper.SetInputData(selected)
             self.selectedActor.SetMapper(self.selectedMapper)
             self.render()
             return
@@ -706,7 +706,7 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
     def nothing_picked(self):
         selected = vtk.vtkUnstructuredGrid()
-        self.selectedMapper.SetInput(selected)
+        self.selectedMapper.SetInputData(selected)
         #self.selectedActor = vtk.vtkActor()
         self.selectedActor.SetMapper(self.selectedMapper)
 
@@ -751,14 +751,14 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
                 selection.AddNode(selectionNode)
 
                 extractSelection = vtk.vtkExtractSelection()
-                extractSelection.SetInput(0, self.Data)
-                extractSelection.SetInput(1, selection)
+                extractSelection.SetInputData(0, self.Data)
+                extractSelection.SetInputData(1, selection)
                 extractSelection.Update()
 
                 selected = vtk.vtkUnstructuredGrid()
                 selected.ShallowCopy(extractSelection.GetOutput())
 
-                self.selectedMapper.SetInput(selected)
+                self.selectedMapper.SetInputData(selected)
                 #self.selectedActor = vtk.vtkActor()
                 self.selectedActor.SetMapper(self.selectedMapper)
                 self.selectedActor.GetProperty().EdgeVisibilityOn()  # this makes cells not blue?
@@ -812,26 +812,26 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             if count == 4:
                 xyz = points.GetPoint(0)
                 xyz = [camera_pos[0] + (xyz[0] - camera_pos[0])*f,
-                        camera_pos[1] + (xyz[1] - camera_pos[1])*f,
-                        camera_pos[2] + (xyz[2] - camera_pos[2])*f]
+                       camera_pos[1] + (xyz[1] - camera_pos[1])*f,
+                       camera_pos[2] + (xyz[2] - camera_pos[2])*f]
                 point_list.InsertNextPoint(xyz)
 
                 xyz = points.GetPoint(1)
                 xyz = [camera_pos[0] + (xyz[0] - camera_pos[0])*f,
-                        camera_pos[1] + (xyz[1] - camera_pos[1])*f,
-                        camera_pos[2] + (xyz[2] - camera_pos[2])*f]
+                       camera_pos[1] + (xyz[1] - camera_pos[1])*f,
+                       camera_pos[2] + (xyz[2] - camera_pos[2])*f]
                 point_list.InsertNextPoint(xyz)
 
                 xyz = points.GetPoint(2)
                 xyz = [camera_pos[0] + (xyz[0] - camera_pos[0])*f,
-                        camera_pos[1] + (xyz[1] - camera_pos[1])*f,
-                        camera_pos[2] + (xyz[2] - camera_pos[2])*f]
+                       camera_pos[1] + (xyz[1] - camera_pos[1])*f,
+                       camera_pos[2] + (xyz[2] - camera_pos[2])*f]
                 point_list.InsertNextPoint(xyz)
 
                 xyz = points.GetPoint(3)
                 xyz = [camera_pos[0] + (xyz[0] - camera_pos[0])*f,
-                        camera_pos[1] + (xyz[1] - camera_pos[1])*f,
-                        camera_pos[2] + (xyz[2] - camera_pos[2])*f]
+                       camera_pos[1] + (xyz[1] - camera_pos[1])*f,
+                       camera_pos[2] + (xyz[2] - camera_pos[2])*f]
                 point_list.InsertNextPoint(xyz)
 
                 cell = vtk.vtkQuad()
@@ -843,20 +843,20 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             elif count == 3:
                 xyz = points.GetPoint(0)
                 xyz = [camera_pos[0] + (xyz[0] - camera_pos[0])*f,
-                        camera_pos[1] + (xyz[1] - camera_pos[1])*f,
-                        camera_pos[2] + (xyz[2] - camera_pos[2])*f]
+                       camera_pos[1] + (xyz[1] - camera_pos[1])*f,
+                       camera_pos[2] + (xyz[2] - camera_pos[2])*f]
                 point_list.InsertNextPoint(xyz)
 
                 xyz = points.GetPoint(1)
                 xyz = [camera_pos[0] + (xyz[0] - camera_pos[0])*f,
-                        camera_pos[1] + (xyz[1] - camera_pos[1])*f,
-                        camera_pos[2] + (xyz[2] - camera_pos[2])*f]
+                       camera_pos[1] + (xyz[1] - camera_pos[1])*f,
+                       camera_pos[2] + (xyz[2] - camera_pos[2])*f]
                 point_list.InsertNextPoint(xyz)
 
                 xyz = points.GetPoint(2)
                 xyz = [camera_pos[0] + (xyz[0] - camera_pos[0])*f,
-                        camera_pos[1] + (xyz[1] - camera_pos[1])*f,
-                        camera_pos[2] + (xyz[2] - camera_pos[2])*f]
+                       camera_pos[1] + (xyz[1] - camera_pos[1])*f,
+                       camera_pos[2] + (xyz[2] - camera_pos[2])*f]
                 point_list.InsertNextPoint(xyz)
 
                 cell = vtk.vtkTriangle()
@@ -867,14 +867,14 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             elif count == 2:
                 xyz = points.GetPoint(0)
                 xyz = [camera_pos[0] + (xyz[0] - camera_pos[0])*f,
-                        camera_pos[1] + (xyz[1] - camera_pos[1])*f,
-                        camera_pos[2] + (xyz[2] - camera_pos[2])*f]
+                       camera_pos[1] + (xyz[1] - camera_pos[1])*f,
+                       camera_pos[2] + (xyz[2] - camera_pos[2])*f]
                 point_list.InsertNextPoint(xyz)
 
                 xyz = points.GetPoint(1)
                 xyz = [camera_pos[0] + (xyz[0] - camera_pos[0])*f,
-                        camera_pos[1] + (xyz[1] - camera_pos[1])*f,
-                        camera_pos[2] + (xyz[2] - camera_pos[2])*f]
+                       camera_pos[1] + (xyz[1] - camera_pos[1])*f,
+                       camera_pos[2] + (xyz[2] - camera_pos[2])*f]
                 point_list.InsertNextPoint(xyz)
 
                 cell = vtk.vtkLine()
@@ -890,7 +890,7 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             poly_data.SetLines(cell_list)
 
             idFilter = vtk.vtkIdFilter()
-            idFilter.SetInput(poly_data)
+            idFilter.SetInputData(poly_data)
             idFilter.SetIdsArrayName("SelectedIds")
             idFilter.Update()
 
@@ -900,7 +900,7 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
             input = surfaceFilter.GetOutput()
 
-            self.selectedMapper.SetInputConnection(input.GetProducerPort())
+            self.selectedMapper.SetInputData(input)
             self.selectedMapper.ScalarVisibilityOff()
 
             self.selectedActor.SetMapper(self.selectedMapper)
@@ -958,12 +958,12 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
 
 
- 
- 
+
+
 if __name__ == "__main__":
- 
+
     app = QtGui.QApplication(sys.argv)
- 
+
     window = MainWindow('fem_data.csv')
- 
+
     sys.exit(app.exec_())
