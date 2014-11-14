@@ -5,8 +5,10 @@ import sys
 from PySide import QtCore, QtGui
 
 from vtk_controller import VTKController
-
 from view import Ui_MainWindow
+
+from fem_reader.nastran.bdf.reader import BDFReader
+
 
 class MainWindow(QtGui.QMainWindow):
  
@@ -21,6 +23,9 @@ class MainWindow(QtGui.QMainWindow):
 
         self.ui.btn_bgcolor1.clicked.connect(self.on_color1)
         self.ui.btn_bgcolor2.clicked.connect(self.on_color2)
+        self.ui.actionOpen.triggered.connect(self.on_open)
+
+        self.bdf = None
 
         self.show()
 
@@ -52,11 +57,17 @@ class MainWindow(QtGui.QMainWindow):
         color2 = (red, green, blue)
         self.vtk_controller.set_background_color(color2=color2)
 
+    def on_open(self):
+        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File', None, "BDF Files (*.bdf);;DAT Files (*.dat)")
+
+        if filename[0] == '':
+            return
+
+        self.bdf = BDFReader().read_bdf(filename[0])
+
 
 if __name__ == "__main__":
  
     app = QtGui.QApplication(sys.argv)
-
     window = MainWindow()
- 
     sys.exit(app.exec_())
