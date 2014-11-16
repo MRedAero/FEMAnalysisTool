@@ -39,6 +39,12 @@ class VTKView(object):
         self.interactor.SetInteractorStyle(self.interactor_style)
 
         self.interactor.Start()
+
+        # http://www.paraview.org/Wiki/VTK/Examples/Python/Widgets/EmbedPyQt
+        # http://www.vtk.org/pipermail/vtk-developers/2013-July/014005.html
+        # see above why self.main_window.show() is done here
+
+        self.main_window.show()
         self.iren.Initialize()
 
     def set_background_color(self, color1=None, color2=None):

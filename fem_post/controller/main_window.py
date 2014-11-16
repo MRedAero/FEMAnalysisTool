@@ -18,15 +18,19 @@ class MainWindow(QtGui.QMainWindow):
         self.ui = ui
         self.ui.setupUi(self)
 
-        self.vtk_widget = VTKWidget(self)
-
         self.ui.btn_bgcolor1.clicked.connect(self.on_color1)
         self.ui.btn_bgcolor2.clicked.connect(self.on_color2)
         self.ui.actionOpen.triggered.connect(self.on_open)
 
         self.bdf = None
 
-        self.show()
+        # http://www.paraview.org/Wiki/VTK/Examples/Python/Widgets/EmbedPyQt
+        # http://www.vtk.org/pipermail/vtk-developers/2013-July/014005.html
+        # see above why self.show() is not implemented here
+        # it is implemented inside VTKWidget.view
+        #self.show()
+
+        self.vtk_widget = VTKWidget(self)
 
     def on_color1(self):
         color = self.vtk_widget.bg_color_1
