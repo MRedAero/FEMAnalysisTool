@@ -52,8 +52,7 @@ class VTKModel(object):
         for i in xrange(len(grids)):
             node = bdf.nodes[grids[i]]
             """:type : fem_reader.GRID"""
-            x, y, z = node.to_global()
-            tmp = self.points.InsertNextPoint(*[x, y, z])
+            tmp = self.points.InsertNextPoint(*node.to_global())
             self.color.InsertTuple1(tmp, 0)
             nidMap[node.ID] = i
 
@@ -94,6 +93,8 @@ class VTKModel(object):
                 ids.SetId(3, nidMap[nodes[3]])
                 cell = self.grid.InsertNextCell(cell.GetCellType(), cell.GetPointIds())
                 self.color.InsertTuple1(cell, 3)
+
+        self.grid.GetCellData().SetScalars(self.color)
 
         self.cell_mapper.SetScalarModeToUseCellData()
         self.cell_mapper.UseLookupTableScalarRangeOn()
