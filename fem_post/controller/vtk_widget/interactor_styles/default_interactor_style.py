@@ -3,6 +3,7 @@ __author__ = 'Michael Redmond'
 import vtk
 
 
+# noinspection PyUnusedLocal
 class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
     def __init__(self):
         self.AddObserver("MouseMoveEvent", self.on_mouse_move)

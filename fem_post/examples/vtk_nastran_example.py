@@ -8,7 +8,7 @@ from pyNastran.bdf.bdf import (BDF, CQUAD4, CQUAD8, CQUADR, CSHEAR,
 
 model = BDF()
 bdf_file = r'C:\Users\Michael\PycharmProjects\FEMAnalysisTool\fem_post\data\rotor.bdf'
-vtk_file = r'C:\Users\Michael\PycharmProjects\FEMAnalysisTool\fem_post\data\rotor.vtk'
+vtk_file = r'C:\Users\Michael\PycharmProjects\FEMAnalysisTool\fem_post\data\rotor.vtk_widget'
 model.readBDF(bdf_file, includeDir=None, xref=False)
 points = vtk.vtkPoints()
 grid = vtk.vtkUnstructuredGrid()

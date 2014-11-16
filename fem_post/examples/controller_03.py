@@ -203,7 +203,7 @@ class MainWindow(QtGui.QMainWindow):
         self.input = self.surfaceFilter.GetOutput()
 
         self.renderer = vtk.vtkRenderer()
-        #self.renderer2 = vtk.vtkRenderer()
+        #self.renderer2 = vtk_widget.vtkRenderer()
 
         viewport = [0.0,0.0,0.15,0.15]
         #self.renderer2.SetViewport(viewport)
@@ -233,7 +233,7 @@ class MainWindow(QtGui.QMainWindow):
         self.actor.GetProperty().SetEdgeColor(self.edgecolor)
 
         self.camera = vtk.vtkCamera()
-        #self.camera2 = vtk.vtkCamera()
+        #self.camera2 = vtk_widget.vtkCamera()
 
 
         # trial... add glyph
@@ -357,7 +357,7 @@ class MainWindow(QtGui.QMainWindow):
         self.renderWindowInteractor.Start()
 
         # screenshot code:e
-        #self.w2if = vtk.vtkWindowToImageFilter()
+        #self.w2if = vtk_widget.vtkWindowToImageFilter()
         #self.w2if.SetInput(self.renWin)
         #self.w2if.Update()
 
@@ -590,7 +590,7 @@ class MainWindow(QtGui.QMainWindow):
         w2if.SetInput(self.renderWindowInteractor.GetRenderWindow())
         w2if.Update()
 
-        # screenshot is a vtk object
+        # screenshot is a vtk_widget object
         image = w2if.GetOutput()
 
         # write a temp image file
@@ -725,7 +725,7 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
     def nothing_picked(self):
         selected = vtk.vtkUnstructuredGrid()
         self.selectedMapper.SetInputData(selected)
-        #self.selectedActor = vtk.vtkActor()
+        #self.selectedActor = vtk_widget.vtkActor()
         self.selectedActor.SetMapper(self.selectedMapper)
 
         if self.did_it_render:
@@ -777,7 +777,7 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
                 selected.ShallowCopy(extractSelection.GetOutput())
 
                 self.selectedMapper.SetInputData(selected)
-                #self.selectedActor = vtk.vtkActor()
+                #self.selectedActor = vtk_widget.vtkActor()
                 self.selectedActor.SetMapper(self.selectedMapper)
                 self.selectedActor.GetProperty().EdgeVisibilityOn()  # this makes cells not blue?
                 #self.selectedActor.GetProperty().SetColor(0, 0.5, 0)
