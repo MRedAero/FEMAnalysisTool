@@ -103,5 +103,9 @@ class CBEAM(SimpleCard):
         # noinspection PyUnresolvedReferences
         return self.EID
 
+    @property
+    def nodes(self):
+        return [self.GA, self.GB]
+
 
 cards['CBEAM'] = CBEAM

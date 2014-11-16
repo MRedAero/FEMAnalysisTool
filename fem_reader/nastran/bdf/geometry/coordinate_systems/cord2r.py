@@ -91,11 +91,7 @@ class CORD2R(SimpleCard):
         if self.RID == 0:
             return xyz
 
-        xyz = self.model.coordinate_systems[self.RID].to_global(xyz)
-
-        print 'CORD2C %d = %s', (self.ID, str(xyz))
-
-        return xyz
+        return self.model.coordinate_systems[self.RID].to_global(xyz)
 
 
 cards['CORD2R'] = CORD2R

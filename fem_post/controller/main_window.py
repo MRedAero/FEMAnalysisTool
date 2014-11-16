@@ -3,7 +3,7 @@
 
 import sys
 
-from PySide import QtGui
+from PySide import QtGui, QtCore
 
 from .vtk_widget import VTKWidget
 from fem_reader.nastran.bdf.reader import BDFReader
@@ -11,10 +11,11 @@ from fem_reader.nastran.bdf.reader import BDFReader
 
 class MainWindow(QtGui.QMainWindow):
  
-    def __init__(self, ui):
+    def __init__(self, app, ui):
         QtGui.QMainWindow.__init__(self)
 
-        # Initiate the UI as defined by Qt Designer
+        self.app = app
+        """:type : QApplication"""
         self.ui = ui
         self.ui.setupUi(self)
 
@@ -67,11 +68,8 @@ class MainWindow(QtGui.QMainWindow):
             return
 
         self.bdf = BDFReader()
+
+        self.app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
         self.bdf.read_bdf(filename[0])
-
-
-if __name__ == "__main__":
- 
-    app = QtGui.QApplication(sys.argv)
-    window = MainWindow()
-    sys.exit(app.exec_())
+        self.vtk_widget.set_data(self.bdf)
+        self.app.restoreOverrideCursor()

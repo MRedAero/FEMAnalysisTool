@@ -81,5 +81,9 @@ class CTRIA3(SimpleCard):
         # noinspection PyUnresolvedReferences
         return self.EID
 
+    @property
+    def nodes(self):
+        return [self.G1, self.G2, self.G3]
+
 
 cards['CTRIA3'] = CTRIA3

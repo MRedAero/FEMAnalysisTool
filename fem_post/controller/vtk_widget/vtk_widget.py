@@ -1,18 +1,23 @@
 __author__ = 'Michael Redmond'
 
+from .model import *
 from .view import *
+from .controller import *
 
 
 class VTKWidget(object):
     def __init__(self, main_window):
         super(VTKWidget, self).__init__()
 
-        # self.model = VTKModel()
         self.view = VTKView(main_window)
-        # self.controller = VTKController()
+        self.model = VTKModel(self.view)
+        self.controller = VTKController(self.model, self.view)
 
     def set_background_color(self, color1=None, color2=None):
-        self.view.set_background_color(color1, color2)
+        self.controller.set_background_color(color1, color2)
+
+    def set_data(self, bdf):
+        self.model.set_data(bdf)
 
     @property
     def bg_color_1(self):

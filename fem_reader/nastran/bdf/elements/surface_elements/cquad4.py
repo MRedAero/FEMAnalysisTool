@@ -83,5 +83,9 @@ class CQUAD4(SimpleCard):
         # noinspection PyUnresolvedReferences
         return self.EID
 
+    @property
+    def nodes(self):
+        return [self.G1, self.G2, self.G3, self.G4]
+
 
 cards['CQUAD4'] = CQUAD4

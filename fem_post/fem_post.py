@@ -11,7 +11,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
     # model ... fem data and other user data?
     view = Ui_MainWindow()
-    controller = MainWindow(view)
+    controller = MainWindow(app, view)
     sys.exit(app.exec_())
 
 

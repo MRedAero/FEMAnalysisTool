@@ -46,12 +46,3 @@ class VTKView(object):
 
         self.main_window.show()
         self.iren.Initialize()
-
-    def set_background_color(self, color1=None, color2=None):
-        if color1 is not None:
-            self.bg_color_1 = color1
-            self.renderer.SetBackground(color1)
-
-        if color2 is not None:
-            self.bg_color_2 = color2
-            self.renderer.SetBackground2(color2)

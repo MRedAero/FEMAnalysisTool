@@ -51,11 +51,7 @@ class GRID(SimpleCard):
         if self.CP == 0:
             return xyz
 
-        print 'GRID %d' % self.ID
-        print 'original = ' + str(xyz)
-        xyz = self.model.coordinate_systems[self.CP].to_global(xyz)
-        print 'global = ' + str(xyz)
-        return xyz
+        return self.model.coordinate_systems[self.CP].to_global(xyz)
 
 
 cards['GRID'] = GRID

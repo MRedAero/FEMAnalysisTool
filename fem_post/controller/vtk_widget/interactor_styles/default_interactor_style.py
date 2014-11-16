@@ -32,7 +32,7 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         self.OnMiddleButtonUp()
 
     def on_right_button_down(self, obj, event):
-        self.OnMiddleButtonUp()
+        self.OnRightButtonDown()
 
     def on_right_button_up(self, obj, event):
         self.OnRightButtonUp()
