@@ -12,7 +12,7 @@ from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 #import win32com.client as comclt
 
 
-from view import Ui_MainWindow
+from fem_post.view import Ui_MainWindow
 from array import array
 
 
@@ -83,7 +83,6 @@ class Tria3(object):
         self.center.append((self.x(0) + self.x(1) + self.x(2))/3.)
         self.center.append((self.y(0) + self.y(1) + self.y(2))/3.)
         self.center.append((self.z(0) + self.z(1) + self.z(2))/3.)
-        print self.center
 
     def x(self, i):
         return self.nodes[i]['x']
@@ -149,6 +148,22 @@ class Quad4(object):
         return self.nodes[i]['order']
 
 
+class CoordinateAxes(object):
+    def __init__(self, interactor):
+        super(CoordinateAxes, self).__init__()
+
+        self.interactor = interactor
+
+        self.axes = vtk.vtkAxesActor()
+        self.axes_widget = vtk.vtkOrientationMarkerWidget()
+        self.axes_widget.SetOutlineColor(0.93, 0.57, 0.13)
+        self.axes_widget.SetOrientationMarker(self.axes)
+        self.axes_widget.SetInteractor(self.interactor)
+        self.axes_widget.SetViewport(0., 0., 0.4, 0.4)
+        self.axes_widget.SetEnabled(1)
+        self.axes_widget.InteractiveOff()
+
+
 class MainWindow(QtGui.QMainWindow):
 
     def __init__(self, filename, parent=None):
@@ -198,6 +213,8 @@ class MainWindow(QtGui.QMainWindow):
         self.renderWindowInteractor.GetRenderWindow().AddRenderer(self.renderer)
         #self.renderWindowInteractor.GetRenderWindow().AddRenderer(self.renderer2)
         self.renderWindowInteractor.GetRenderWindow().SetAlphaBitPlanes(1)
+
+        self.axes = CoordinateAxes(self.renderWindowInteractor)
 
         self.ui.vl.addWidget(self.renderWindowInteractor)
 
@@ -378,8 +395,8 @@ class MainWindow(QtGui.QMainWindow):
 
         from fem_reader.nastran.bdf.reader import BDFReader
 
-        bdf_reader = BDFReader()
-        bdf = bdf_reader.read_bdf(r'data/wing.bdf')
+        bdf = BDFReader()
+        bdf.read_bdf(r'../data/rotor.bdf')
         grids = bdf.nodes.keys()
         elements = bdf.elements.keys()
 
@@ -394,9 +411,10 @@ class MainWindow(QtGui.QMainWindow):
             nodes[node_id] = {}
             nodes[node_id]['order'] = i
             nodes[node_id]['id'] = node_id
-            x = bdf.nodes[grids[i]].X1  #float(line[2]) # grids[i].x
-            y = bdf.nodes[grids[i]].X2  # float(line[3])
-            z = bdf.nodes[grids[i]].X3  # float(line[4])
+            #x = bdf.nodes[grids[i]].X1  #float(line[2]) # grids[i].x
+            #y = bdf.nodes[grids[i]].X2  # float(line[3])
+            #z = bdf.nodes[grids[i]].X3  # float(line[4])
+            x, y, z = bdf.nodes[grids[i]].to_global()
             nodes[node_id]['x'] = float(x)
             nodes[node_id]['y'] = float(y)
             nodes[node_id]['z'] = float(z)

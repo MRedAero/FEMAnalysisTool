@@ -1,25 +1,24 @@
 
 #!/usr/bin/env python
- 
+
 import sys
-from PySide import QtCore, QtGui
 
-from vtk_controller import VTKController
-from view import Ui_MainWindow
+from PySide import QtGui
 
+from .vtk import VTKController
 from fem_reader.nastran.bdf.reader import BDFReader
 
 
 class MainWindow(QtGui.QMainWindow):
  
-    def __init__(self):
+    def __init__(self, ui):
         QtGui.QMainWindow.__init__(self)
 
         # Initiate the UI as defined by Qt Designer
-        self.ui = Ui_MainWindow()
+        self.ui = ui
         self.ui.setupUi(self)
 
-        self.vtk_controller = VTKController(self.ui)
+        self.vtk_controller = VTKController(self)
 
         self.ui.btn_bgcolor1.clicked.connect(self.on_color1)
         self.ui.btn_bgcolor2.clicked.connect(self.on_color2)

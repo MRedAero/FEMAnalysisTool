@@ -28,8 +28,8 @@ class GRID(SimpleCard):
     __slots__ = ('ID', 'CP', 'X1', 'X2', 'X3', 'CD', 'PS', 'SEID',
                  '_ID', '_CP', '_X1', '_X2', '_X3', '_CD', '_PS', '_SEID')
 
-    def __init__(self, data=None):
-        super(GRID, self).__init__()
+    def __init__(self, model=None, data=None):
+        super(GRID, self).__init__(model)
 
         self._ID = Integer(self, 0, 0, 100000000, True, True)
         self._CP = Integer(self, 1, 0, None, can_be_blank=True)
@@ -45,6 +45,17 @@ class GRID(SimpleCard):
         self.items = [self._ID, self._CP, self._X1, self._X2, self._X3, self._CD, self._PS, self._SEID]
 
         self.set_data(data)
+
+    def to_global(self):
+        xyz = [self.X1, self.X2, self.X3]
+        if self.CP == 0:
+            return xyz
+
+        print 'GRID %d' % self.ID
+        print 'original = ' + str(xyz)
+        xyz = self.model.coordinate_systems[self.CP].to_global(xyz)
+        print 'global = ' + str(xyz)
+        return xyz
 
 
 cards['GRID'] = GRID

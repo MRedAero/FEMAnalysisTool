@@ -8,10 +8,12 @@ class SimpleCard(object):
 
     card_name = 'Simple'
 
-    __slots__ = ('items', 'field_width')
+    __slots__ = ('items', 'field_width', 'model')
 
-    def __init__(self):
+    def __init__(self, model=None):
         super(SimpleCard, self).__init__()
+
+        self.model = model
 
         self.items = []
         self.field_width = 8
@@ -19,8 +21,11 @@ class SimpleCard(object):
     def set_data(self, data):
         if data is not None:
             self.field_width = data[0]
-            for i in xrange(1, len(data)):
-                self.items[i-1].value = data[i]
+            try:
+                for i in xrange(1, len(data)):
+                    self.items[i-1].value = data[i]
+            except IndexError:
+                pass
 
     def __getattr__(self, name):
         # this is only used when the attribute 'name' does not currently exist

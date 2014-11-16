@@ -39,8 +39,8 @@ class CBEAM(SimpleCard):
                  '_PA', '_PB', '_W1A', '_W2A', '_W3A', '_W1B', '_W2B', '_W3B', '_SA', '_SB', 'ID', 'X1', 'G0', 'OFFT',
                  'BIT')
 
-    def __init__(self, data=None):
-        super(CBEAM, self).__init__()
+    def __init__(self, model=None, data=None):
+        super(CBEAM, self).__init__(model)
 
         self._EID = Integer(self, 0, 0, 100000000, True, True)
         self._PID = Integer(self, 1, 0, 100000000, True, True, can_be_blank=True)

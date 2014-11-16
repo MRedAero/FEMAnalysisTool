@@ -27,8 +27,8 @@ class PCOMP(SimpleCard):
     __slots__ = ('PID', 'Z0', 'NSM', 'SB', 'FT', 'TREF', 'GE', 'LAM',
                  '_PID', '_Z0', '_NSM', '_SB', '_FT', '_TREF', '_GE', '_LAM', '_MID', '_T', '_THETA', '_SOUT')
 
-    def __init__(self, data=None):
-        super(PCOMP, self).__init__()
+    def __init__(self, model=None, data=None):
+        super(PCOMP, self).__init__(model)
 
         self._PID = Integer(self, 0, 0, 100000000, True, True)
 

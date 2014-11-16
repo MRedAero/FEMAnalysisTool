@@ -2,9 +2,9 @@ __author__ = 'Michael Redmond'
 
 from nastran.bdf.reader import BDFReader
 
-bdf_reader = BDFReader()
+bdf = BDFReader()
 
-bdf = bdf_reader.read_bdf(r'data\wing.bdf')
+bdf.read_bdf(r'data\wing.bdf')
 
 grids = bdf.nodes.keys()
 

@@ -35,8 +35,8 @@ class CQUAD4(SimpleCard):
                  '_T3', '_T4', 'ID', 'THETA', 'MCID')
 
     # noinspection PyUnresolvedReferences
-    def __init__(self, data=None):
-        super(CQUAD4, self).__init__()
+    def __init__(self, model=None, data=None):
+        super(CQUAD4, self).__init__(model)
 
         self._EID = Integer(self, 0, 0, 100000000, True, True)
         self._PID = Integer(self, 1, 0, 100000000, True, True, can_be_blank=True)

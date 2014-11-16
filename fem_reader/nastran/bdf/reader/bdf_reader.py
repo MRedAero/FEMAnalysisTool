@@ -19,12 +19,11 @@ class BDF(object):
         self.constraints = OrderedDict()
 
 
-class BDFReader(object):
+class BDFReader(BDF):
     def __init__(self):
         super(BDFReader, self).__init__()
 
-        self._data = None
-        self._data_keys = None
+        self._data_keys = {}
         self._level = 0
 
         self._card_keys = cards.keys()
@@ -38,14 +37,12 @@ class BDFReader(object):
         except IOError:
             raise IOError("File '%s' does not exist!" % filename)
 
-        if self._data is None:
-            self._data = BDF()
+        if self._level == 0:
             # noinspection PyDictCreation
-            self._data_keys = {}
-            self._data_keys['elements'] = self._data.elements
-            self._data_keys['nodes'] = self._data.nodes
-            self._data_keys['coordinate_systems'] = self._data.coordinate_systems
-            self._data_keys['properties'] = self._data.properties
+            self._data_keys['elements'] = self.elements
+            self._data_keys['nodes'] = self.nodes
+            self._data_keys['coordinate_systems'] = self.coordinate_systems
+            self._data_keys['properties'] = self.properties
             # add others
 
         lines = _file.read().split('\n')
@@ -149,7 +146,7 @@ class BDFReader(object):
 
                 try:
                     # noinspection PyUnboundLocalVariable,PyCallingNonCallable
-                    new_data = cards[card](data)
+                    new_data = cards[card](self, data)
                 except Exception:
                     # noinspection PyUnboundLocalVariable
                     print 'BDF %s: line %d: field_width = %d\n%s' % (filename, bdf_line+1, field_width, card_line)
@@ -160,9 +157,6 @@ class BDFReader(object):
                 #goto = 0
 
         self._level -= 1
-
-        if self._level == 0:
-            return self._data
 
 
 def parse_string(in_str, parse):

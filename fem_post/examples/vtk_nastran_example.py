@@ -7,8 +7,8 @@ from pyNastran.bdf.bdf import (BDF, CQUAD4, CQUAD8, CQUADR, CSHEAR,
                                CHEXA8, CHEXA20, CBUSH, CBEAM, CONM2)
 
 model = BDF()
-bdf_file = r'C:\Users\Michael\PycharmProjects\FEMAnalysisTool\fem_post\data\wing.bdf'
-vtk_file = r'C:\Users\Michael\PycharmProjects\FEMAnalysisTool\fem_post\data\wing.vtk'
+bdf_file = r'C:\Users\Michael\PycharmProjects\FEMAnalysisTool\fem_post\data\rotor.bdf'
+vtk_file = r'C:\Users\Michael\PycharmProjects\FEMAnalysisTool\fem_post\data\rotor.vtk'
 model.readBDF(bdf_file, includeDir=None, xref=False)
 points = vtk.vtkPoints()
 grid = vtk.vtkUnstructuredGrid()
@@ -89,6 +89,7 @@ for (eid, element) in model.elements.iteritems():
         Color.InsertTuple1(Tria3cell,3)
 
     elif isinstance(element, CTRIA6):
+        continue
         nodeIDs = element.nodeIDs()
         if None not in nodeIDs:
             elem = vtk.vtkQuadraticTriangle()
@@ -105,6 +106,7 @@ for (eid, element) in model.elements.iteritems():
             Color.InsertTuple1(Tria6cell,4)
 
     elif isinstance(element, CTRIAX6):
+        continue
         nodeIDs = element.nodeIDs()
         if None not in nodeIDs:
             elem = vtk.vtkQuadraticTriangle()
@@ -151,6 +153,7 @@ for (eid, element) in model.elements.iteritems():
             Color.InsertTuple1(Quad8cell,4)
 
     elif isinstance(element, CTETRA4):
+        continue
         elem = vtk.vtkTetra()
         nodeIDs = element.nodeIDs()
         elem.GetPointIds().SetId(0, nidMap[nodeIDs[0]])
@@ -162,6 +165,7 @@ for (eid, element) in model.elements.iteritems():
         Color.InsertTuple1(Tetra4cell,4)
 
     elif isinstance(element, CTETRA10):
+        continue
         nodeIDs = element.nodeIDs()
         if None not in nodeIDs:
             elem = vtk.vtkQuadraticTetra()
@@ -182,6 +186,7 @@ for (eid, element) in model.elements.iteritems():
             Color.InsertTuple1(Tetra10cell,4)
 
     elif isinstance(element, CPENTA6):
+        continue
         elem = vtk.vtkWedge()
         nodeIDs = element.nodeIDs()
         elem.GetPointIds().SetId(0, nidMap[nodeIDs[0]])
@@ -195,6 +200,7 @@ for (eid, element) in model.elements.iteritems():
         Color.InsertTuple1(Penta6cell,4)
 
     elif isinstance(element, CPENTA15):
+        continue
         nodeIDs = element.nodeIDs()
         if None not in nodeIDs:
             elem = vtk.vtkQuadraticWedge()
@@ -220,6 +226,7 @@ for (eid, element) in model.elements.iteritems():
             Color.InsertTuple1(Penta15cell,4)
 
     elif isinstance(element, CHEXA8):
+        continue
         nodeIDs = element.nodeIDs()
         elem = vtk.vtkHexahedron()
         elem.GetPointIds().SetId(0, nidMap[nodeIDs[0]])
@@ -235,6 +242,7 @@ for (eid, element) in model.elements.iteritems():
         Color.InsertTuple1(Hexa8cell,4)
 
     elif isinstance(element, CHEXA20):
+        continue
         nodeIDs = element.nodeIDs()
         if None not in nodeIDs:
             elem = vtk.vtkQuadraticHexahedron()
@@ -336,6 +344,8 @@ renderer.SetBackground((0.1, 0.2, 0.3))
 # Create the RendererWindow
 renderer_window = vtk.vtkRenderWindow()
 renderer_window.AddRenderer(renderer)
+
+ShellVolactor.GetProperty().EdgeVisibilityOn()
 
 # Create the RendererWindowInteractor and display the vtk_file
 interactor = vtk.vtkRenderWindowInteractor()
