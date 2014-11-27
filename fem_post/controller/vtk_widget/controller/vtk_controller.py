@@ -17,3 +17,11 @@ class VTKController(object):
         if color2 is not None:
             self.view.bg_color_2 = color2
             self.view.renderer.SetBackground2(color2)
+
+    def toggle_perspective(self):
+        if self.view.perspective == 0:
+            self.view.camera.ParallelProjectionOn()
+            self.view.perspective = 1
+        else:
+            self.view.camera.ParallelProjectionOff()
+            self.view.perspective = 0

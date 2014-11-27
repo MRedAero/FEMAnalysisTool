@@ -1,8 +1,6 @@
 
 #!/usr/bin/env python
 
-import sys
-
 from PySide import QtGui, QtCore
 
 from .vtk_widget import VTKWidget
@@ -18,10 +16,12 @@ class MainWindow(QtGui.QMainWindow):
         """:type : QApplication"""
         self.ui = ui
         self.ui.setupUi(self)
+        self.ui.menubar.setNativeMenuBar(False)
 
         self.ui.btn_bgcolor1.clicked.connect(self.on_color1)
         self.ui.btn_bgcolor2.clicked.connect(self.on_color2)
         self.ui.actionOpen.triggered.connect(self.on_open)
+        self.ui.btn_perspectivetoggle.clicked.connect(self.on_toggle_perspective)
 
         self.bdf = None
 
@@ -62,6 +62,7 @@ class MainWindow(QtGui.QMainWindow):
         self.vtk_widget.set_background_color(color2=color2)
 
     def on_open(self):
+        # noinspection PyCallByClass
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File', None, "BDF Files (*.bdf);;DAT Files (*.dat)")
 
         if filename[0] == '':
@@ -69,7 +70,12 @@ class MainWindow(QtGui.QMainWindow):
 
         self.bdf = BDFReader()
 
+        # noinspection PyUnresolvedReferences
         self.app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
         self.bdf.read_bdf(filename[0])
         self.vtk_widget.set_data(self.bdf)
+        # noinspection PyUnresolvedReferences
         self.app.restoreOverrideCursor()
+
+    def on_toggle_perspective(self):
+        self.vtk_widget.toggle_perspective()

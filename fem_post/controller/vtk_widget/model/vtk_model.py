@@ -3,6 +3,7 @@ __author__ = 'Michael Redmond'
 import vtk
 
 
+# noinspection PyPep8Naming
 class VTKModel(object):
     def __init__(self, view):
         super(VTKModel, self).__init__()
@@ -32,10 +33,10 @@ class VTKModel(object):
         self.lookup_table.SetNumberOfTableValues(4)
         self.lookup_table.SetTableRange(0, 4)
         self.lookup_table.Build()
-        self.lookup_table.SetTableValue(0, 0, 0, 0, 1) # Black
-        self.lookup_table.SetTableValue(1, 1, 0, 0, 1) # Red
-        self.lookup_table.SetTableValue(2, 0, 1, 0, 1) # Green
-        self.lookup_table.SetTableValue(3, 0, 0, 1, 1) # Blue
+        self.lookup_table.SetTableValue(0, 0, 0, 0, 1)  # Black
+        self.lookup_table.SetTableValue(1, 1, 0, 0, 1)  # Red
+        self.lookup_table.SetTableValue(2, 0, 1, 0, 1)  # Green
+        self.lookup_table.SetTableValue(3, 0, 0, 1, 1)  # Blue
 
         self.cell_mapper = vtk.vtkDataSetMapper()
 
@@ -52,8 +53,9 @@ class VTKModel(object):
         for i in xrange(len(grids)):
             node = bdf.nodes[grids[i]]
             """:type : fem_reader.GRID"""
+            # noinspection PyArgumentList
             tmp = self.points.InsertNextPoint(*node.to_global())
-            self.color.InsertTuple1(tmp, 0)
+            #self.color.InsertTuple1(tmp, 0)
             nidMap[node.ID] = i
 
         self.grid.SetPoints(self.points)

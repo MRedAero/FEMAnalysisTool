@@ -8,9 +8,10 @@ from ..interactor_styles import *
 
 
 class VTKView(object):
-    def __init__(self, main_window):
+    def __init__(self, widget, main_window):
         super(VTKView, self).__init__()
 
+        self.widget = widget
         self.main_window = main_window
         self.interactor = QVTKRenderWindowInteractor(self.main_window.ui.frame)
 
@@ -34,7 +35,15 @@ class VTKView(object):
         self.renderer.SetBackground2(self.bg_color_2)
         self.renderer.GradientBackgroundOn()
 
-        self.interactor_style = DefaultInteractorStyle()
+        self.perspective = 0
+        self.camera = vtk.vtkCamera()
+
+        self.renderer.SetActiveCamera(self.camera)
+        self.renderer.ResetCamera()
+
+        self._interactor_style = None
+
+        self.interactor_style = DefaultInteractorStyle(self.widget)
 
         self.interactor.SetInteractorStyle(self.interactor_style)
 
@@ -46,3 +55,12 @@ class VTKView(object):
 
         self.main_window.show()
         self.iren.Initialize()
+
+    @property
+    def interactor_style(self):
+        return self._interactor_style
+
+    @interactor_style.setter
+    def interactor_style(self, style):
+        self._interactor_style = style
+        style.SetDefaultRenderer(self.renderer)

@@ -782,13 +782,16 @@ class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
                 self.selectedActor.GetProperty().EdgeVisibilityOn()  # this makes cells not blue?
                 #self.selectedActor.GetProperty().SetColor(0, 0.5, 0)
                 self.selectedActor.GetProperty().SetEdgeColor(0.5, 0.5, 0)
-                self.selectedActor.GetProperty().SetPointSize(3)
+                self.selectedActor.GetProperty().SetPointSize(6)
 
                 self.should_it_render = True
 
                 return True
 
             else:
+
+                self.picked_id = None
+                return False
 
                 return self.cell_pick(_id)
 
