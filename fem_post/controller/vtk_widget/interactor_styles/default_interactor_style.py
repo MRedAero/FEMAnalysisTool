@@ -8,9 +8,8 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
     def __init__(self, widget):
 
         self.widget = widget
-        self.picker = vtk.vtkCellPicker()
-
-        self.data = None
+        self.point_picker = vtk.vtkPointPicker()
+        self.cell_picker = vtk.vtkCellPicker()
 
         self._left_mouse_down = False
         self._right_mouse_down = False
@@ -71,9 +70,9 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
         if self._left_mouse_down or self._right_mouse_down or self._middle_mouse_down:
             self._should_it_render = True
-            selected = vtk.vtkUnstructuredGrid()
-            self.selectedMapper.SetInputData(selected)
-            self.selectedActor.SetMapper(self.selectedMapper)
+            if self.actor_added:
+                self.GetDefaultRenderer().RemoveActor(self.selectedActor)
+                self.actor_added = False
             self.render()
             return
 
@@ -93,33 +92,28 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
     def render(self):
         if self._should_it_render:
             render_window = self.GetInteractor().GetRenderWindow()
-            #render_window.GetRenderers().GetFirstRenderer().AddActor(self.selectedActor)
-
-            if not self.actor_added:
-                self.GetDefaultRenderer().AddActor(self.selectedActor)
-                self.actor_added = True
-
             render_window.Render()
 
     def nothing_picked(self):
-        selected = vtk.vtkUnstructuredGrid()
-        self.selectedMapper.SetInputData(selected)
-        #self.selectedActor.SetMapper(self.selectedMapper)
+        if self.actor_added:
+            self.GetDefaultRenderer().RemoveActor(self.selectedActor)
+            self.actor_added = False
 
+        if self._last_selection == "nothing":
+            self._should_it_render = False
+            return
+
+        self._last_selection = "nothing"
         self._should_it_render = True
-
-        #render_window = self.GetInteractor().GetRenderWindow()
-        #render_window.GetRenderers().GetFirstRenderer().RemoveActor(self.selectedActor)
-        #render_window.Render()
 
     def node_pick(self, pos):
 
-        self.picker.SetTolerance(0.005)
-        self.picker.Pick(pos[0], pos[1], 0, self.GetDefaultRenderer())
+        self.point_picker.SetTolerance(0.005)
+        self.point_picker.Pick(pos[0], pos[1], 0, self.GetDefaultRenderer())
 
-        _id = self.picker.GetPointId()
+        _id = self.point_picker.GetPointId()
 
-        print _id
+        print _id, pos
 
         if _id >= 0:
 
@@ -146,28 +140,26 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             extractSelection.SetInputData(1, selection)
             extractSelection.Update()
 
-            selected = vtk.vtkUnstructuredGrid()
-            selected.ShallowCopy(extractSelection.GetOutput())
+            self.selectedMapper.SetInputData(extractSelection.GetOutput())
 
-            self.selectedMapper.SetInputData(selected)
-
-            #self.selectedActor.SetMapper(self.selectedMapper)
             self.selectedActor.GetProperty().EdgeVisibilityOn()
             self.selectedActor.GetProperty().SetEdgeColor(0.5, 0.5, 0)
             self.selectedActor.GetProperty().SetPointSize(6)
 
+            if not self.actor_added:
+                self.GetDefaultRenderer().AddActor(self.selectedActor)
+                self.actor_added = True
+
             self._should_it_render = True
             return True
         else:
-            self._should_it_render = False
             return False
 
     def cell_pick(self, pos):
-        picker = vtk.vtkCellPicker()
-        picker.SetTolerance(0.005)
-        picker.Pick(pos[0], pos[1], 0, self.GetDefaultRenderer())
+        self.cell_picker.SetTolerance(0.005)
+        self.cell_picker.Pick(pos[0], pos[1], 0, self.GetDefaultRenderer())
 
-        _id = picker.GetCellId()
+        _id = self.cell_picker.GetCellId()
 
         if _id != -1:
 
@@ -194,10 +186,7 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             extractSelection.SetInputData(1, selection)
             extractSelection.Update()
 
-            selected = vtk.vtkUnstructuredGrid()
-            selected.ShallowCopy(extractSelection.GetOutput())
-
-            self.selectedMapper.SetInputData(selected)
+            self.selectedMapper.SetInputData(extractSelection.GetOutput())
 
             self.selectedActor.SetMapper(self.selectedMapper)
             self.selectedActor.GetProperty().EdgeVisibilityOn()

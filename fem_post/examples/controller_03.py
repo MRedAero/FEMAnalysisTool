@@ -396,7 +396,7 @@ class MainWindow(QtGui.QMainWindow):
         from fem_reader.nastran.bdf.reader import BDFReader
 
         bdf = BDFReader()
-        bdf.read_bdf(r'../data/rotor.bdf')
+        bdf.read_bdf(r'../data/wing.bdf')
         grids = bdf.nodes.keys()
         elements = bdf.elements.keys()
 

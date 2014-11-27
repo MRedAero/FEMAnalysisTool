@@ -51,8 +51,6 @@ class VTKWidget(object):
         self.interactor_style = DefaultInteractorStyle(self)
         self.interactor_style.SetDefaultRenderer(self.renderer)
 
-        #self.interactor_style.data = self.id_filter.GetOutput()
-
         self.interactor.SetInteractorStyle(self.interactor_style)
 
         self.interactor.Start()
@@ -79,7 +77,6 @@ class VTKWidget(object):
         :return:
         """
 
-        #self.cells = vtk.vtkCellArray()
         self.points = vtk.vtkPoints()
         self.grid = vtk.vtkUnstructuredGrid()
         self.color = vtk.vtkFloatArray()
@@ -130,7 +127,7 @@ class VTKWidget(object):
                 ids.SetId(0, nidMap[nodes[0]])
                 ids.SetId(1, nidMap[nodes[1]])
                 #cell = self.cells.InsertNextCell(cell)
-                cell = self.grid.InsertNextCell(cell.GetCellType(), cell.GetPointIds())
+                cell = self.grid.InsertNextCell(cell.GetCellType(), ids)  # cell.GetPointIds())
                 self.color.InsertTuple1(cell, 1)
             elif card_name == 'CTRIA3':
                 nodes = element.nodes
@@ -140,7 +137,7 @@ class VTKWidget(object):
                 ids.SetId(1, nidMap[nodes[1]])
                 ids.SetId(2, nidMap[nodes[2]])
                 #cell = self.cells.InsertNextCell(cell)
-                cell = self.grid.InsertNextCell(cell.GetCellType(), cell.GetPointIds())
+                cell = self.grid.InsertNextCell(cell.GetCellType(), ids)  # cell.GetPointIds())
                 self.color.InsertTuple1(cell, 2)
             elif card_name == 'CQUAD4':
                 nodes = element.nodes
@@ -151,11 +148,8 @@ class VTKWidget(object):
                 ids.SetId(2, nidMap[nodes[2]])
                 ids.SetId(3, nidMap[nodes[3]])
                 #cell = self.cells.InsertNextCell(cell)
-                cell = self.grid.InsertNextCell(cell.GetCellType(), cell.GetPointIds())
+                cell = self.grid.InsertNextCell(cell.GetCellType(), ids)  # cell.GetPointIds())
                 self.color.InsertTuple1(cell, 3)
-
-        self.poly_data = vtk.vtkPolyData()
-        self.poly_data.SetPoints(self.points)
 
         self.grid.GetCellData().SetScalars(self.color)
 
@@ -168,6 +162,7 @@ class VTKWidget(object):
 
         self.cell_actor.SetMapper(self.cell_mapper)
         self.cell_actor.GetProperty().EdgeVisibilityOn()
+        #self.cell_actor.GetProperty().SetOpacity(0.5)
 
         self.renderer.AddActor(self.cell_actor)
 
