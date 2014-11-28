@@ -1,6 +1,7 @@
 __author__ = 'Michael Redmond'
 
 import vtk
+from ..custom_pickers import vtkThruCellPicker
 
 
 # noinspection PyUnusedLocal
@@ -9,7 +10,7 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
         self.widget = widget
         self.point_picker = vtk.vtkPointPicker()
-        self.cell_picker = vtk.vtkCellPicker()
+        self.cell_picker = vtkThruCellPicker()
 
         self._left_mouse_down = False
         self._right_mouse_down = False
@@ -80,8 +81,8 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
         if self.node_pick(pos):
             pass
-        #elif self.cell_pick(pos):
-        #    pass
+        elif self.cell_pick(pos):
+            pass
         else:
             self.nothing_picked()
 
@@ -108,12 +109,10 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
     def node_pick(self, pos):
 
-        self.point_picker.SetTolerance(0.005)
+        self.point_picker.SetTolerance(0.0025)
         self.point_picker.Pick(pos[0], pos[1], 0, self.GetDefaultRenderer())
 
         _id = self.point_picker.GetPointId()
-
-        print _id, pos
 
         if _id >= 0:
 
@@ -156,10 +155,15 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             return False
 
     def cell_pick(self, pos):
+        if self.widget.grid is None:
+            return False
+
+        self.cell_picker.SetDataSet(self.widget.grid)
+        self.cell_picker.BuildLocator()
         self.cell_picker.SetTolerance(0.005)
         self.cell_picker.Pick(pos[0], pos[1], 0, self.GetDefaultRenderer())
 
-        _id = self.cell_picker.GetCellId()
+        _id = self.cell_picker.GetClosestCellId()
 
         if _id != -1:
 
@@ -169,33 +173,18 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
             self._last_selection = 'Element %s' % str(_id)
 
-            ids = vtk.vtkIdTypeArray()
-            ids.SetNumberOfComponents(1)
-            ids.InsertNextValue(_id)
+            self.selectedMapper.SetInputData(self.cell_picker.GetClosestCellEdges())
 
-            selectionNode = vtk.vtkSelectionNode()
-            selectionNode.SetFieldType(vtk.vtkSelectionNode.CELL)
-            selectionNode.SetContentType(vtk.vtkSelectionNode.INDICES)
-            selectionNode.SetSelectionList(ids)
-
-            selection = vtk.vtkSelection()
-            selection.AddNode(selectionNode)
-
-            extractSelection = vtk.vtkExtractSelection()
-            extractSelection.SetInputData(0, self.widget.grid)
-            extractSelection.SetInputData(1, selection)
-            extractSelection.Update()
-
-            self.selectedMapper.SetInputData(extractSelection.GetOutput())
-
-            self.selectedActor.SetMapper(self.selectedMapper)
             self.selectedActor.GetProperty().EdgeVisibilityOn()
-            self.selectedActor.GetProperty().SetColor(0.5, 0.5, 0)
+            #self.selectedActor.GetProperty().SetColor(0.5, 0.5, 0)
             self.selectedActor.GetProperty().SetEdgeColor(0.5, 0.5, 0)
-            self.selectedActor.GetProperty().SetPointSize(6)
+            #self.selectedActor.GetProperty().SetPointSize(6)
+
+            if not self.actor_added:
+                self.GetDefaultRenderer().AddActor(self.selectedActor)
+                self.actor_added = True
 
             self._should_it_render = True
             return True
         else:
-            self._should_it_render = False
             return False
