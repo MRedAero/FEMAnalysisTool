@@ -87,32 +87,20 @@ class vtkThruCellPicker(vtk.vtkCellLocator):
 
         clipRange = camera.GetClippingRange()
 
-        self.project_base = [0, 0, 0]
-
-        self.project_magnitude = 0.
-
         if camera.GetParallelProjection():
             tF = clipRange[0] - rayLength
             tB = clipRange[1] - rayLength
             for i in xrange(3):
                 self.p1World[i] = self.PickPosition[i] + tF*cameraDOP[i]
                 self.p2World[i] = self.PickPosition[i] + tB*cameraDOP[i]
-                self.project_base[i] = self.p1World[i] - self.p2World[i]
-                self.project_magnitude += self.project_base[i]**2
-                self.project_base[i] += self.p1World[i]
         else:
             tF = clipRange[0]/rayLength
             tB = clipRange[1]/rayLength
             for i in xrange(3):
                 self.p1World[i] = cameraPos[i] + tF*ray[i]
                 self.p2World[i] = cameraPos[i] + tB*ray[i]
-                self.project_base[i] = self.p1World[i] - self.p2World[i]
-                self.project_magnitude += self.project_base[i]**2
-                self.project_base[i] += self.p1World[i]
 
         self.p1World[3] = self.p2World[3] = 1.
-
-        self.project_magnitude **= 0.5
 
         # Compute the tolerance in world coordinates.  Do this by
         # determining the world coordinates of the diagonal points of the
@@ -212,26 +200,20 @@ class vtkThruCellPicker(vtk.vtkCellLocator):
 
         cell_points = cell.GetPoints()
 
-        distance_to_element = 0.
-
-        for i in xrange(3):
-            distance_to_element += (self.project_base[i] - self.p_min[i])**2
-
-        distance_to_element **= 0.5
-
-        factor = self.project_magnitude/distance_to_element
-
         points = vtk.vtkPoints()
 
         for i in xrange(cell_points.GetNumberOfPoints()):
             p = cell_points.GetPoint(i)
 
-            p_new = [0, 0, 0]
+            self.Renderer.SetWorldPoint(p[0], p[1], p[2], 1.)
+            self.Renderer.WorldToDisplay()
+            displayCoords = self.Renderer.GetDisplayPoint()
 
-            for j in xrange(3):
-                p_new[j] = self.project_base[j] + (p[j] - self.project_base[j])*factor
+            self.Renderer.SetDisplayPoint(displayCoords[0], displayCoords[1], 0.001)
+            self.Renderer.DisplayToWorld()
+            worldCoords = self.Renderer.GetWorldPoint()
 
-            points.InsertNextPoint(p_new)
+            points.InsertNextPoint(worldCoords[:3])
 
         poly_data = vtk.vtkPolyData()
 

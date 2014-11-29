@@ -87,7 +87,7 @@ class VTKWidget(object):
         self.lookup_table.Build()
         self.lookup_table.SetTableValue(0, 0, 0, 0, 1)  # Black
         self.lookup_table.SetTableValue(1, 1, 0, 0, 1)  # Red
-        self.lookup_table.SetTableValue(2, 0, 1, 0, 1)  # Green
+        self.lookup_table.SetTableValue(2, 0, 0.5, 0.5, 1)  # Green
         self.lookup_table.SetTableValue(3, 0, 0, 1, 1)  # Blue
 
         self.cell_mapper = vtk.vtkDataSetMapper()
@@ -153,15 +153,15 @@ class VTKWidget(object):
 
         self.grid.GetCellData().SetScalars(self.color)
 
-        #self.cell_mapper.SetScalarModeToUseCellData()
-        #self.cell_mapper.UseLookupTableScalarRangeOn()
-        #self.cell_mapper.SetLookupTable(self.lookup_table)
+        self.cell_mapper.SetScalarModeToUseCellData()
+        self.cell_mapper.UseLookupTableScalarRangeOn()
+        self.cell_mapper.SetLookupTable(self.lookup_table)
         self.cell_mapper.SetInputData(self.grid)
 
         self.cell_actor.SetMapper(self.cell_mapper)
         self.cell_actor.GetProperty().EdgeVisibilityOn()
         self.cell_actor.GetProperty().SetColor(0, 1, 0)
-        self.cell_actor.GetProperty().SetOpacity(0.5)
+        #self.cell_actor.GetProperty().SetOpacity(0.1)
 
         self.renderer.AddActor(self.cell_actor)
 

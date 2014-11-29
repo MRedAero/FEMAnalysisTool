@@ -62,9 +62,13 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
     def on_mouse_wheel_forward(self, obj, event):
         self.OnMouseWheelForward()
+        self._last_selection = 'nothing'
+        self.on_mouse_move(obj, event)
 
     def on_mouse_wheel_backward(self, obj, event):
         self.OnMouseWheelBackward()
+        self._last_selection = 'nothing'
+        self.on_mouse_move(obj, event)
 
     def on_mouse_move(self, obj, event):
         self.OnMouseMove()
@@ -178,7 +182,8 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             self.selectedActor.GetProperty().EdgeVisibilityOn()
             #self.selectedActor.GetProperty().SetColor(0.5, 0.5, 0)
             self.selectedActor.GetProperty().SetEdgeColor(0.5, 0.5, 0)
-            #self.selectedActor.GetProperty().SetPointSize(6)
+            self.selectedActor.GetProperty().SetOpacity(0.5)
+            self.selectedActor.GetProperty().SetLineWidth(3)
 
             if not self.actor_added:
                 self.GetDefaultRenderer().AddActor(self.selectedActor)
