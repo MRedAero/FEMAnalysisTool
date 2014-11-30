@@ -2,6 +2,7 @@ __author__ = 'Michael Redmond'
 
 
 import vtk
+from vtk.vtkCommonCorePython import mutable
 
 
 class vtkThruCellPicker(vtk.vtkCellLocator):
@@ -13,6 +14,10 @@ class vtkThruCellPicker(vtk.vtkCellLocator):
         self.p2World = [0, 0, 0, 0]
         self.ids = vtk.vtkIdList()
         self.ClosestCellId = -1
+
+        self.edges = vtk.vtkPolyData()
+
+        #self.SetNumberOfCellsPerBucket(1)
 
     def SetTolerance(self, value):
         self.Tolerance = value
@@ -128,30 +133,50 @@ class vtkThruCellPicker(vtk.vtkCellLocator):
         for i in xrange(3):
             tol += (windowUpperRight[i] - windowLowerLeft[i])**2
 
-        tol = self.Tolerance*tol**0.5
+        #tol = self.Tolerance*tol**0.5
+
+        tol = self.Tolerance
 
         self.FindCellsAlongLine(self.p1World[:3], self.p2World[:3], tol, self.ids)
 
         self.ClosestCellId = -1
 
+        # determine which cells are actually intersected
+
+        data = self.GetDataSet()
+
+        self.id_array = vtk.vtkIdTypeArray()
+        self.id_array.SetNumberOfComponents(1)
+
+        self.id_list = []
+
+        t = mutable(0.)
+        x = [0, 0, 0]
+        pcoords = [0, 0, 0]
+        subId = mutable(0)
+
+        for i in xrange(self.ids.GetNumberOfIds()):
+            id = self.ids.GetId(i)
+            cell = data.GetCell(id)
+
+            if cell.IntersectWithLine(self.p1World[:3], self.p2World[:3], tol, t, x, pcoords, subId):
+                self.id_array.InsertNextValue(id)
+                self.id_list.append(id)
+            #else:
+            #    print 'cell %d does not intersect' % id
+
     def GetCellIds(self):
-        return self.ids
+        return self.id_array
 
     def GetClosestCellId(self):
 
         if self.ClosestCellId != -1:
             return self.ClosestCellId
 
-        ids = vtk.vtkIdTypeArray()
-        ids.SetNumberOfComponents(1)
-
-        for i in xrange(self.ids.GetNumberOfIds()):
-            ids.InsertNextValue(self.ids.GetId(i))
-
         selectionNode = vtk.vtkSelectionNode()
         selectionNode.SetFieldType(vtk.vtkSelectionNode.CELL)
         selectionNode.SetContentType(vtk.vtkSelectionNode.INDICES)
-        selectionNode.SetSelectionList(ids)
+        selectionNode.SetSelectionList(self.id_array)
 
         selection = vtk.vtkSelection()
         selection.AddNode(selectionNode)
@@ -186,7 +211,7 @@ class vtkThruCellPicker(vtk.vtkCellLocator):
                 self.p_min = p
 
         if min_i >= 0:
-            self.ClosestCellId = self.ids.GetId(min_i)
+            self.ClosestCellId = self.id_list[min_i]
             return self.ClosestCellId
         else:
             return -1
@@ -202,6 +227,10 @@ class vtkThruCellPicker(vtk.vtkCellLocator):
 
         points = vtk.vtkPoints()
 
+        self.edges.Reset()
+
+        edges = vtk.vtkCellArray()
+
         for i in xrange(cell_points.GetNumberOfPoints()):
             p = cell_points.GetPoint(i)
 
@@ -215,24 +244,28 @@ class vtkThruCellPicker(vtk.vtkCellLocator):
 
             points.InsertNextPoint(worldCoords[:3])
 
-        poly_data = vtk.vtkPolyData()
+        self.edges.SetPoints(points)
 
-        edges = vtk.vtkCellArray()
+        if cell_points.GetNumberOfPoints() > 1:
+            for i in xrange(cell_points.GetNumberOfPoints()-1):
+                cell = vtk.vtkLine()
+                ids = cell.GetPointIds()
+                ids.SetId(0, i)
+                ids.SetId(1, i+1)
+                edges.InsertNextCell(cell)
 
-        for i in xrange(cell_points.GetNumberOfPoints()-1):
             cell = vtk.vtkLine()
             ids = cell.GetPointIds()
-            ids.SetId(0, i)
-            ids.SetId(1, i+1)
+            ids.SetId(0, i+1)
+            ids.SetId(1, 0)
             edges.InsertNextCell(cell)
 
-        cell = vtk.vtkLine()
-        ids = cell.GetPointIds()
-        ids.SetId(0, i+1)
-        ids.SetId(1, 0)
-        edges.InsertNextCell(cell)
+            self.edges.SetLines(edges)
+        else:
+            cell = vtk.vtkVertex()
+            ids = cell.GetPointIds()
+            ids.SetId(0, 0)
+            edges.InsertNextCell(cell)
+            self.edges.SetVertices(edges)
 
-        poly_data.SetPoints(points)
-        poly_data.SetLines(edges)
-
-        return poly_data
+        return self.edges

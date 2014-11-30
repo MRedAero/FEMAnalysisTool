@@ -85,10 +85,10 @@ class VTKWidget(object):
         self.lookup_table.SetNumberOfTableValues(4)
         self.lookup_table.SetTableRange(0, 4)
         self.lookup_table.Build()
-        self.lookup_table.SetTableValue(0, 0, 0, 0, 1)  # Black
+        self.lookup_table.SetTableValue(0, 1, 0, 0, 1)  # Black
         self.lookup_table.SetTableValue(1, 1, 0, 0, 1)  # Red
-        self.lookup_table.SetTableValue(2, 0, 0.5, 0.5, 1)  # Green
-        self.lookup_table.SetTableValue(3, 0, 0, 1, 1)  # Blue
+        self.lookup_table.SetTableValue(2, 0.5, 0.5, 0, 1)  # Green
+        self.lookup_table.SetTableValue(3, 0, 0.5, 0.5, 1)  # Green
 
         self.cell_mapper = vtk.vtkDataSetMapper()
 
@@ -112,6 +112,13 @@ class VTKWidget(object):
 
         self.grid.SetPoints(self.points)
 
+        #for i in xrange(len(grids)):
+        #    cell = vtk.vtkVertex()
+        #    ids = cell.GetPointIds()
+        #    ids.SetId(0, i)
+        #    cell = self.grid.InsertNextCell(cell.GetCellType(), ids)
+        #    self.color.InsertTuple1(cell, 1)
+
         elements = bdf.elements.keys()
 
         for i in xrange(len(elements)):
@@ -126,9 +133,8 @@ class VTKWidget(object):
                 ids = cell.GetPointIds()
                 ids.SetId(0, nidMap[nodes[0]])
                 ids.SetId(1, nidMap[nodes[1]])
-                #cell = self.cells.InsertNextCell(cell)
                 cell = self.grid.InsertNextCell(cell.GetCellType(), ids)  # cell.GetPointIds())
-                self.color.InsertTuple1(cell, 1)
+                self.color.InsertTuple1(cell, 2)
             elif card_name == 'CTRIA3':
                 nodes = element.nodes
                 cell = vtk.vtkTriangle()
@@ -136,9 +142,8 @@ class VTKWidget(object):
                 ids.SetId(0, nidMap[nodes[0]])
                 ids.SetId(1, nidMap[nodes[1]])
                 ids.SetId(2, nidMap[nodes[2]])
-                #cell = self.cells.InsertNextCell(cell)
                 cell = self.grid.InsertNextCell(cell.GetCellType(), ids)  # cell.GetPointIds())
-                self.color.InsertTuple1(cell, 2)
+                self.color.InsertTuple1(cell, 3)
             elif card_name == 'CQUAD4':
                 nodes = element.nodes
                 cell = vtk.vtkQuad()
@@ -147,9 +152,8 @@ class VTKWidget(object):
                 ids.SetId(1, nidMap[nodes[1]])
                 ids.SetId(2, nidMap[nodes[2]])
                 ids.SetId(3, nidMap[nodes[3]])
-                #cell = self.cells.InsertNextCell(cell)
                 cell = self.grid.InsertNextCell(cell.GetCellType(), ids)  # cell.GetPointIds())
-                self.color.InsertTuple1(cell, 2)
+                self.color.InsertTuple1(cell, 3)
 
         self.grid.GetCellData().SetScalars(self.color)
 
@@ -161,6 +165,7 @@ class VTKWidget(object):
         self.cell_actor.SetMapper(self.cell_mapper)
         self.cell_actor.GetProperty().EdgeVisibilityOn()
         self.cell_actor.GetProperty().SetColor(0, 1, 0)
+        #self.cell_actor.GetProperty().SetPointSize(6)
         #self.cell_actor.GetProperty().SetOpacity(0.1)
 
         self.renderer.AddActor(self.cell_actor)
