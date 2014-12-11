@@ -22,6 +22,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.btn_bgcolor2.clicked.connect(self.on_color2)
         self.ui.actionOpen.triggered.connect(self.on_open)
         self.ui.btn_perspectivetoggle.clicked.connect(self.on_toggle_perspective)
+        self.ui.showHideCheckBox.clicked.connect(self.show_hide_check)
+        self.ui.showHideButton.clicked.connect(self.show_hide_button_clicked)
 
         self.bdf = None
 
@@ -79,3 +81,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def on_toggle_perspective(self):
         self.vtk_widget.toggle_perspective()
+
+    def show_hide_check(self):
+        self.vtk_widget.show_hide_check()
+
+    def show_hide_button_clicked(self):
+        self.vtk_widget.show_hide_button_clicked()

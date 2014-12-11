@@ -44,3 +44,7 @@ class vtkNodePicker(vtk.vtkPointPicker):
         self.poly_data.SetVerts(self.cells)
 
         return self.poly_data
+
+    def add_pick_list(self, actor):
+        self.InitializePickList()
+        self.AddPickList(actor)

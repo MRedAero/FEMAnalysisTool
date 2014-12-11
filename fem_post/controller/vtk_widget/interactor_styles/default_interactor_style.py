@@ -14,6 +14,8 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         self.widget = widget
         self.point_picker = vtkNodePicker()
         self.point_data_set = False
+        self.point_picker.PickFromListOn()
+
         self.cell_picker = vtkThruCellPicker()
         self.cell_data_set = False
 
@@ -34,6 +36,8 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         self.actor_added = False
 
         self._last_selection = 'nothing'
+
+        self.id = None
 
         self.AddObserver("MouseMoveEvent", self.on_mouse_move)
         self.AddObserver("LeftButtonPressEvent", self.on_left_button_down)
@@ -61,6 +65,15 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             # these aren't actual node and element numbers
             msg_box = self.widget.main_window.ui.txt_msg
             msg_box.setPlainText(msg_box.toPlainText() + self._last_selection + '\n')
+
+            if self.widget.show_hide and self.id is not None:
+                id = self.widget.cell_id(self.id)
+                if self.widget.grid.visible[id]:
+                    self.widget.grid.visible[id] = 0
+                else:
+                    self.widget.grid.visible[id] = 1
+
+                self.widget.visibleFilter.execute()
 
     def on_middle_button_down(self, obj, event):
         self.OnMiddleButtonDown()
@@ -106,11 +119,12 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         pos = self.GetInteractor().GetEventPosition()
 
         if self.node_pick(pos):
-            pass
+            self.id = None
         elif self.cell_pick(pos):
             pass
         else:
             self.nothing_picked()
+            self.id = None
 
         self.render()
 
@@ -141,10 +155,8 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         self.point_picker.Pick(pos[0], pos[1], 0, self.GetDefaultRenderer())
 
         if not self.point_data_set:
-            self.point_picker.AddPickList(self.widget.cell_actor)
-            self.point_picker.Renderer = self.GetDefaultRenderer()
+            self.point_picker.add_pick_list(self.widget.cell_actor)
             self.point_data_set = True
-            self.point_picker.PickFromListOn()
 
         _id = self.point_picker.GetPointId()
 
@@ -171,18 +183,16 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
             self._should_it_render = True
 
-            #print "cell pick %d = %d\n" % (self.cell_pick_count, _id)
-
             return True
         else:
             return False
 
     def cell_pick(self, pos):
-        if self.widget.grid is None:
+        if self.widget.grid is None or self.widget.data.GetNumberOfCells() == 0:
             return False
 
         if not self.cell_data_set:
-            self.cell_picker.SetDataSet(self.widget.grid)
+            self.cell_picker.SetDataSet(self.widget.data)
             self.cell_data_set = True
 
         self.cell_picker.BuildLocator()
@@ -212,7 +222,13 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
                 self.GetDefaultRenderer().AddActor(self.selectedActor)
                 self.actor_added = True
 
+            self.id = _id
+
             self._should_it_render = True
             return True
         else:
             return False
+
+    def set_default_renderer(self, renderer):
+        self.SetDefaultRenderer(renderer)
+        self.point_picker.Renderer = self.GetDefaultRenderer()
