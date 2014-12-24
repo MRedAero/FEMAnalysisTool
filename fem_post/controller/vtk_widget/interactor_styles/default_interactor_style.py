@@ -108,6 +108,8 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
     def on_mouse_move(self, obj, event):
         self.OnMouseMove()
 
+        return
+
         if self._left_mouse_down or self._right_mouse_down or self._middle_mouse_down:
             self._should_it_render = True
             if self.actor_added:
@@ -118,9 +120,7 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
         pos = self.GetInteractor().GetEventPosition()
 
-        if self.node_pick(pos):
-            self.id = None
-        elif self.cell_pick(pos):
+        if self.cell_pick(pos):
             pass
         else:
             self.nothing_picked()
@@ -188,12 +188,12 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             return False
 
     def cell_pick(self, pos):
-        if self.widget.grid is None or self.widget.data.GetNumberOfCells() == 0:
-            return False
+#        if self.widget.data is None or self.widget.data.quads.GetNumberOfCells() == 0:
+#            return False
 
-        if not self.cell_data_set:
-            self.cell_picker.SetDataSet(self.widget.data)
-            self.cell_data_set = True
+       # if not self.cell_data_set:
+       #     self.cell_picker.SetDataSet(self.widget.data)
+       #     self.cell_data_set = True
 
         self.cell_picker.BuildLocator()
         self.cell_picker.SetTolerance(0.005)

@@ -43,6 +43,9 @@ class ShowHideFilter(vtk.vtkProgrammableFilter):
                 self.hidden.data.InsertNextCell(cell.GetCellType(), cell.GetPointIds())
                 self.hidden.map.append(i)
 
+        self.shown.data.Squeeze()
+        self.hidden.data.Squeeze()
+
         self.shown.data.Modified()
         self.hidden.data.Modified()
         self.widget.screen_update()
