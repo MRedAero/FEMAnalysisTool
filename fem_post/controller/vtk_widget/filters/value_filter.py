@@ -2,6 +2,8 @@ __author__ = 'Michael Redmond'
 
 import vtk
 
+from ..vtk_globals import VTK_VERSION
+
 
 class ValueFilter(vtk.vtkProgrammableFilter):
     def __init__(self, value_selection):
@@ -27,15 +29,26 @@ class ValueFilter(vtk.vtkProgrammableFilter):
         self.s_sel.AddNode(self.n_sel)
         self.s_unsel.AddNode(self.n_unsel)
 
-        self.ex_sel.SetInputData(1, self.s_sel)
-        self.ex_unsel.SetInputData(1, self.s_unsel)
+        if VTK_VERSION >= 6.0:
+            self.ex_sel.SetInputData(1, self.s_sel)
+            self.ex_unsel.SetInputData(1, self.s_unsel)
+        else:
+            self.ex_sel.SetInput(1, self.s_sel)
+            self.ex_unsel.SetInput(1, self.s_unsel)
 
     def set_input_data(self, input_data, do_not_execute=False):
 
-        self.SetInputData(input_data)
+        if VTK_VERSION >= 6.0:
 
-        self.ex_sel.SetInputData(0, input_data)
-        self.ex_unsel.SetInputData(0, input_data)
+            self.SetInputData(input_data)
+
+            self.ex_sel.SetInputData(0, input_data)
+            self.ex_unsel.SetInputData(0, input_data)
+        else:
+            self.SetInput(input_data)
+
+            self.ex_sel.SetInput(0, input_data)
+            self.ex_unsel.SetInput(0, input_data)
 
         self.ex_sel.Update()
         self.ex_unsel.Update()

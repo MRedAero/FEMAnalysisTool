@@ -1,7 +1,7 @@
 __author__ = 'Michael Redmond'
 
 import vtk
-from ..custom_filters import ValueFilter
+from ..filters import ValueFilter
 
 
 class ModelData(object):

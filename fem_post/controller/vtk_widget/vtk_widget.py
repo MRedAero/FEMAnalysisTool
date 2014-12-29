@@ -6,9 +6,7 @@ from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from .widgets import *
 from .interactor_styles import *
 
-from .custom_data import ModelData
-from .pipelines import DataPipeline
-from .custom_pickers import PolyPlanePicker
+from .model_data import *
 
 
 class VTKWidget(object):
@@ -23,6 +21,7 @@ class VTKWidget(object):
 
         self.poly_plane_picker = PolyPlanePicker()
         self.poly_plane_picker.set_pipeline(self.data_pipeline)
+        self.poly_plane_picker.set_interactor_style(self.interactor_style)
 
         self.show_hide = False
         self.show = True

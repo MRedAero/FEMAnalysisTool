@@ -129,9 +129,9 @@ class vtkThruCellPicker(vtk.vtkCellLocator):
         renderer.DisplayToWorld()
         windowUpperRight = renderer.GetWorldPoint()
 
-        tol = 0.
-        for i in xrange(3):
-            tol += (windowUpperRight[i] - windowLowerLeft[i])**2
+        #tol = 0.
+        #for i in xrange(3):
+        #    tol += (windowUpperRight[i] - windowLowerLeft[i])**2
 
         #tol = self.Tolerance*tol**0.5
 
@@ -218,16 +218,16 @@ class vtkThruCellPicker(vtk.vtkCellLocator):
 
     def GetClosestCellEdges(self):
 
+        self.edges.Reset()
+
         if self.ClosestCellId == -1:
-            return
+            return self.edges
 
         cell = self.GetDataSet().GetCell(self.ClosestCellId)
 
         cell_points = cell.GetPoints()
 
         points = vtk.vtkPoints()
-
-        self.edges.Reset()
 
         edges = vtk.vtkCellArray()
 

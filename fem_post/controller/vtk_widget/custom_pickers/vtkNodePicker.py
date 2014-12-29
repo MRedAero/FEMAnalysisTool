@@ -13,6 +13,8 @@ class vtkNodePicker(vtk.vtkPointPicker):
         self.vertex = vtk.vtkVertex()
         self.cells = vtk.vtkCellArray()
 
+        self.PickFromListOn()
+
     def GetProjectedPoint(self):
 
         if self.GetPointId() == -1:
