@@ -19,9 +19,9 @@ class VTKWidget(object):
 
         self.data_pipeline = DataPipeline(self.data, self.renderer)
 
-        self.poly_plane_picker = PolyPlanePicker()
-        self.poly_plane_picker.set_pipeline(self.data_pipeline)
-        self.poly_plane_picker.set_interactor_style(self.interactor_style)
+        self.model_picker = ModelPicker()
+        self.model_picker.set_pipeline(self.data_pipeline)
+        self.model_picker.set_interactor_style(self.interactor_style)
 
         self.show_hide = False
         self.show = True
@@ -180,15 +180,12 @@ class VTKWidget(object):
             self.camera.ParallelProjectionOff()
             self.perspective = 0
 
-    def show_hide_check(self):
-        if self.show_hide:
-            self.show_hide = False
-        else:
-            self.show_hide = True
-
-    def show_hide_button_clicked(self):
+    def toggle_view(self):
         self.data_pipeline.toggle_shown()
         self.screen_update()
+
+    def toggle_hidden(self):
+        pass
 
     def screen_update(self):
         # how to get screen to update without cheating?
@@ -196,129 +193,6 @@ class VTKWidget(object):
         self.interactor_style.OnMouseMove()
         self.interactor_style.OnLeftButtonUp()
 
-    def set_data_old(self, bdf):
-        """
+    def toggle_picking(self, entity_type, index=None):
+        self.model_picker.toggle_picking(entity_type, index)
 
-        :param bdf: fem_reader.BDFReader
-        :return:
-        """
-
-        self.points = vtk.vtkPoints()
-        #self.grid = CustomUnstructuredGrid()
-        self.color = vtk.vtkFloatArray()
-        self.lookup_table = vtk.vtkLookupTable()
-
-        self.lookup_table.SetNumberOfTableValues(4)
-        self.lookup_table.SetTableRange(0, 4)
-        self.lookup_table.Build()
-        self.lookup_table.SetTableValue(0, 1, 0, 0, 0.5)  # Black
-        self.lookup_table.SetTableValue(1, 1, 0, 0, 0.5)  # Red
-        self.lookup_table.SetTableValue(2, 0, 0.5, 0.5, 1.)  # Green
-        self.lookup_table.SetTableValue(3, 0, 0.5, 0.5, 1.)  # Green
-
-        self.cell_mapper = vtk.vtkDataSetMapper()
-
-        if self.cell_actor is not None:
-            self.renderer.RemoveActor(self.cell_actor)
-
-        self.cell_actor = vtk.vtkActor()
-
-        visible = []
-
-        nidMap = {}
-        eidMap = {}
-
-        grids = bdf.nodes.keys()
-
-        for i in xrange(len(grids)):
-            node = bdf.nodes[grids[i]]
-            """:type : fem_reader.GRID"""
-            # noinspection PyArgumentList
-            self.points.InsertNextPoint(node.to_global())
-            #self.color.InsertTuple1(tmp, 0)
-            nidMap[node.ID] = i
-
-        self.points.Squeeze()
-
-        self.grid.data.SetPoints(self.points)
-
-        #for i in xrange(len(grids)):
-        #    cell = vtk.vtkVertex()
-        #    ids = cell.GetPointIds()
-        #    ids.SetId(0, i)
-        #    cell = self.grid.InsertNextCell(cell.GetCellType(), ids)
-        #    self.color.InsertTuple1(cell, 1)
-
-        elements = bdf.elements.keys()
-
-        for i in xrange(len(elements)):
-            element = bdf.elements[elements[i]]
-            card_name = element.card_name
-
-            eidMap[element.ID] = i
-
-            if card_name == 'CBEAM':
-                nodes = element.nodes
-                cell = vtk.vtkLine()
-                ids = cell.GetPointIds()
-                ids.SetId(0, nidMap[nodes[0]])
-                ids.SetId(1, nidMap[nodes[1]])
-                cell = self.grid.data.InsertNextCell(cell.GetCellType(), ids)  # cell.GetPointIds())
-                self.color.InsertTuple1(cell, 2)
-                self.grid.visible.append(1)
-            elif card_name == 'CTRIA3':
-                nodes = element.nodes
-                cell = vtk.vtkTriangle()
-                ids = cell.GetPointIds()
-                ids.SetId(0, nidMap[nodes[0]])
-                ids.SetId(1, nidMap[nodes[1]])
-                ids.SetId(2, nidMap[nodes[2]])
-                cell = self.grid.data.InsertNextCell(cell.GetCellType(), ids)  # cell.GetPointIds())
-                self.color.InsertTuple1(cell, 2)
-                self.grid.visible.append(1)
-            elif card_name == 'CQUAD4':
-                nodes = element.nodes
-                cell = vtk.vtkQuad()
-                ids = cell.GetPointIds()
-                ids.SetId(0, nidMap[nodes[0]])
-                ids.SetId(1, nidMap[nodes[1]])
-                ids.SetId(2, nidMap[nodes[2]])
-                ids.SetId(3, nidMap[nodes[3]])
-                cell = self.grid.data.InsertNextCell(cell.GetCellType(), ids)  # cell.GetPointIds())
-                self.color.InsertTuple1(cell, 3)
-                self.grid.visible.append(1)
-
-        self.grid.data.Squeeze()
-
-        self.grid.data.GetCellData().SetScalars(self.color)
-
-        self.visibleFilter.SetInputData(self.grid.data)
-
-        self.visibleFilter.input = self.grid
-        self.visibleFilter.Update()
-        #self.visibleFilter.execute()
-
-        #self.cell_mapper.SetScalarModeToUseCellData()
-        #self.cell_mapper.UseLookupTableScalarRangeOn()
-        #self.cell_mapper.SetLookupTable(self.lookup_table)
-        self.cell_mapper.SetInputData(self.data)
-
-        #self.cell_mapper.SetInputData(self.visibleFilter.output)
-
-        self.cell_actor.SetMapper(self.cell_mapper)
-        self.cell_actor.GetProperty().EdgeVisibilityOn()
-        #self.cell_actor.GetProperty().SetColor(0, 1, 0)
-
-
-        #self.cell_actor.GetProperty().SetPointSize(6)
-        #self.cell_actor.GetProperty().SetOpacity(0.95)
-
-        self.renderer.AddActor(self.cell_actor)
-
-        self.interactor_style.cell_picker.SetDataSet(self.data)
-        self.interactor_style.cell_data_set = True
-
-        self.interactor_style.point_picker.add_pick_list(self.cell_actor)
-        self.interactor_style.point_data_set = True
-
-        self.screen_update()

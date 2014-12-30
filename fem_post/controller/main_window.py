@@ -22,8 +22,21 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.btn_bgcolor2.clicked.connect(self.on_color2)
         self.ui.actionOpen.triggered.connect(self.on_open)
         self.ui.btn_perspectivetoggle.clicked.connect(self.on_toggle_perspective)
-        self.ui.showHideCheckBox.clicked.connect(self.show_hide_check)
-        self.ui.showHideButton.clicked.connect(self.show_hide_button_clicked)
+
+        self.ui.toggle_view_button.clicked.connect(self.toggle_view)
+        self.ui.toggle_hidden_button.clicked.connect(self.toggle_hidden)
+
+        self.ui.single_pick_button.clicked.connect(self.single_pick_button)
+        self.ui.box_pick_button.clicked.connect(self.box_pick_button)
+        self.ui.poly_pick_button.clicked.connect(self.poly_pick_button)
+
+        self.ui.any_button.clicked.connect(self.any_button)
+        self.ui.nodes_button.clicked.connect(self.nodes_button)
+        self.ui.elements_button.clicked.connect(self.elements_button)
+        self.ui.points_button.clicked.connect(self.points_button)
+        self.ui.bars_button.clicked.connect(self.bars_button)
+        self.ui.tris_button.clicked.connect(self.tris_button)
+        self.ui.quads_button.clicked.connect(self.quads_button)
 
         self.bdf = None
 
@@ -82,8 +95,39 @@ class MainWindow(QtGui.QMainWindow):
     def on_toggle_perspective(self):
         self.vtk_widget.toggle_perspective()
 
-    def show_hide_check(self):
-        self.vtk_widget.show_hide_check()
+    def toggle_view(self):
+        self.vtk_widget.toggle_view()
 
-    def show_hide_button_clicked(self):
-        self.vtk_widget.show_hide_button_clicked()
+    def toggle_hidden(self):
+        self.vtk_widget.toggle_hidden()
+
+    def single_pick_button(self):
+        pass
+
+    def box_pick_button(self):
+        pass
+
+    def poly_pick_button(self):
+        pass
+
+    def any_button(self):
+        self.vtk_widget.toggle_picking(0)
+
+    def nodes_button(self):
+        self.vtk_widget.toggle_picking(1)
+
+    def elements_button(self):
+        self.vtk_widget.toggle_picking(2)
+
+    def points_button(self):
+        self.vtk_widget.toggle_picking(2, 1)
+
+    def bars_button(self):
+        self.vtk_widget.toggle_picking(2, 2)
+
+    def tris_button(self):
+        self.vtk_widget.toggle_picking(2, 3)
+
+    def quads_button(self):
+        self.vtk_widget.toggle_picking(2, 4)
+

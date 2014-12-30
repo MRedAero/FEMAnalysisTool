@@ -24,7 +24,8 @@ class DataPipeline(QtCore.QObject):
         self.element_actor = vtk.vtkActor()
         self.rbe_actor = vtk.vtkActor()
 
-        self.element_actor.GetProperty().SetOpacity(0.5)
+        #self.element_actor.GetProperty().SetOpacity(0.5)
+        self.element_actor.GetProperty().EdgeVisibilityOn()
 
         self.node_actor.SetMapper(self.node_mapper)
         self.element_actor.SetMapper(self.element_mapper)

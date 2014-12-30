@@ -169,6 +169,12 @@
         </layout>
        </widget>
        <widget class="QFrame" name="frame_2">
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="maximumSize">
          <size>
           <width>300</width>
@@ -181,24 +187,11 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <widget class="QCheckBox" name="showHideCheckBox">
+        <widget class="QPushButton" name="toggle_view_button">
          <property name="geometry">
           <rect>
-           <x>30</x>
-           <y>20</y>
-           <width>70</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Show/Hide</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="showHideButton">
-         <property name="geometry">
-          <rect>
-           <x>30</x>
-           <y>60</y>
+           <x>90</x>
+           <y>10</y>
            <width>101</width>
            <height>23</height>
           </rect>
@@ -210,7 +203,232 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Switch Show/Hide</string>
+          <string>Toggle View</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="single_pick_button">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>65</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Single Pick</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="box_pick_button">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>86</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Box Pick</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="poly_pick_button">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>107</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Poly Pick</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="any_button">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>64</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Any</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="elements_button">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>106</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Elements</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="nodes_button">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>85</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Nodes</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="points_button">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>127</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Points</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="bars_button">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>148</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Bars</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="tris_button">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>169</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Tris</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="quads_button">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>190</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Quads</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="selection_box">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>240</y>
+           <width>281</width>
+           <height>20</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="toggle_hidden_button">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>270</y>
+           <width>101</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Toggle Hidden</string>
          </property>
         </widget>
        </widget>
