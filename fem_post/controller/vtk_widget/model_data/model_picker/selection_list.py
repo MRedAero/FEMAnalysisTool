@@ -33,6 +33,15 @@ class SelectionList(QtCore.QObject):
         elif self.selection_type == SELECTION_REMOVE:
             self._remove_selection(selections)
 
+    def reset(self):
+        self.nodes = []
+        self.elements = []
+        self.mpcs = []
+        self.loads =[]
+        self.disps = []
+
+        self.selection_changed.emit()
+
     def _replace_selection(self, selections):
         try:
             self.nodes = self.expand_selection(selections['nodes'])
@@ -125,8 +134,17 @@ class SelectionList(QtCore.QObject):
         except KeyError:
             pass
 
+        self.selection_changed.emit()
+
     def expand_selection(self, selection):
-        selection_list = re.split(regex_pattern, selection)
+
+        if isinstance(selection, list) and len(selection) == 0:
+            return []
+
+        if not isinstance(selection, list):
+            selection_list = re.split(regex_pattern, str(selection))
+        else:
+            selection_list = selection
 
         expanded_selection = []
 
@@ -151,3 +169,17 @@ class SelectionList(QtCore.QObject):
 
     def condense_selection(self, selection):
         pass
+
+    def to_string(self):
+        result = ''
+
+        if len(self.nodes) > 0:
+            result += 'Node ' + ' '.join(self.nodes)
+
+        if len(self.elements) > 0:
+            result += ' Element ' + ' '.join(self.elements)
+
+        if len(self.mpcs) > 0:
+            result += ' MPC ' + ' '.join(self.mpcs)
+
+        return result

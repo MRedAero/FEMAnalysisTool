@@ -13,6 +13,8 @@ class AbstractPicker(object):
 
         interactor_style.signals.left_button_down.connect(self.left_button_down)
         interactor_style.signals.left_button_double_click.connect(self.left_button_double_click)
+        interactor_style.signals.ctrl_left_button_down.connect(self.ctrl_left_button_down)
+        interactor_style.signals.ctrl_left_button_up.connect(self.ctrl_left_button_up)
         interactor_style.signals.left_button_up.connect(self.left_button_up)
         interactor_style.signals.middle_button_down.connect(self.middle_button_down)
         interactor_style.signals.middle_button_up.connect(self.middle_button_up)
@@ -27,6 +29,8 @@ class AbstractPicker(object):
 
         interactor_style.signals.left_button_down.disconnect(self.left_button_down)
         interactor_style.signals.left_button_double_click.disconnect(self.left_button_double_click)
+        interactor_style.signals.ctrl_left_button_down.disconnect(self.ctrl_left_button_down)
+        interactor_style.signals.ctrl_left_button_up.disconnect(self.ctrl_left_button_up)
         interactor_style.signals.left_button_up.disconnect(self.left_button_up)
         interactor_style.signals.middle_button_down.disconnect(self.middle_button_down)
         interactor_style.signals.middle_button_up.disconnect(self.middle_button_up)
@@ -40,6 +44,12 @@ class AbstractPicker(object):
         pass
 
     def left_button_double_click(self, obj, event, interactor):
+        pass
+
+    def ctrl_left_button_down(self, obj, event, interactor):
+        pass
+
+    def ctrl_left_button_up(self, obj, event, interactor):
         pass
 
     def left_button_up(self, obj, event, interactor):

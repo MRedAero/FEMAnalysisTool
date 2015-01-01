@@ -19,9 +19,16 @@ class VTKWidget(object):
 
         self.data_pipeline = DataPipeline(self.data, self.renderer)
 
-        self.model_picker = ModelPicker()
+        self.model_picker = ModelPicker(self)
         self.model_picker.set_pipeline(self.data_pipeline)
         self.model_picker.set_interactor_style(self.interactor_style)
+
+        ui = self.main_window.ui
+
+        ui.left_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_left_button)
+        ui.middle_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_middle_button)
+        ui.right_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_right_button)
+        ui.ctrl_left_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_ctrl_left_button)
 
         self.show_hide = False
         self.show = True
@@ -181,18 +188,27 @@ class VTKWidget(object):
             self.perspective = 0
 
     def toggle_view(self):
+        self.model_picker.reset_data(True)
         self.data_pipeline.toggle_shown()
         self.screen_update()
 
     def toggle_hidden(self):
-        pass
+        self.model_picker.toggle_hidden()
 
     def screen_update(self):
         # how to get screen to update without cheating?
+
+        self.model_picker.render()
+
+        return
+
         self.interactor_style.OnLeftButtonDown()
         self.interactor_style.OnMouseMove()
         self.interactor_style.OnLeftButtonUp()
 
     def toggle_picking(self, entity_type, index=None):
         self.model_picker.toggle_picking(entity_type, index)
+
+    def update_ui_selection(self, selection):
+        self.main_window.ui.selection_box.setText(selection)
 

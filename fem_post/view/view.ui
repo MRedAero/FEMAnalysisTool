@@ -431,6 +431,260 @@
           <string>Toggle Hidden</string>
          </property>
         </widget>
+        <widget class="QPushButton" name="append_selection_button">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>161</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Append</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="remove_selection_button">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>182</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Remove</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="replace_selection_button">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>140</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Replace</string>
+         </property>
+         <property name="autoDefault">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QWidget" name="">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>350</y>
+           <width>150</width>
+           <height>116</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="minimumSize">
+               <size>
+                <width>71</width>
+                <height>16</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Left-Click</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="left_click_combo">
+              <property name="minimumSize">
+               <size>
+                <width>69</width>
+                <height>22</height>
+               </size>
+              </property>
+              <item>
+               <property name="text">
+                <string>Rotate</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Pan</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Zoom</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Select</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="minimumSize">
+               <size>
+                <width>71</width>
+                <height>16</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Middle-Click</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="middle_click_combo">
+              <property name="minimumSize">
+               <size>
+                <width>69</width>
+                <height>22</height>
+               </size>
+              </property>
+              <item>
+               <property name="text">
+                <string>Rotate</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Pan</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Zoom</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Select</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="minimumSize">
+               <size>
+                <width>71</width>
+                <height>16</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Right-Click</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="right_click_combo">
+              <property name="minimumSize">
+               <size>
+                <width>69</width>
+                <height>22</height>
+               </size>
+              </property>
+              <item>
+               <property name="text">
+                <string>Rotate</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Pan</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Zoom</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Select</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="minimumSize">
+               <size>
+                <width>71</width>
+                <height>16</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Ctrl-Left-Click</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="ctrl_left_click_combo">
+              <property name="minimumSize">
+               <size>
+                <width>69</width>
+                <height>22</height>
+               </size>
+              </property>
+              <item>
+               <property name="text">
+                <string>Rotate</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Pan</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Zoom</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Select</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </widget>
      </widget>

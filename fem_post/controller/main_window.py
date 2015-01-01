@@ -38,6 +38,11 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.tris_button.clicked.connect(self.tris_button)
         self.ui.quads_button.clicked.connect(self.quads_button)
 
+        self.ui.left_click_combo.setCurrentIndex(0)
+        self.ui.middle_click_combo.setCurrentIndex(1)
+        self.ui.right_click_combo.setCurrentIndex(2)
+        self.ui.ctrl_left_click_combo.setCurrentIndex(3)
+
         self.bdf = None
 
         # http://www.paraview.org/Wiki/VTK/Examples/Python/Widgets/EmbedPyQt

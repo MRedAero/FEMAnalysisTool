@@ -21,11 +21,22 @@ class SinglePicker(AbstractPicker):
         self._last_selection = None
 
         self._left_button_down = False
+        self._ctrl_left_button_down = False
         self._right_button_down = False
         self._middle_button_down = False
 
         self._down_pos = None
         self._up_pos = None
+
+        self.selection = None
+        self.reset_selection()
+
+    def reset_selection(self):
+        self.selection = {'nodes': [],
+                          'elements': [],
+                          'mpcs': [],
+                          'loads': [],
+                          'disps': []}
 
     def set_data(self):
         data = self.model_picker.get_data()
@@ -46,7 +57,10 @@ class SinglePicker(AbstractPicker):
 
     def node_pick(self, pos):
 
-        if self.model_picker.get_renderer() is None:
+        data_set = self.node_picker.GetDataSet()
+
+        if self.model_picker.get_renderer() is None or data_set is None or \
+                        data_set.GetNumberOfCells() == 0:
             return False
 
         self.node_picker.Pick(pos[0], pos[1], 0, self.model_picker.get_renderer())
@@ -55,10 +69,18 @@ class SinglePicker(AbstractPicker):
 
         if _id >= 0:
 
-            if self._last_selection == 'Node %s' % str(_id):
+            global_id = data_set.GetCellData().GetGlobalIds().GetTuple(_id)[0]
+
+            if self._last_selection == 'nodes %s' % str(global_id):
                 return True
 
-            self._last_selection = 'Node %s' % str(_id)
+            self._last_selection = 'nodes %s' % str(global_id)
+
+            self.selection = {'nodes': [global_id],
+                              'elements': [],
+                              'mpcs': [],
+                              'loads': [],
+                              'disps': []}
 
             self.model_picker.hover_data.Reset()
             self.model_picker.hover_data.ShallowCopy(self.node_picker.GetProjectedPoint())
@@ -72,7 +94,10 @@ class SinglePicker(AbstractPicker):
 
     def element_pick(self, pos):
 
-        if self.model_picker.get_renderer() is None:
+        data_set = self.element_picker.GetDataSet()
+
+        if self.model_picker.get_renderer() is None or data_set is None or \
+                        data_set.GetNumberOfCells() == 0:
             return False
 
         self.element_picker.Pick(pos[0], pos[1], 0, self.model_picker.get_renderer())
@@ -81,10 +106,18 @@ class SinglePicker(AbstractPicker):
 
         if _id >= 0:
 
-            if self._last_selection == 'Element %s' % str(_id):
+            global_id = self.element_picker.GetDataSet().GetCellData().GetGlobalIds().GetTuple(_id)[0]
+
+            if self._last_selection == 'elements %s' % str(global_id):
                 return True
 
-            self._last_selection = 'Element %s' % str(_id)
+            self._last_selection = 'elements %s' % str(global_id)
+
+            self.selection = {'nodes': [],
+                              'elements': [global_id],
+                              'mpcs': [],
+                              'loads': [],
+                              'disps': []}
 
             self.model_picker.hover_data.Reset()
             self.model_picker.hover_data.DeepCopy(self.element_picker.GetClosestCellEdges())
@@ -95,10 +128,17 @@ class SinglePicker(AbstractPicker):
         else:
             return False
 
-    def mouse_move(self, obj, event, interactor):
+    def mouse_move(self, obj, event, interactor, action):
 
-        if self._left_button_down or self._middle_button_down or self._right_button_down:
-            self.no_selection()
+        should_pick = True
+
+        if self._left_button_down or self._ctrl_left_button_down or self._middle_button_down or self._right_button_down:
+            self.reset_hover_and_selected_data()
+            should_pick = False
+
+        action()
+
+        if not should_pick:
             return
 
         pos = interactor.GetEventPosition()
@@ -110,50 +150,126 @@ class SinglePicker(AbstractPicker):
         #elif self.poly_plane_picker.active_selections.rbes and self.pick(self.rbe_picker, pos):
         #    self.poly_plane_picker.render()
         else:
-            self.no_selection()
+            self.reset_hover_data()
 
-    def no_selection(self):
+    def reset_hover_data(self, do_not_render=False):
         self._last_selection = None
         self.model_picker.hover_data.Reset()
         self.model_picker.hover_data.Modified()
-        self.model_picker.render()
 
-    def left_button_down(self, obj, event, interactor):
-        self._left_button_down = True
-
-        self._down_pos = interactor.GetEventPosition()
-
-    def left_button_double_click(self, obj, event, interactor):
-        pass
-
-    def left_button_up(self, obj, event, interactor):
-        self._left_button_down = False
-
-        self._up_pos = interactor.GetEventPosition()
-
-        if self._down_pos == self._up_pos:
-            self.model_picker.selected_data.Reset()
-            self.model_picker.selected_data.DeepCopy(self.model_picker.hover_data)
-            self.model_picker.selected_data.Modified()
+        if not do_not_render:
             self.model_picker.render()
 
-    def middle_button_down(self, obj, event, interactor):
+    def reset_hover_and_selected_data(self):
+        self.reset_hover_data(True)
+        self.model_picker.reset_selected_data()
+
+    def try_pick(self):
+        if self._down_pos == self._up_pos:
+            self.something_picked()
+        else:
+            self.model_picker.update_selection_data()
+
+    def left_button_down(self, obj, event, interactor, action, picking_is_active=False):
+        if callable(action):
+            action()
+
+        self._left_button_down = True
+        self._down_pos = interactor.GetEventPosition()
+
+        if picking_is_active:
+            self.try_pick()
+
+    def left_button_up(self, obj, event, interactor, action, picking_is_active=False):
+        if callable(action):
+            action()
+
+        self._left_button_down = False
+        self._up_pos = interactor.GetEventPosition()
+
+        if picking_is_active:
+            self.try_pick()
+        else:
+            self.model_picker.update_selection_data()
+
+    def ctrl_left_button_down(self, obj, event, interactor, action, picking_is_active=False):
+        if callable(action):
+            action()
+
+        self._ctrl_left_button_down = True
+        self._down_pos = interactor.GetEventPosition()
+
+        if picking_is_active:
+            self.try_pick()
+
+    def ctrl_left_button_up(self, obj, event, interactor, action, picking_is_active=False):
+        if callable(action):
+            action()
+
+        self._ctrl_left_button_down = False
+        self._up_pos = interactor.GetEventPosition()
+
+        if picking_is_active:
+            self.try_pick()
+        else:
+            self.model_picker.update_selection_data()
+
+    def left_button_double_click(self, obj, event, interactor, action):
+        pass
+
+    def middle_button_down(self, obj, event, interactor, action, picking_is_active=False):
+        if callable(action):
+            action()
+
         self._middle_button_down = True
+        self._down_pos = interactor.GetEventPosition()
 
-    def middle_button_up(self, obj, event, interactor):
+        if picking_is_active:
+            self.try_pick()
+
+    def middle_button_up(self, obj, event, interactor, action, picking_is_active=False):
+        if callable(action):
+            action()
+
         self._middle_button_down = False
+        self._up_pos = interactor.GetEventPosition()
 
-    def right_button_down(self, obj, event, interactor):
+        if picking_is_active:
+            self.try_pick()
+        else:
+            self.model_picker.update_selection_data()
+
+    def right_button_down(self, obj, event, interactor, action, picking_is_active=False):
+        if callable(action):
+            action()
+
         self._right_button_down = True
+        self._down_pos = interactor.GetEventPosition()
 
-    def right_button_up(self, obj, event, interactor):
+        if picking_is_active:
+            self.try_pick()
+
+    def right_button_up(self, obj, event, interactor, action, picking_is_active=False):
+        if callable(action):
+            action()
+
         self._right_button_down = False
+        self._up_pos = interactor.GetEventPosition()
 
-    def mouse_wheel_forward(self, obj, event, interactor):
-        self.no_selection()
+        if picking_is_active:
+            self.try_pick()
+        else:
+            self.model_picker.update_selection_data()
 
-    def mouse_wheel_backward(self, obj, event, interactor):
-        self.no_selection()
+    def mouse_wheel_forward(self, obj, event, interactor, action):
+        self.reset_hover_and_selected_data()
+        action()
+        self.model_picker.update_selection_data()
+
+    def mouse_wheel_backward(self, obj, event, interactor, action):
+        self.reset_hover_and_selected_data()
+        action()
+        self.model_picker.update_selection_data()
 
     def set_picking(self, active_selections):
 
@@ -165,3 +281,12 @@ class SinglePicker(AbstractPicker):
         self.element_picker.set_picking(VTK_QUAD, active_selections.quads)
 
         self.rbe_picker.set_picking(VTK_POLY_LINE, active_selections.rbes)
+
+    def something_picked(self):
+        self.reset_selection()
+
+        if self._last_selection is not None:
+            tmp = self._last_selection.split(' ')
+            self.selection[tmp[0]] = int(round(float(tmp[1]), 0))
+
+        self.model_picker.selection_list.update_selection(self.selection)

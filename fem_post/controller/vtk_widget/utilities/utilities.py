@@ -2,6 +2,26 @@ __author__ = 'Michael Redmond'
 
 import vtk
 
+from ..vtk_globals import *
+
+
+def project_cell_from_screen(cell, points, renderer, dist):
+    cell_type = cell.GetCellType()
+
+    point_ids = cell.GetPointIds()
+
+    id_count = point_ids.GetNumberOfIds()
+
+    if id_count == 0:
+        return None
+
+    if cell_type == 1:
+        pos = points.GetPoint(point_ids[0])
+
+        new_pos = project_point_from_screen(pos, renderer, dist)
+
+        new_cell = vtk.vtkVertex
+
 
 def project_point_from_screen(pos, renderer, dist):
     """

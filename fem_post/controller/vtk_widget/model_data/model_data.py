@@ -37,13 +37,14 @@ class ModelData(object):
         self.elements.GetCellData().AddArray(self.element_visible)
         self.rbes.GetCellData().AddArray(self.rbe_visible)
 
-        value_selection = vtk.vtkIntArray()
-        value_selection.SetName("visible")
-        value_selection.InsertNextValue(1)
+        selected = vtk.vtkIntArray()
+        selected.SetName("visible")
+        selected.InsertNextValue(1)
+        selected.InsertNextValue(1)
 
-        self.node_filter = ValueFilter(value_selection)
-        self.element_filter = ValueFilter(value_selection)
-        self.rbe_filter = ValueFilter(value_selection)
+        self.node_filter = ValueFilter(selected)
+        self.element_filter = ValueFilter(selected)
+        self.rbe_filter = ValueFilter(selected)
 
         self.node_filter.set_input_data(self.nodes)
         self.element_filter.set_input_data(self.elements)
@@ -59,10 +60,17 @@ class ModelData(object):
         self.elements.Modified()
         self.rbes.Modified()
 
-        self.node_filter.set_input_data(self.nodes)
-        self.element_filter.set_input_data(self.elements)
-        self.rbe_filter.set_input_data(self.rbes)
+        self.node_filter.execute()
+        self.element_filter.execute()
+        self.rbe_filter.execute()
 
+        # should these be commented or not?
+        #self.node_filter.set_input_data(self.nodes)
+        #self.element_filter.set_input_data(self.elements)
+        #self.rbe_filter.set_input_data(self.rbes)
+
+
+        # these have been commented for a while
         #self.node_filter.execute()
         #self.element_filter.execute()
         #self.rbe_filter.execute()
