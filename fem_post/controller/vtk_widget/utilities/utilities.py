@@ -42,6 +42,21 @@ def project_point_from_screen(pos, renderer, dist):
     return renderer.GetWorldPoint()
 
 
+def display_to_world(pos, renderer, dist):
+    """
+
+    :param pos: list
+    :param renderer: vtk.vtkRenderer
+    :param dist: float
+    :return: list
+    """
+
+    renderer.SetDisplayPoint(pos[0], pos[1], dist)
+    renderer.DisplayToWorld()
+
+    return renderer.GetWorldPoint()
+
+
 def picking_ray(pos, renderer):
     """
 

@@ -5,6 +5,7 @@ from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 from .widgets import *
 from .interactor_styles import *
+from .vtk_globals import *
 
 from .model_data import *
 
@@ -103,7 +104,8 @@ class VTKWidget(object):
 
         grids = bdf.nodes.keys()
 
-        self.data.node_ids.SetNumberOfTuples(len(grids))
+        self.data.node_global_ids.SetNumberOfTuples(len(grids))
+        self.data.node_original_ids.SetNumberOfTuples(len(grids))
 
         for i in xrange(len(grids)):
             node = bdf.nodes[grids[i]]
@@ -117,10 +119,13 @@ class VTKWidget(object):
             ids.SetId(0, i)
 
             self.data.nodes.InsertNextCell(cell.GetCellType(), ids)
-            self.data.node_ids.SetValue(i, node.ID)
+            self.data.node_global_ids.SetValue(i, node.ID)
+            self.data.node_original_ids.SetValue(i, i)
             self.data.node_visible.InsertNextValue(1)
 
         elements = bdf.elements.keys()
+
+        id = 0
 
         for i in xrange(len(elements)):
             element = bdf.elements[elements[i]]
@@ -137,7 +142,9 @@ class VTKWidget(object):
 
                 self.data.elements.InsertNextCell(cell.GetCellType(), ids)
                 self.data.element_visible.InsertNextValue(1)
-                self.data.element_ids.InsertNextValue(element.ID)
+                self.data.element_global_ids.InsertNextValue(element.ID)
+                self.data.element_original_ids.InsertNextValue(id)
+                id += 1
 
             elif card_name == 'CTRIA3':
                 nodes = element.nodes
@@ -149,7 +156,9 @@ class VTKWidget(object):
 
                 self.data.elements.InsertNextCell(cell.GetCellType(), ids)
                 self.data.element_visible.InsertNextValue(1)
-                self.data.element_ids.InsertNextValue(element.ID)
+                self.data.element_global_ids.InsertNextValue(element.ID)
+                self.data.element_original_ids.InsertNextValue(id)
+                id += 1
 
             elif card_name == 'CQUAD4':
                 nodes = element.nodes
@@ -162,7 +171,9 @@ class VTKWidget(object):
 
                 self.data.elements.InsertNextCell(cell.GetCellType(), ids)
                 self.data.element_visible.InsertNextValue(1)
-                self.data.element_ids.InsertNextValue(element.ID)
+                self.data.element_global_ids.InsertNextValue(element.ID)
+                self.data.element_original_ids.InsertNextValue(id)
+                id += 1
 
         self.data.squeeze()
 
@@ -211,4 +222,22 @@ class VTKWidget(object):
 
     def update_ui_selection(self, selection):
         self.main_window.ui.selection_box.setText(selection)
+
+    def replace_selection_button(self):
+        self.model_picker.selection_list.selection_type = SELECTION_REPLACE
+
+    def append_selection_button(self):
+        self.model_picker.selection_list.selection_type = SELECTION_APPEND
+
+    def remove_selection_button(self):
+        self.model_picker.selection_list.selection_type = SELECTION_REMOVE
+
+    def single_pick_button(self):
+        self.model_picker.set_selection_type(SELECTION_SINGLE)
+
+    def box_pick_button(self):
+        self.model_picker.set_selection_type(SELECTION_BOX)
+
+    def poly_pick_button(self):
+        self.model_picker.set_selection_type(SELECTION_POLY)
 

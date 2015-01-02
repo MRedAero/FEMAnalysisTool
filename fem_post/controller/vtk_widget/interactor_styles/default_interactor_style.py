@@ -68,7 +68,7 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
                         'right_up': self.zoom_end}
 
         self.picking = {'left_down': False,
-                        'ctrl_left_down': False,
+                        'ctrl_left_down': True,
                         'middle_down': False,
                         'right_down': False,
                         'left_up': False,
@@ -112,6 +112,7 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             begin = None
             end = None
             self.reset_picking()
+            self.picking[button_down] = True
             self.picking[button_up] = True
 
         self.actions[button_down] = begin

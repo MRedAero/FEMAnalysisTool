@@ -25,15 +25,6 @@ class ModelPicker(object):
 
         self.pipeline = None
 
-        self.poly_points = vtk.vtkPoints()
-        self.poly_line = vtk.vtkPolyLine()
-        self.poly_data = vtk.vtkUnstructuredGrid()
-        self.poly_plane = vtk.vtkPolyPlane()
-
-        self.poly_data.SetPoints(self.poly_points)
-        self.poly_data.InsertNextCell(self.poly_line.GetCellType(), self.poly_line.GetPointIds())
-        self.poly_plane.SetPolyLine(self.poly_line)
-
         self.hover_data = vtk.vtkPolyData()
         self.selected_data = vtk.vtkPolyData()
 
@@ -107,6 +98,7 @@ class ModelPicker(object):
             return
 
         self.single_picker.set_data()
+        self.box_picker.set_data()
 
     def get_data(self):
         return {'nodes': self.pipeline.node_mapper.GetInput(),
@@ -169,6 +161,7 @@ class ModelPicker(object):
 
     def active_selections_changed(self):
         self.single_picker.set_picking(self.active_selections)
+        self.box_picker.set_picking(self.active_selections)
 
     def reset_selected_data(self, do_not_render=False):
         self.selected_data.Reset()
@@ -197,13 +190,13 @@ class ModelPicker(object):
         node_data = data['nodes']
         element_data = data['elements']
 
-        self.node_filter.set_global_id_selection(self.selection_list.nodes, True)
+        self.node_filter.set_selection_list(self.selection_list.nodes, True)
         self.node_filter.set_input_data(node_data)
 
         selected_nodes = self.node_filter.selected_data()
         node_points = selected_nodes.GetPoints()
 
-        self.element_filter.set_global_id_selection(self.selection_list.elements, True)
+        self.element_filter.set_selection_list(self.selection_list.elements, True)
         self.element_filter.set_input_data(element_data)
 
         selected_elements = self.element_filter.selected_data()
@@ -326,26 +319,25 @@ class ModelPicker(object):
         node_data = data['nodes']
         element_data = data['elements']
 
-        self.node_filter.set_global_id_selection(self.selection_list.nodes, True)
+        self.node_filter.set_selection_list(self.selection_list.nodes, True)
         self.node_filter.set_input_data(node_data)
-        selected_node_ids = self.node_filter.selected_data().GetCellData().GetArray("vtkOriginalCellIds")
+        original_node_ids = self.node_filter.selected_data().GetCellData().GetArray("original_ids")
 
-        self.element_filter.set_global_id_selection(self.selection_list.elements, True)
+        self.element_filter.set_selection_list(self.selection_list.elements, True)
         self.element_filter.set_input_data(element_data)
-        selected_element_ids = self.element_filter.selected_data().GetCellData().GetArray("vtkOriginalCellIds")
+        original_element_ids = self.element_filter.selected_data().GetCellData().GetArray("original_ids")
 
         original_data = self.pipeline.get_data()
         node_visible = original_data.nodes.GetCellData().GetArray("visible")
         element_visible = original_data.elements.GetCellData().GetArray("visible")
 
-        for i in xrange(selected_node_ids.GetNumberOfTuples()):
-            id = int(selected_node_ids.GetValue(i))
+        for i in xrange(original_node_ids.GetNumberOfTuples()):
+            id = int(original_node_ids.GetValue(i))
             previous_value = int(node_visible.GetTuple1(id))
             node_visible.SetTuple1(id, -previous_value)
 
-        for i in xrange(selected_element_ids.GetNumberOfTuples()):
-            id = int(selected_element_ids.GetValue(i))
-            print id
+        for i in xrange(original_element_ids.GetNumberOfTuples()):
+            id = int(original_element_ids.GetValue(i))
             previous_value = int(element_visible.GetTuple1(id))
             element_visible.SetTuple1(id, -previous_value)
 

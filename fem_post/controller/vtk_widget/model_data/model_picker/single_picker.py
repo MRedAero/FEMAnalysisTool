@@ -177,9 +177,6 @@ class SinglePicker(AbstractPicker):
         self._left_button_down = True
         self._down_pos = interactor.GetEventPosition()
 
-        if picking_is_active:
-            self.try_pick()
-
     def left_button_up(self, obj, event, interactor, action, picking_is_active=False):
         if callable(action):
             action()
@@ -198,9 +195,6 @@ class SinglePicker(AbstractPicker):
 
         self._ctrl_left_button_down = True
         self._down_pos = interactor.GetEventPosition()
-
-        if picking_is_active:
-            self.try_pick()
 
     def ctrl_left_button_up(self, obj, event, interactor, action, picking_is_active=False):
         if callable(action):
@@ -224,9 +218,6 @@ class SinglePicker(AbstractPicker):
         self._middle_button_down = True
         self._down_pos = interactor.GetEventPosition()
 
-        if picking_is_active:
-            self.try_pick()
-
     def middle_button_up(self, obj, event, interactor, action, picking_is_active=False):
         if callable(action):
             action()
@@ -245,9 +236,6 @@ class SinglePicker(AbstractPicker):
 
         self._right_button_down = True
         self._down_pos = interactor.GetEventPosition()
-
-        if picking_is_active:
-            self.try_pick()
 
     def right_button_up(self, obj, event, interactor, action, picking_is_active=False):
         if callable(action):

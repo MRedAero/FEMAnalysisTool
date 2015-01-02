@@ -38,6 +38,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.tris_button.clicked.connect(self.tris_button)
         self.ui.quads_button.clicked.connect(self.quads_button)
 
+        self.ui.replace_selection_button.clicked.connect(self.replace_selection_button)
+        self.ui.append_selection_button.clicked.connect(self.append_selection_button)
+        self.ui.remove_selection_button.clicked.connect(self.remove_selection_button)
+
         self.ui.left_click_combo.setCurrentIndex(0)
         self.ui.middle_click_combo.setCurrentIndex(1)
         self.ui.right_click_combo.setCurrentIndex(2)
@@ -107,13 +111,13 @@ class MainWindow(QtGui.QMainWindow):
         self.vtk_widget.toggle_hidden()
 
     def single_pick_button(self):
-        pass
+        self.vtk_widget.single_pick_button()
 
     def box_pick_button(self):
-        pass
+        self.vtk_widget.box_pick_button()
 
     def poly_pick_button(self):
-        pass
+        self.vtk_widget.poly_pick_button()
 
     def any_button(self):
         self.vtk_widget.toggle_picking(0)
@@ -135,4 +139,13 @@ class MainWindow(QtGui.QMainWindow):
 
     def quads_button(self):
         self.vtk_widget.toggle_picking(2, 4)
+
+    def replace_selection_button(self):
+        self.vtk_widget.replace_selection_button()
+
+    def append_selection_button(self):
+        self.vtk_widget.append_selection_button()
+
+    def remove_selection_button(self):
+        self.vtk_widget.remove_selection_button()
 
