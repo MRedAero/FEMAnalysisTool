@@ -4,7 +4,7 @@ from .abstract_picker import AbstractPicker
 from ...custom_pickers import *
 from .active_selections import ActiveSelections
 from ...vtk_globals import *
-from ...utilities import display_to_world
+from ...utilities import *
 
 
 class BoxPicker(AbstractPicker):
@@ -23,17 +23,32 @@ class BoxPicker(AbstractPicker):
         self.element_picker = vtk.vtkExtractGeometry()
         self.rbe_picker = vtk.vtkExtractGeometry()
 
-        #self.node_picker.ExtractBoundaryCellsOn()
-        #self.element_picker.ExtractBoundaryCellsOn()
-        #self.rbe_picker.ExtractBoundaryCellsOn()
+        self.node_picker.ExtractBoundaryCellsOn()
+        self.element_picker.ExtractBoundaryCellsOn()
+        self.rbe_picker.ExtractBoundaryCellsOn()
 
         self.node_picker.ExtractInsideOn()
         self.element_picker.ExtractInsideOn()
         self.rbe_picker.ExtractInsideOn()
 
+        self._picking_box = vtk.vtkPlanes()
+
         self.node_picker.SetImplicitFunction(self.poly_plane)
         self.element_picker.SetImplicitFunction(self.poly_plane)
         self.rbe_picker.SetImplicitFunction(self.poly_plane)
+
+        self.box_points = vtk.vtkPoints()
+
+        self.box_poly = vtk.vtkPolyData()
+        self.box_poly.SetPoints(self.box_points)
+
+        self.box_mapper = vtk.vtkPolyDataMapper()
+        self.box_mapper.SetInputData(self.box_poly)
+        self.box_actor = vtk.vtkActor()
+        self.box_actor.SetMapper(self.box_mapper)
+        self.box_actor.GetProperty().SetPointSize(20)
+
+        self._added = False
 
         self._left_button_down = False
         self._ctrl_left_button_down = False
@@ -44,6 +59,10 @@ class BoxPicker(AbstractPicker):
 
         self._down_pos = None
         self._up_pos = None
+        self._pos1 = None
+        self._pos2 = None
+        self._pos3 = None
+        self._pos4 = None
 
         self.selection = None
         self.reset_selection()
@@ -83,14 +102,14 @@ class BoxPicker(AbstractPicker):
         self._picking_active = True
         self._down_pos = pos
 
-        pos1 = display_to_world(self._down_pos, self.model_picker.get_renderer(), .001)
+        self._pos1 = display_to_world(self._down_pos, self.model_picker.get_renderer(), .001)
 
         self.poly_points.Reset()
 
-        self.poly_points.InsertNextPoint(pos1[:3])
-        self.poly_points.InsertNextPoint(pos1[:3])
-        self.poly_points.InsertNextPoint(pos1[:3])
-        self.poly_points.InsertNextPoint(pos1[:3])
+        self.poly_points.InsertNextPoint(self._pos1[:3])
+        self.poly_points.InsertNextPoint(self._pos1[:3])
+        self.poly_points.InsertNextPoint(self._pos1[:3])
+        self.poly_points.InsertNextPoint(self._pos1[:3])
 
         self.reset_hover_data()
 
@@ -108,24 +127,43 @@ class BoxPicker(AbstractPicker):
         self.model_picker.hover_data.SetPolys(self.cell_array)
 
     def end_picking(self, pos):
+
+        if not self._added:
+            self.model_picker.get_renderer().AddActor(self.box_actor)
+            self._added = True
+
         self._picking_active = False
         self._up_pos = pos
 
+        self._frustum = create_box_frustum(self._down_pos[0], self._down_pos[1],
+                                     self._up_pos[0], self._up_pos[1], self.model_picker.get_renderer())
+
+        print self._frustum
+
+        #print self._picking_box
+
         self.poly_plane.SetPolyLine(self.poly_line)
 
-        print self.poly_plane
+       #print self.poly_plane
 
-        self.node_picker.SetImplicitFunction(self.poly_plane)
-        self.element_picker.SetImplicitFunction(self.poly_plane)
-        self.rbe_picker.SetImplicitFunction(self.poly_plane)
+        self.node_picker.SetImplicitFunction(self._frustum)
+        self.element_picker.SetImplicitFunction(self._frustum)
+        self.rbe_picker.SetImplicitFunction(self._frustum)
 
         self.node_picker.Update()
-        self.element_picker.Update()
-        self.rbe_picker.Update()
+        self.node_picker.Modified()
 
-        print self.element_picker.GetOutput().GetNumberOfCells()
+        self.element_picker.Update()
+        self.element_picker.Modified()
+
+        self.rbe_picker.Update()
+        self.rbe_picker.Modified()
+
+        #print self.element_picker.GetOutput().GetNumberOfCells()
 
         self.reset_hover_data()
+
+        self.something_picked()
 
     def mouse_move(self, obj, event, interactor, action):
 
@@ -144,13 +182,13 @@ class BoxPicker(AbstractPicker):
 
         pos = interactor.GetEventPosition()
 
-        pos3 = display_to_world(pos, self.model_picker.get_renderer(), .001)
-        pos2 = display_to_world([pos[0], self._down_pos[1]], self.model_picker.get_renderer(), .001)
-        pos4 = display_to_world([self._down_pos[0], pos[1]], self.model_picker.get_renderer(), .001)
+        self._pos3 = display_to_world(pos, self.model_picker.get_renderer(), .001)
+        self._pos2 = display_to_world([pos[0], self._down_pos[1]], self.model_picker.get_renderer(), .001)
+        self._pos4 = display_to_world([self._down_pos[0], pos[1]], self.model_picker.get_renderer(), .001)
 
-        self.poly_points.SetPoint(1, pos2[:3])
-        self.poly_points.SetPoint(2, pos3[:3])
-        self.poly_points.SetPoint(3, pos4[:3])
+        self.poly_points.SetPoint(1, self._pos2[:3])
+        self.poly_points.SetPoint(2, self._pos3[:3])
+        self.poly_points.SetPoint(3, self._pos4[:3])
 
         self.poly_points.Modified()
         self.poly_line.Modified()
@@ -160,6 +198,7 @@ class BoxPicker(AbstractPicker):
         self.model_picker.render()
 
     def reset_hover_data(self, do_not_render=False):
+        #return
         self.model_picker.hover_data.Reset()
         self.model_picker.hover_data.Modified()
 
@@ -167,6 +206,7 @@ class BoxPicker(AbstractPicker):
             self.model_picker.render()
 
     def reset_hover_and_selected_data(self):
+        #return
         self.reset_hover_data(True)
         self.model_picker.reset_selected_data()
 
@@ -271,6 +311,8 @@ class BoxPicker(AbstractPicker):
 
     def set_picking(self, active_selections):
 
+        return
+
         self.node_picker.set_picking(VTK_VERTEX, active_selections.nodes)
 
         self.element_picker.set_picking(VTK_VERTEX, active_selections.points)
@@ -283,8 +325,20 @@ class BoxPicker(AbstractPicker):
     def something_picked(self):
         self.reset_selection()
 
-        if self._last_selection is not None:
-            tmp = self._last_selection.split(' ')
-            self.selection[tmp[0]] = int(round(float(tmp[1]), 0))
+        data = self.element_picker.GetOutput().GetCellData()
+        global_ids = data.GetGlobalIds()
+        selection = []
+        for i in xrange(global_ids.GetNumberOfTuples()):
+            selection.append(str(int(round(float(global_ids.GetValue(i)), 0))))
+
+        self.selection['elements'] = selection
+
+        data = self.node_picker.GetOutput().GetCellData()
+        global_ids = data.GetGlobalIds()
+        selection = []
+        for i in xrange(global_ids.GetNumberOfTuples()):
+            selection.append(str(int(round(float(global_ids.GetValue(i)), 0))))
+
+        self.selection['nodes'] = selection
 
         self.model_picker.selection_list.update_selection(self.selection)

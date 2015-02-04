@@ -183,6 +183,8 @@ class ModelPicker(object):
 
     def update_selection_data(self):
 
+        #return
+
         self.selected_data.Reset()
 
         data = self.get_data()

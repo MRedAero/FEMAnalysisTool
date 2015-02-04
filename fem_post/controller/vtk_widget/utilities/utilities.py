@@ -152,3 +152,133 @@ def picking_ray(pos, renderer):
     return [selection_point, PickPosition, p1World, p2World]
 
 
+def len_between_points(p1, p2):
+    dx = p1[0] - p2[0]
+    dy = p1[1] - p2[1]
+    dz = p1[2] - p2[2]
+
+    return (dx**2 + dy**2 + dz**2)**0.5
+
+
+def vector_between_points(p1, p2):
+    dx = p2[0] - p1[0]
+    dy = p2[1] - p1[1]
+    dz = p2[2] - p1[2]
+
+    len = (dx**2 + dy**2 + dz**2)**0.5
+
+    if len == 0:
+        return [0, 0, 0]
+    else:
+        return [dx/len, dy/len, dz/len]
+
+
+def points_to_poly_data(poly_data, points, cells):
+
+    poly_data = poly_data['poly_data']
+
+    point_list = vtk.vtkPoints()
+
+    for i in xrange(len(points)):
+        point_list.InsertNextPoint(points[i][0], points[i][1], points[i][2])
+
+    cell_array = vtk.vtkCellArray()
+
+    for i in xrange(len(cells)):
+        pts = cells[i]
+
+        if len(pts) == 1:
+            cell = vtk.vtkVertex()
+            ids = cell.GetPointIds()
+            ids.SetId(0, pts[0])
+        if len(pts) == 2:
+            cell = vtk.vtkLine()
+            ids = cell.GetPointIds()
+            ids.SetId(0, pts[0])
+            ids.SetId(1, pts[1])
+        elif len(pts) == 3:
+            cell = vtk.vtkTriangle()
+            ids = cell.GetPointIds()
+            ids.SetId(0, pts[0])
+            ids.SetId(1, pts[1])
+            ids.SetId(2, pts[2])
+        elif len(pts) == 4:
+            cell = vtk.vtkQuad()
+            ids = cell.GetPointIds()
+            ids.SetId(0, pts[0])
+            ids.SetId(1, pts[1])
+            ids.SetId(2, pts[2])
+            ids.SetId(3, pts[3])
+        else:
+            continue
+
+        cell_array.InsertNextCell(cell)
+
+    poly_data.Reset()
+
+    poly_data.SetPoints(point_list)
+    poly_data.SetVerts(cell_array)
+    poly_data.SetLines(cell_array)
+    poly_data.SetPolys(cell_array)
+
+
+def create_box_frustum(x0_, y0_, x1_, y1_, renderer):
+
+    if x0_ < x1_:
+        x0 = x0_
+        x1 = x1_
+    else:
+        x0 = x1_
+        x1 = x0_
+
+    if y0_ < y1_:
+        y0 = y0_
+        y1 = y1_
+    else:
+        y0 = y1_
+        y1 = y0_
+
+    if x0 == x1:
+        x1 += 1.
+
+    if y0 == y1:
+        y1 += 1.
+
+    verts = []
+
+    renderer.SetDisplayPoint(x0, y0, 0)
+    renderer.DisplayToWorld()
+    verts.extend(renderer.GetWorldPoint()[:4])
+
+    renderer.SetDisplayPoint(x0, y0, 1)
+    renderer.DisplayToWorld()
+    verts.extend(renderer.GetWorldPoint()[:4])
+
+    renderer.SetDisplayPoint(x0, y1, 0)
+    renderer.DisplayToWorld()
+    verts.extend(renderer.GetWorldPoint()[:4])
+
+    renderer.SetDisplayPoint(x0, y1, 1)
+    renderer.DisplayToWorld()
+    verts.extend(renderer.GetWorldPoint()[:4])
+
+    renderer.SetDisplayPoint(x1, y0, 0)
+    renderer.DisplayToWorld()
+    verts.extend(renderer.GetWorldPoint()[:4])
+
+    renderer.SetDisplayPoint(x1, y0, 1)
+    renderer.DisplayToWorld()
+    verts.extend(renderer.GetWorldPoint()[:4])
+
+    renderer.SetDisplayPoint(x1, y1, 0)
+    renderer.DisplayToWorld()
+    verts.extend(renderer.GetWorldPoint()[:4])
+
+    renderer.SetDisplayPoint(x1, y1, 1)
+    renderer.DisplayToWorld()
+    verts.extend(renderer.GetWorldPoint()[:4])
+
+    extract_selected_frustum = vtk.vtkExtractSelectedFrustum()
+    extract_selected_frustum.CreateFrustum(verts)
+
+    return extract_selected_frustum.GetFrustum()
