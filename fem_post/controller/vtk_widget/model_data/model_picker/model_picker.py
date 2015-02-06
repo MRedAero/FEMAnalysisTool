@@ -28,18 +28,80 @@ class ModelPicker(object):
         self.hover_data = vtk.vtkPolyData()
         self.selected_data = vtk.vtkPolyData()
 
+        #################### test #####################
+        self.selected_elements = vtk.vtkUnstructuredGrid()
+        self.selected_nodes = vtk.vtkUnstructuredGrid()
+
+        self.selected_elements_mapper = vtk.vtkPolyDataMapper2D()
+        self.selected_nodes_mapper = vtk.vtkPolyDataMapper2D()
+
+        self.coordinate = vtk.vtkCoordinate()
+        self.coordinate.SetCoordinateSystem(5)
+
+        self.selected_elements_mapper.SetTransformCoordinate(self.coordinate)
+        self.selected_nodes_mapper.SetTransformCoordinate(self.coordinate)
+
+        self.selected_elements_geometry_filter = vtk.vtkGeometryFilter()
+        self.selected_nodes_geometry_filter = vtk.vtkGeometryFilter()
+
+        self.selected_elements_edges = vtk.vtkExtractEdges()
+        self.selected_nodes_edges = vtk.vtkExtractEdges()
+
+        #################### test #####################
+
         self.hover_mapper = vtk.vtkPolyDataMapper()
         self.selected_mapper = vtk.vtkPolyDataMapper()
 
         if VTK_VERSION >= 6.0:
             self.hover_mapper.SetInputData(self.hover_data)
             self.selected_mapper.SetInputData(self.selected_data)
+
+            #################### test #####################
+            #self.selected_elements_object_filter.SetInputData(self.selected_elements)
+            #self.selected_nodes_object_filter.SetInputData(self.selected_nodes)
+
+            self.selected_elements_geometry_filter.SetInputData(self.selected_elements)
+            self.selected_nodes_geometry_filter.SetInputData(self.selected_nodes)
+
+            self.selected_elements_geometry_filter.Update()
+            self.selected_nodes_geometry_filter.Update()
+
+            #self.selected_elements_object_filter.Update()
+            #self.selected_nodes_object_filter.Update()
+
+            #self.selected_elements_mapper.SetInputDataObject(self.selected_elements_object_filter.GetOutput())
+            #self.selected_nodes_mapper.SetInputDataObject(self.selected_nodes_object_filter.GetOutput())
+
+            self.selected_elements_edges.SetInputData(self.selected_elements_geometry_filter.GetOutput())
+            self.selected_nodes_edges.SetInputData(self.selected_nodes_geometry_filter.GetOutput())
+
+            self.selected_elements_edges.Update()
+            self.selected_nodes_edges.Update()
+
+            self.selected_elements_mapper.SetInputData(self.selected_elements_edges.GetOutput())
+            self.selected_nodes_mapper.SetInputData(self.selected_nodes_edges.GetOutput())
+
+            #################### test #####################
+
         else:
             self.hover_mapper.SetInput(self.hover_data)
             self.selected_mapper.SetInput(self.selected_data)
 
+            #################### test #####################
+            self.selected_elements_object_filter.SetInput(self.selected_elements)
+            self.selected_nodes_object_filter.SetInput(self.selected_nodes)
+
+            self.selected_elements_mapper.SetInputDataObject(self.selected_elements_object_filter.GetOutput())
+            self.selected_nodes_mapper.SetInputDataObject(self.selected_nodes_object_filter.GetOutput())
+            #################### test #####################
+
         self.hover_actor = vtk.vtkActor()
         self.selected_actor = vtk.vtkActor()
+
+        #################### test #####################
+        self.selected_elements_actor = vtk.vtkActor2D()
+        self.selected_nodes_actor = vtk.vtkActor2D()
+        #################### test #####################
 
         self.hover_actor.GetProperty().EdgeVisibilityOn()
         self.hover_actor.GetProperty().SetColor(0.5, 0.5, 0)
@@ -49,13 +111,35 @@ class ModelPicker(object):
         self.hover_actor.GetProperty().SetPointSize(6)
 
         self.selected_actor.GetProperty().EdgeVisibilityOn()
-        #self.selected_actor.GetProperty().SetColor(0., 0.5, 0.5)
+        self.selected_actor.GetProperty().SetColor(0., 0.5, 0.5)
         self.selected_actor.GetProperty().SetEdgeColor(0., 0.5, 0.5)
-        self.selected_actor.GetProperty().SetLineWidth(3)
+        self.selected_actor.GetProperty().SetLineWidth(1)
         #self.selected_actor.GetProperty().SetPointSize(6)
+        self.selected_actor.GetProperty().SetRepresentationToWireframe()
+
+        #################### test #####################
+#        self.selected_elements_actor.GetProperty().EdgeVisibilityOn()
+        self.selected_elements_actor.GetProperty().SetColor(0., 0.5, 0.5)
+#        self.selected_elements_actor.GetProperty().SetEdgeColor(0., 0.5, 0.5)
+        self.selected_elements_actor.GetProperty().SetLineWidth(2)
+        #self.selected_elements_actor.GetProperty().SetPointSize(6)
+        #self.selected_elements_actor.GetProperty().SetRepresentationToWireframe()
+
+        #self.selected_nodes_actor.GetProperty().EdgeVisibilityOn()
+        self.selected_nodes_actor.GetProperty().SetColor(0., 0.5, 0.5)
+        #self.selected_nodes_actor.GetProperty().SetEdgeColor(0., 0.5, 0.5)
+        self.selected_nodes_actor.GetProperty().SetLineWidth(2)
+        #self.selected_nodes_actor.GetProperty().SetPointSize(6)
+        #self.selected_nodes_actor.GetProperty().SetRepresentationToWireframe()
+        #################### test #####################
 
         self.hover_actor.SetMapper(self.hover_mapper)
         self.selected_actor.SetMapper(self.selected_mapper)
+
+        #################### test #####################
+        self.selected_elements_actor.SetMapper(self.selected_elements_mapper)
+        self.selected_nodes_actor.SetMapper(self.selected_nodes_mapper)
+        #################### test #####################
 
         self.active_selections = ActiveSelections()
         self.active_selections.selection_changed.connect(self.active_selections_changed)
@@ -82,12 +166,22 @@ class ModelPicker(object):
             self.pipeline.get_renderer().RemoveActor(self.hover_actor)
             self.pipeline.get_renderer().RemoveActor(self.selected_actor)
 
+            #################### test #####################
+            self.pipeline.get_renderer().RemoveActor(self.selected_elements_actor)
+            self.pipeline.get_renderer().RemoveActor(self.selected_nodes_actor)
+            #################### test #####################
+
         self.pipeline = pipeline
         """:type: fem_post.controller.vtk_widget.pipelines.DataPipeline"""
 
         self.pipeline.data_updated.connect(self.update_data)
         self.pipeline.get_renderer().AddActor(self.hover_actor)
         self.pipeline.get_renderer().AddActor(self.selected_actor)
+
+        #################### test #####################
+        self.pipeline.get_renderer().AddActor2D(self.selected_elements_actor)
+        self.pipeline.get_renderer().AddActor2D(self.selected_nodes_actor)
+        #################### test #####################
 
         self.single_picker.node_picker.Renderer = self.get_renderer()
 
@@ -122,6 +216,11 @@ class ModelPicker(object):
 
         self.hover_data.Reset()
         self.selected_data.Reset()
+
+        #################### test #####################
+        self.selected_elements.Reset()
+        self.selected_nodes.Reset()
+        #################### test #####################
 
     def set_interactor_style(self, interactor_style):
         if self.interactor_style is not None:
@@ -167,6 +266,22 @@ class ModelPicker(object):
         self.selected_data.Reset()
         self.selected_data.Modified()
 
+        #################### test #####################
+        self.selected_elements.Reset()
+        self.selected_elements.GetCellData().Reset()
+        self.selected_elements.Modified()
+        self.selected_nodes.Reset()
+        self.selected_nodes.GetCellData().Reset()
+        self.selected_nodes.Modified()
+
+        self.selected_elements_geometry_filter.Update()
+        self.selected_nodes_geometry_filter.Update()
+
+        self.selected_elements_edges.Update()
+        self.selected_nodes_edges.Update()
+
+        #################### test #####################
+
         if not do_not_render:
             self.render()
 
@@ -182,6 +297,112 @@ class ModelPicker(object):
         self.reset_hover_data(do_not_render)
 
     def update_selection_data(self):
+
+        #return
+
+        self.selected_data.Reset()
+
+        #################### test #####################
+        self.selected_elements.Reset()
+        self.selected_elements.GetCellData().Reset()
+        self.selected_nodes.Reset()
+        self.selected_nodes.GetCellData().Reset()
+        #################### test #####################
+
+        data = self.get_data()
+
+        node_data = data['nodes']
+        element_data = data['elements']
+
+        self.node_filter.set_selection_list(self.selection_list.nodes, True)
+        self.node_filter.set_input_data(node_data)
+
+        self.element_filter.set_selection_list(self.selection_list.elements, True)
+        self.element_filter.set_input_data(element_data)
+
+        selected_nodes = self.node_filter.selected_data()
+        self.selected_nodes.ShallowCopy(selected_nodes)
+
+        selected_elements = self.element_filter.selected_data()
+        self.selected_elements.ShallowCopy(selected_elements)
+
+        self.selected_elements.Modified()
+        self.selected_nodes.Modified()
+
+        self.selected_elements_geometry_filter.Update()
+        self.selected_nodes_geometry_filter.Update()
+
+        self.selected_elements_edges.Update()
+        self.selected_nodes_edges.Update()
+
+        #self.selected_elements_mapper.Modified()
+        #self.selected_nodes_mapper.Modified()
+
+        #print self.selected_elements_geometry_filter.GetOutput()
+
+        self.render()
+
+    def update_selection_data_old2(self):
+
+        #return
+
+        self.selected_data.Reset()
+
+        #################### test #####################
+        self.selected_elements.Reset()
+        self.selected_elements.GetCellData().Reset()
+        self.selected_nodes.Reset()
+        self.selected_nodes.GetCellData().Reset()
+        #################### test #####################
+
+        data = self.get_data()
+
+        node_data = data['nodes']
+        element_data = data['elements']
+
+        self.node_filter.set_selection_list(self.selection_list.nodes, True)
+        self.node_filter.set_input_data(node_data)
+
+        self.element_filter.set_selection_list(self.selection_list.elements, True)
+        self.element_filter.set_input_data(element_data)
+
+        renderer = self.get_renderer()
+
+        selected_nodes = self.node_filter.selected_data()
+        self.selected_nodes.ShallowCopy(selected_nodes)
+        #self.selected_nodes.GetCellData().DeepCopy(selected_nodes.GetCellData())
+        node_points = self.selected_nodes.GetPoints()
+
+        if node_points is not None:
+            for i in xrange(node_points.GetNumberOfPoints()):
+                new_pos = project_point_from_screen(node_points.GetPoint(i), renderer, .001)
+                node_points.SetPoint(i, new_pos[:3])
+
+        selected_elements = self.element_filter.selected_data()
+        self.selected_elements.ShallowCopy(selected_elements)
+        #self.selected_elements.GetCellData().DeepCopy(selected_elements.GetCellData())
+        element_points = self.selected_elements.GetPoints()
+
+        if element_points is not None:
+            for i in xrange(element_points.GetNumberOfPoints()):
+                new_pos = project_point_from_screen(element_points.GetPoint(i), renderer, .001)
+                element_points.SetPoint(i, new_pos[:3])
+
+        self.selected_elements.Modified()
+        self.selected_nodes.Modified()
+
+        self.render()
+
+        #for i in xrange(self.selection_list.mpcs):
+        #    pass
+
+        #for i in xrange(self.selection_list.loads):
+        #    pass
+
+        #for i in xrange(self.selection_list.disps):
+        #    pass
+
+    def update_selection_data_old(self):
 
         #return
 
@@ -264,32 +485,38 @@ class ModelPicker(object):
                 cell_array.InsertNextCell(cell)
                 continue
 
-            elif point_count > 2:
+            elif point_count == 3:
 
-                for j in xrange(1, point_count+1):
+                cell = vtk.vtkTriangle()
+                ids = cell.GetPointIds()
 
-                    cell = vtk.vtkLine()
-                    ids = cell.GetPointIds()
+                for j in xrange(3):
 
-                    pos1 = element_points.GetPoint(point_ids.GetId(j-1))
+                    pos = element_points.GetPoint(point_ids.GetId(j))
+                    new_pos = project_point_from_screen(pos, renderer, .001)
+                    selected_points.InsertNextPoint(new_pos[:3])
 
-                    if j == point_count:
-                        pos2 = element_points.GetPoint(point_ids.GetId(0))
-                    else:
-                        pos2 = element_points.GetPoint(point_ids.GetId(j))
-
-                    new_pos1 = project_point_from_screen(pos1, renderer, .001)
-                    new_pos2 = project_point_from_screen(pos2, renderer, .001)
-
-                    selected_points.InsertNextPoint(new_pos1[:3])
-                    selected_points.InsertNextPoint(new_pos2[:3])
-
-                    ids.SetId(0, id)
-                    id += 1
-                    ids.SetId(1, id)
+                    ids.SetId(j, id)
                     id += 1
 
-                    cell_array.InsertNextCell(cell)
+                cell_array.InsertNextCell(cell)
+                continue
+
+            elif point_count == 4:
+
+                cell = vtk.vtkQuad()
+                ids = cell.GetPointIds()
+
+                for j in xrange(4):
+
+                    pos = element_points.GetPoint(point_ids.GetId(j))
+                    new_pos = project_point_from_screen(pos, renderer, .001)
+                    selected_points.InsertNextPoint(new_pos[:3])
+
+                    ids.SetId(j, id)
+                    id += 1
+
+                cell_array.InsertNextCell(cell)
                 continue
 
         self.selected_data.SetPoints(selected_points)

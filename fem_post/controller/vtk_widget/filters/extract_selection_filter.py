@@ -81,3 +81,62 @@ class ExtractSelectionFilter(vtk.vtkProgrammableFilter):
         self.ex_unsel.Update()
         self.n_sel.Modified()
         self.n_unsel.Modified()
+
+
+class ExtractSelectionFilterOnlySelected(vtk.vtkProgrammableFilter):
+    def __init__(self, selected):
+        self.SetExecuteMethod(self.execute)
+
+        self.s_sel = vtk.vtkSelection()
+
+        self.n_sel = vtk.vtkSelectionNode()
+
+        self.ex_sel = vtk.vtkExtractSelection()
+
+        self.n_sel.SetContentType(vtk.vtkSelectionNode.THRESHOLDS)
+
+        self.selection_list = None
+        self.set_selection_list(selected, True)
+
+        self.s_sel.AddNode(self.n_sel)
+
+        if VTK_VERSION >= 6.0:
+            self.ex_sel.SetInputData(1, self.s_sel)
+        else:
+            self.ex_sel.SetInput(1, self.s_sel)
+
+    def filter_thresholds(self):
+        self.n_sel.SetContentType(vtk.vtkSelectionNode.THRESHOLDS)
+
+    # this is SLOW, use thresholds instead
+    def filter_values(self):
+        self.n_sel.SetContentType(vtk.vtkSelectionNode.VALUES)
+
+    def set_input_data(self, input_data, do_not_execute=False):
+
+        if VTK_VERSION >= 6.0:
+            self.SetInputData(input_data)
+
+            self.ex_sel.SetInputData(0, input_data)
+        else:
+            self.SetInput(input_data)
+
+            self.ex_sel.SetInput(0, input_data)
+
+        if not do_not_execute:
+            self.execute()
+
+    def set_selection_list(self, selected, do_not_execute=False):
+        self.selection_list = selected
+
+        self.n_sel.SetSelectionList(self.selection_list)
+
+        if not do_not_execute:
+            self.execute()
+
+    def selected_data(self):
+        return self.ex_sel.GetOutput()
+
+    def execute(self):
+        self.ex_sel.Update()
+        self.n_sel.Modified()

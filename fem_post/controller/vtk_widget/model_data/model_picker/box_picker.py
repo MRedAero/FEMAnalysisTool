@@ -138,8 +138,6 @@ class BoxPicker(AbstractPicker):
         self._frustum = create_box_frustum(self._down_pos[0], self._down_pos[1],
                                      self._up_pos[0], self._up_pos[1], self.model_picker.get_renderer())
 
-        print self._frustum
-
         #print self._picking_box
 
         self.poly_plane.SetPolyLine(self.poly_line)

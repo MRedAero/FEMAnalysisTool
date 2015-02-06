@@ -10,11 +10,12 @@ class DataPipeline(QtCore.QObject):
 
     data_updated = QtCore.Signal()
 
-    def __init__(self, data, renderer):
+    def __init__(self, data, renderer, renderer2=None):
         super(DataPipeline, self).__init__()
 
         self._data = data
         self._renderer = renderer
+        self._renderer2 = renderer2
 
         self.node_mapper = vtk.vtkDataSetMapper()
         self.element_mapper = vtk.vtkDataSetMapper()
@@ -53,6 +54,9 @@ class DataPipeline(QtCore.QObject):
 
     def get_renderer(self):
         return self._renderer
+
+    def get_renderer2(self):
+        return self._renderer2
 
     def update(self):
         self._data.update()

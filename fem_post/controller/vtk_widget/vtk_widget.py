@@ -19,6 +19,7 @@ class VTKWidget(object):
         self.data = ModelData()
 
         self.data_pipeline = DataPipeline(self.data, self.renderer)
+        #self.data_pipeline = DataPipeline(self.data, self.renderer, self.renderer2)  # test
 
         self.model_picker = ModelPicker(self)
         self.model_picker.set_pipeline(self.data_pipeline)
@@ -39,7 +40,14 @@ class VTKWidget(object):
         self.interactor = QVTKRenderWindowInteractor(self.main_window.ui.frame)
 
         self.renderer = vtk.vtkRenderer()
+        #self.renderer.SetInteractive(1)  # test
+        #self.renderer2 = vtk.vtkRenderer()  # test
+        #self.renderer2.SetInteractive(0)  # test
+        #self.renderer.SetLayer(0)  # test
+        #self.renderer2.SetLayer(1)  # test
+        #self.interactor.GetRenderWindow().SetNumberOfLayers(2)  # test
         self.interactor.GetRenderWindow().AddRenderer(self.renderer)
+        #self.interactor.GetRenderWindow().AddRenderer(self.renderer2)  # test
         self.interactor.GetRenderWindow().SetAlphaBitPlanes(1)
 
         self.main_window.ui.vl.addWidget(self.interactor)
