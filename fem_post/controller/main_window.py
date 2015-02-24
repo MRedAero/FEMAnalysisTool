@@ -1,9 +1,8 @@
-
-#!/usr/bin/env python
+__author__ = 'Michael Redmond'
 
 from PySide import QtGui, QtCore
 
-from .vtk_widget import VTKWidget
+from .vtk_widget2 import VTKWidget
 from fem_reader.nastran.bdf.reader import BDFReader
 
 
@@ -23,8 +22,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionOpen.triggered.connect(self.on_open)
         self.ui.btn_perspectivetoggle.clicked.connect(self.on_toggle_perspective)
 
-        self.ui.toggle_view_button.clicked.connect(self.toggle_view)
-        self.ui.toggle_hidden_button.clicked.connect(self.toggle_hidden)
+        self.ui.toggle_view_button.clicked.connect(self.toggle_visible)
+        self.ui.toggle_hidden_button.clicked.connect(self.toggle_selected)
 
         self.ui.single_pick_button.clicked.connect(self.single_pick_button)
         self.ui.box_pick_button.clicked.connect(self.box_pick_button)
@@ -97,18 +96,18 @@ class MainWindow(QtGui.QMainWindow):
         # noinspection PyUnresolvedReferences
         self.app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
         self.bdf.read_bdf(filename[0])
-        self.vtk_widget.set_data(self.bdf)
+        self.vtk_widget.set_bdf_data(self.bdf)
         # noinspection PyUnresolvedReferences
         self.app.restoreOverrideCursor()
 
     def on_toggle_perspective(self):
         self.vtk_widget.toggle_perspective()
 
-    def toggle_view(self):
-        self.vtk_widget.toggle_view()
+    def toggle_selected(self):
+        self.vtk_widget.toggle_selected()
 
-    def toggle_hidden(self):
-        self.vtk_widget.toggle_hidden()
+    def toggle_visible(self):
+        self.vtk_widget.toggle_visible()
 
     def single_pick_button(self):
         self.vtk_widget.single_pick_button()

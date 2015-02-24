@@ -9,10 +9,12 @@ from ...custom_pickers import *
 from .data_extractor import DataExtractor
 from .active_selections import ActiveSelections
 from .selection_list import SelectionList
+from ..model_pipelines import DataPipeline2D
 
 from .single_picker import SinglePicker
 from .box_picker import BoxPicker
 from .poly_picker import PolyPicker
+from .no_picker import NoPicker
 
 from ...filters import GlobalIdFilter
 
@@ -575,3 +577,107 @@ class ModelPicker(object):
 
     def render(self):
         self.interactor_style.GetInteractor().GetRenderWindow().Render()
+
+
+class ModelPicker2(object):
+
+
+    def __init__(self, main_pipeline, renderer, interactor_style):
+        super(ModelPicker2, self).__init__()
+
+        self.main_pipeline = main_pipeline
+        """:type : fem_post.controller.vtk_widget.model_data.model_pipelines.main_pipeline.MainPipeline"""
+        self.visible_filter = self.main_pipeline.visible_filter
+        self.renderer = renderer
+
+        #self.selected_data_pipeline = DataPipeline2D(self.visible_filter, self.renderer)
+
+        self.active_selections = ActiveSelections()
+        self.active_selections.selection_changed.connect(self.active_selections_changed)
+
+        self.selection_list = SelectionList()
+        #self.selection_list.selection_changed.connect(self.update_selection_data)
+        #self.selection_list.selection_changed.connect(self.update_ui_selection)
+
+        self.interactor_style = None
+
+        self.selection_type = 0
+        self.set_selection_type(-1)
+
+        self.no_picker = NoPicker(self)
+        self.single_picker = SinglePicker(self)
+        self.box_picker = BoxPicker(self)
+        self.poly_picker = PolyPicker(self)
+
+        self.set_interactor_style(interactor_style)
+
+    def set_interactor_style(self, interactor_style):
+        if self.interactor_style is not None:
+            self.disconnect_interactor_style_signals()
+
+        self.interactor_style = interactor_style
+
+        self.connect_interactor_style_signals()
+
+    def set_selection_type(self, value):
+        if value == self.selection_type:
+            return
+
+        self.disconnect_interactor_style_signals()
+
+        self.selection_type = value
+
+        self.connect_interactor_style_signals()
+
+    def connect_interactor_style_signals(self):
+        if self.interactor_style is not None:
+            if self.selection_type == -1:
+                self.no_picker.connect_signals()
+            elif self.selection_type == SELECTION_SINGLE:
+                self.single_picker.connect_signals()
+            elif self.selection_type == SELECTION_BOX:
+                self.box_picker.connect_signals()
+            elif self.selection_type == SELECTION_POLY:
+                self.poly_picker.connect_signals()
+
+    def disconnect_interactor_style_signals(self):
+        if self.interactor_style is not None:
+            if self.selection_type == -1:
+                self.no_picker.disconnect_signals()
+            elif self.selection_type == SELECTION_SINGLE:
+                self.single_picker.disconnect_signals()
+            elif self.selection_type == SELECTION_BOX:
+                self.box_picker.disconnect_signals()
+            elif self.selection_type == SELECTION_POLY:
+                self.poly_picker.disconnect_signals()
+
+    def active_selections_changed(self):
+        self.single_picker.set_picking(self.active_selections)
+        self.box_picker.set_picking(self.active_selections)
+
+    def get_renderer(self):
+        return self.renderer
+
+    def get_model_data(self):
+
+        input_filter = self.main_pipeline.mapper.input_filter
+
+        return {'nodes': input_filter.nodes.GetOutput(),
+                'elements': input_filter.elements.GetOutput(),
+                'mpcs': input_filter.mpcs.GetOutput()}
+
+    def get_model_ports(self):
+
+        input_filter = self.main_pipeline.mapper.input_filter
+
+        return {'nodes': input_filter.nodes.GetOutputPort(),
+                'elements': input_filter.elements.GetOutputPort(),
+                'mpcs': input_filter.mpcs.GetOutputPort()}
+
+    def get_model_actors(self):
+
+        actors = self.main_pipeline.actor
+
+        return {'nodes': actors.nodes.actor,
+                'elements': actors.elements.actor,
+                'mpcs': actors.mpcs.actors}

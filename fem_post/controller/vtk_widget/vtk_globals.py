@@ -17,3 +17,5 @@ SELECTION_REMOVE = 2
 SELECTION_SINGLE = 0
 SELECTION_BOX = 1
 SELECTION_POLY = 2
+
+a = vtk.util.vtkAlgorithm.VTKPythonAlgorithmBase()

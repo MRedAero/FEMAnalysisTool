@@ -5,7 +5,7 @@ import vtk
 
 from ..utilities import project_point_from_screen
 from ..vtk_globals import *
-
+from ..model_data.model_filters import ModelExtractSelectionFilterBase
 
 class vtkNodePointPicker(vtk.vtkPointPicker):
     def __init__(self):
@@ -103,3 +103,37 @@ class vtkNodeCellPicker(vtk.vtkCellPicker):
     def add_pick_list(self, actor):
         self.InitializePickList()
         self.AddPickList(actor)
+
+
+class vtkNodeCellPicker2(vtk.vtkCellPicker):
+    def __init__(self):
+
+        self.Renderer = None
+
+        self.PickFromListOn()
+
+        self.node_filter = ModelExtractSelectionFilterBase()
+
+        self.cells_to_pick_from = [0]*10
+        self.cells_to_pick_from[VTK_VERTEX] = 1
+
+    def set_picking(self, index, value):
+        self.cells_to_pick_from[index] = value
+
+    def GetClosestCell(self):
+
+        if self.GetCellId() == -1:
+            self.node_filter.reset()
+            self.node_filter.GetOutput()
+
+        self.node_filter.set_selection_list([self.GetCellId()])
+
+        self.node_filter.GetOutput()
+
+    def add_pick_list(self, actor):
+        self.InitializePickList()
+        self.AddPickList(actor)
+        self.update_node_filter_data()
+
+    def update_node_filter_data(self):
+        self.node_filter.set_input_data(self.GetDataSet(), True)

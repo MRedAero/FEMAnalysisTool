@@ -249,3 +249,234 @@ class VTKWidget(object):
     def poly_pick_button(self):
         self.model_picker.set_selection_type(SELECTION_POLY)
 
+
+class VTKWidget2(object):
+    def __init__(self, main_window):
+        super(VTKWidget2, self).__init__()
+
+        self.set_up_view(main_window)
+
+        self.model_data = ModelData2()
+        self.main_pipeline = MainPipeline(self.model_data, self.renderer)
+
+        #self.selected_data = ModelData2()
+        #self.selected_data_pipeline = DataPipeline2D(self.selected_data, self.renderer)
+
+        #self.hover_data = ModelData2()
+        #self.hover_data_pipeline = DataPipeline2D(self.hover_data, self.renderer)
+
+        self.model_picker = ModelPicker2(self.main_pipeline, self.renderer, self.interactor_style)
+
+        #self.model_picker = ModelPicker2(self, self.selected_data, self.hover_data)
+        #self.model_picker.set_pipeline(self.data_pipeline)
+        #self.model_picker.set_interactor_style(self.interactor_style)
+
+        ui = self.main_window.ui
+
+        ui.left_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_left_button)
+        ui.middle_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_middle_button)
+        ui.right_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_right_button)
+        ui.ctrl_left_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_ctrl_left_button)
+
+        self.show_hide = False
+        self.show = True
+
+    def set_up_view(self, main_window):
+        self.main_window = main_window
+        self.interactor = QVTKRenderWindowInteractor(self.main_window.ui.frame)
+
+        self.renderer = vtk.vtkRenderer()
+        self.interactor.GetRenderWindow().AddRenderer(self.renderer)
+        self.interactor.GetRenderWindow().SetAlphaBitPlanes(1)
+
+        self.main_window.ui.vl.addWidget(self.interactor)
+
+        self.iren = self.interactor.GetRenderWindow().GetInteractor()
+
+        self.bg_color_1_default = (0, 0, 1)
+        self.bg_color_2_default = (0.8, 0.8, 1)
+
+        self.bg_color_1 = self.bg_color_1_default
+        self.bg_color_2 = self.bg_color_2_default
+
+        self.axes = CoordinateAxes(self.interactor)
+
+        self.renderer.SetBackground(self.bg_color_1)
+        self.renderer.SetBackground2(self.bg_color_2)
+        self.renderer.GradientBackgroundOn()
+
+        self.perspective = 0
+        self.camera = vtk.vtkCamera()
+
+        self.renderer.SetActiveCamera(self.camera)
+        self.renderer.ResetCamera()
+
+        self.interactor_style = DefaultInteractorStyle(self)
+        self.interactor_style.set_default_renderer(self.renderer)
+        #self.interactor_style.SetDefaultRenderer(self.renderer)
+
+        self.interactor.SetInteractorStyle(self.interactor_style)
+
+        self.interactor.Start()
+
+        # http://www.paraview.org/Wiki/VTK/Examples/Python/Widgets/EmbedPyQt
+        # http://www.vtk.org/pipermail/vtk-developers/2013-July/014005.html
+        # see above why self.main_window.show() is done here
+
+        self.main_window.show()
+        self.iren.Initialize()
+
+    def set_up_model(self):
+        self.points = None
+        self.grid = None
+        self.color = None
+        self.lookup_table = None
+        self.cell_mapper = None
+        self.cell_actor = None
+
+    def set_data(self, bdf):
+        """
+
+        :param bdf: fem_reader.BDFReader
+        :return:
+        """
+
+        self.model_data.reset()
+
+        nidMap = {}
+        eidMap = {}
+
+        grids = bdf.nodes.keys()
+
+        self.model_data.nodes.global_ids.SetNumberOfTuples(len(grids))
+        self.model_data.nodes.original_ids.SetNumberOfTuples(len(grids))
+
+        for i in xrange(len(grids)):
+            node = bdf.nodes[grids[i]]
+            """:type : fem_reader.GRID"""
+            # noinspection PyArgumentList
+            self.model_data.points.InsertNextPoint(node.to_global())
+            nidMap[node.ID] = i
+
+            cell = vtk.vtkVertex()
+            ids = cell.GetPointIds()
+            ids.SetId(0, i)
+
+            self.model_data.nodes.data.InsertNextCell(cell.GetCellType(), ids)
+            self.model_data.nodes.global_ids.SetValue(i, node.ID)
+            self.model_data.nodes.original_ids.SetValue(i, i)
+            self.model_data.nodes.visible.InsertNextValue(1)
+
+        elements = bdf.elements.keys()
+
+        id = 0
+
+        for i in xrange(len(elements)):
+            element = bdf.elements[elements[i]]
+            card_name = element.card_name
+
+            eidMap[element.ID] = i
+
+            if card_name == 'CBEAM':
+                nodes = element.nodes
+                cell = vtk.vtkLine()
+                ids = cell.GetPointIds()
+                ids.SetId(0, nidMap[nodes[0]])
+                ids.SetId(1, nidMap[nodes[1]])
+
+                self.model_data.elements.data.InsertNextCell(cell.GetCellType(), ids)
+                self.model_data.elements.visible.InsertNextValue(1)
+                self.model_data.elements.global_ids.InsertNextValue(element.ID)
+                self.model_data.elements.original_ids.InsertNextValue(id)
+                id += 1
+
+            elif card_name == 'CTRIA3':
+                nodes = element.nodes
+                cell = vtk.vtkTriangle()
+                ids = cell.GetPointIds()
+                ids.SetId(0, nidMap[nodes[0]])
+                ids.SetId(1, nidMap[nodes[1]])
+                ids.SetId(2, nidMap[nodes[2]])
+
+                self.model_data.elements.data.InsertNextCell(cell.GetCellType(), ids)
+                self.model_data.elements.visible.InsertNextValue(1)
+                self.model_data.elements.global_ids.InsertNextValue(element.ID)
+                self.model_data.elements.original_ids.InsertNextValue(id)
+                id += 1
+
+            elif card_name == 'CQUAD4':
+                nodes = element.nodes
+                cell = vtk.vtkQuad()
+                ids = cell.GetPointIds()
+                ids.SetId(0, nidMap[nodes[0]])
+                ids.SetId(1, nidMap[nodes[1]])
+                ids.SetId(2, nidMap[nodes[2]])
+                ids.SetId(3, nidMap[nodes[3]])
+
+                self.model_data.elements.data.InsertNextCell(cell.GetCellType(), ids)
+                self.model_data.elements.visible.InsertNextValue(1)
+                self.model_data.elements.global_ids.InsertNextValue(element.ID)
+                self.model_data.elements.original_ids.InsertNextValue(id)
+                id += 1
+
+        self.model_data.squeeze()
+        #self.data_pipeline.update()
+        self.screen_update()
+
+    def set_background_color(self, color1=None, color2=None):
+        if color1 is not None:
+            self.bg_color_1 = color1
+            self.renderer.SetBackground(color1)
+
+        if color2 is not None:
+            self.bg_color_2 = color2
+            self.renderer.SetBackground2(color2)
+
+    def toggle_perspective(self):
+        if self.perspective == 0:
+            self.camera.ParallelProjectionOn()
+            self.perspective = 1
+        else:
+            self.camera.ParallelProjectionOff()
+            self.perspective = 0
+
+    def toggle_view(self):
+        #self.model_picker.reset_data(True)
+        self.main_pipeline.toggle_shown()
+        self.screen_update()
+
+    def toggle_hidden(self):
+        pass
+        #self.model_picker.toggle_hidden()
+
+    def screen_update(self):
+        # how to get screen to update without cheating?
+
+        self.interactor_style.OnLeftButtonDown()
+        self.interactor_style.OnMouseMove()
+        self.interactor_style.OnLeftButtonUp()
+
+    def toggle_picking(self, entity_type, index=None):
+        self.model_picker.toggle_picking(entity_type, index)
+
+    def update_ui_selection(self, selection):
+        self.main_window.ui.selection_box.setText(selection)
+
+    def replace_selection_button(self):
+        self.model_picker.selection_list.selection_type = SELECTION_REPLACE
+
+    def append_selection_button(self):
+        self.model_picker.selection_list.selection_type = SELECTION_APPEND
+
+    def remove_selection_button(self):
+        self.model_picker.selection_list.selection_type = SELECTION_REMOVE
+
+    def single_pick_button(self):
+        self.model_picker.set_selection_type(SELECTION_SINGLE)
+
+    def box_pick_button(self):
+        self.model_picker.set_selection_type(SELECTION_BOX)
+
+    def poly_pick_button(self):
+        self.model_picker.set_selection_type(SELECTION_POLY)
+

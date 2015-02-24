@@ -2,7 +2,7 @@ __author__ = 'Michael Redmond'
 
 from PySide import QtCore
 
-from ...vtk_globals import *
+from ...vtk_globals import vtk_globals
 
 import re
 
@@ -44,27 +44,27 @@ class SelectionList(QtCore.QObject):
 
     def _replace_selection(self, selections):
         try:
-            self.nodes = self.expand_selection(selections['nodes'])
+            self.nodes = self.expand_selection(selections['Node'])
         except KeyError:
             self.nodes = []
 
         try:
-            self.elements = self.expand_selection(selections['elements'])
+            self.elements = self.expand_selection(selections['Element'])
         except KeyError:
             self.elements = []
 
         try:
-            self.mpcs = self.expand_selection(selections['mpcs'])
+            self.mpcs = self.expand_selection(selections['MPC'])
         except KeyError:
             self.mpcs = []
 
         try:
-            self.loads = self.expand_selection(selections['loads'])
+            self.loads = self.expand_selection(selections['Load'])
         except KeyError:
             self.loads = []
 
         try:
-            self.disps = self.expand_selection(selections['disps'])
+            self.disps = self.expand_selection(selections['Disp'])
         except KeyError:
             self.disps = []
 
@@ -72,31 +72,31 @@ class SelectionList(QtCore.QObject):
 
     def _append_selection(self, selections):
         try:
-            new_list = self.expand_selection(selections['nodes'])
+            new_list = self.expand_selection(selections['Node'])
             self.nodes = self.nodes + list(set(new_list) - set(self.nodes))
         except KeyError:
             pass
 
         try:
-            new_list = self.expand_selection(selections['elements'])
+            new_list = self.expand_selection(selections['Element'])
             self.elements = self.elements + list(set(new_list) - set(self.elements))
         except KeyError:
             pass
 
         try:
-            new_list = self.expand_selection(selections['mpcs'])
+            new_list = self.expand_selection(selections['MPC'])
             self.mpcs = self.mpcs + list(set(new_list) - set(self.mpcs))
         except KeyError:
             pass
 
         try:
-            new_list = self.expand_selection(selections['loads'])
+            new_list = self.expand_selection(selections['Load'])
             self.loads = self.loads + list(set(new_list) - set(self.loads))
         except KeyError:
             pass
 
         try:
-            new_list = self.expand_selection(selections['disps'])
+            new_list = self.expand_selection(selections['Disp'])
             self.disps = self.disps + list(set(new_list) - set(self.disps))
         except KeyError:
             pass
@@ -105,31 +105,31 @@ class SelectionList(QtCore.QObject):
 
     def _remove_selection(self, selections):
         try:
-            new_list = self.expand_selection(selections['nodes'])
+            new_list = self.expand_selection(selections['Node'])
             self.nodes = list(set(self.nodes) - set(new_list))
         except KeyError:
             pass
 
         try:
-            new_list = self.expand_selection(selections['elements'])
+            new_list = self.expand_selection(selections['Element'])
             self.elements = list(set(self.elements) - set(new_list))
         except KeyError:
             pass
 
         try:
-            new_list = self.expand_selection(selections['mpcs'])
+            new_list = self.expand_selection(selections['MPC'])
             self.mpcs = list(set(self.mpcs) - set(new_list))
         except KeyError:
             pass
 
         try:
-            new_list = self.expand_selection(selections['loads'])
+            new_list = self.expand_selection(selections['Load'])
             self.loads = list(set(self.loads) - set(new_list))
         except KeyError:
             pass
 
         try:
-            new_list = self.expand_selection(selections['disps'])
+            new_list = self.expand_selection(selections['Disp'])
             self.disps = list(set(self.disps) - set(new_list))
         except KeyError:
             pass

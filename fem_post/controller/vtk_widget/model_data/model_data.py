@@ -4,6 +4,94 @@ import vtk
 from ..filters import ExtractSelectionFilter
 
 
+class ModelBaseData(object):
+    def __init__(self):
+        super(ModelBaseData, self).__init__()
+
+        self.data = vtk.vtkUnstructuredGrid()
+
+        self.points = None
+
+        self.global_ids = vtk.vtkIdTypeArray()
+
+        self.data.GetCellData().SetGlobalIds(self.global_ids)
+
+        self.visible = vtk.vtkIntArray()
+        self.visible.SetName("visible")
+
+        self.original_ids = vtk.vtkIntArray()
+        self.original_ids.SetName("original_ids")
+
+        self.data.GetCellData().AddArray(self.visible)
+        self.data.GetCellData().AddArray(self.original_ids)
+
+    def set_points(self, points):
+        self.points = points
+        self.data.SetPoints(points)
+
+    def reset(self):
+        self.data.Reset()
+        self.global_ids.Reset()
+        self.visible.Reset()
+        self.original_ids.Reset()
+
+        self.data.GetCellData().SetGlobalIds(self.global_ids)
+        self.data.GetCellData().AddArray(self.visible)
+        self.data.GetCellData().AddArray(self.original_ids)
+
+        self.points = None
+
+    def squeeze(self):
+        self.data.Squeeze()
+        self.global_ids.Squeeze()
+        self.visible.Squeeze()
+        self.original_ids.Squeeze()
+
+    def update(self):
+        self.data.Modified()
+
+
+class ModelData2(object):
+    def __init__(self):
+        super(ModelData2, self).__init__()
+
+        self.points = vtk.vtkPoints()
+
+        self.nodes = ModelBaseData()
+        self.elements = ModelBaseData()
+        self.mpcs = ModelBaseData()
+
+        self.set_points()
+
+    def set_points(self):
+        self.nodes.set_points(self.points)
+        self.elements.set_points(self.points)
+        self.mpcs.set_points(self.points)
+
+    def update(self):
+        self.nodes.update()
+        self.elements.update()
+        self.mpcs.update()
+
+    def reset(self):
+        self.nodes.reset()
+        self.elements.reset()
+        self.mpcs.reset()
+
+        self.points.Reset()
+
+        self.set_points()
+
+        self.update()
+
+    def squeeze(self):
+        self.points.Squeeze()
+
+        self.nodes.squeeze()
+        self.elements.squeeze()
+        self.mpcs.squeeze()
+
+
 class ModelData(object):
     def __init__(self):
         super(ModelData, self).__init__()

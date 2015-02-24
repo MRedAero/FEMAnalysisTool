@@ -3,7 +3,10 @@ __author__ = 'Michael Redmond'
 import vtk
 from PySide import QtCore
 
-from ..vtk_globals import VTK_VERSION
+from ...vtk_globals import VTK_VERSION
+from ..model_filters import *
+from ..model_mappers import ModelMapper
+from ..model_actors import ModelActor
 
 
 class DataPipeline(QtCore.QObject):
@@ -91,4 +94,65 @@ class DataPipeline(QtCore.QObject):
                 self.element_mapper.SetInput(self._data.shown_elements())
                 self.rbe_mapper.SetInput(self._data.shown_rbes())
 
+        self.data_updated.emit()
+
+
+class MainPipeline(QtCore.QObject):
+
+    data_updated = QtCore.Signal()
+
+    def __init__(self, model_data, renderer):
+        super(MainPipeline, self).__init__()
+
+        self.model_data = model_data
+        self.renderer = renderer
+
+        self.group_filter = ModelGroupFilter()
+        self.group_filter.set_input_data(self.model_data)
+
+        self.visible_filter = ModelVisibleFilter()
+        self.visible_filter.set_input_connection(self.group_filter)
+
+        self.mapper = ModelMapper()
+        self.mapper.set_input_connection(self.visible_filter)
+
+        self.actor = ModelActor()
+        self.actor.set_mapper(self.mapper)
+        self.set_renderer(self.renderer)
+
+        self.actor.elements.GetProperty().EdgeVisibilityOn()
+
+        #self.shown = False
+        #self.toggle_shown()
+
+        self.update()
+
+    def set_data(self, model_data):
+        self.model_data = model_data
+        self.group_filter.set_input_data(self.model_data)
+        self.update()
+
+    def get_data(self):
+        return self.model_data
+
+    def set_renderer(self, renderer):
+        self.actor.remove_renderer()
+
+        self.renderer = renderer
+        self.actor.set_renderer(self.renderer)
+        self.update()
+
+    def get_renderer(self):
+        return self.renderer
+
+    def update(self):
+        self.model_data.update()
+        self.group_filter.update()
+        self.visible_filter.update()
+        self.mapper.update()
+
+        self.data_updated.emit()
+
+    def toggle_shown(self):
+        self.visible_filter.toggle_visible()
         self.data_updated.emit()
