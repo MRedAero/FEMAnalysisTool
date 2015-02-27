@@ -98,14 +98,6 @@ class HoveredPipelineHelper(object):
 
         self.renderer = renderer
 
-        self.renderer.AddActor2D(self.actor)
-
-    def set_renderer(self, renderer):
-        if self.renderer is not None:
-            self.remove_renderer()
-
-        self.renderer = renderer
-
         self.renderer.AddActor(self.actor)
 
     def remove_renderer(self):
