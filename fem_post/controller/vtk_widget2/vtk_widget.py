@@ -73,29 +73,19 @@ class HoveredPipelineHelper(object):
 
         self.parent = parent
 
-        # visible_filter.all_data goes into global_id_filter and output goes to data
         self.global_id_filter = GlobalIdFilter()
 
-        self.data = vtk.vtkUnstructuredGrid()
+        self.mapper = vtk.vtkDataSetMapper()
+        self.mapper.SetInputConnection(self.global_id_filter.GetOutputPort(0))
 
-        self.coordinate = vtk.vtkCoordinate()
-        self.coordinate.SetCoordinateSystem(5)
-
-        self.hovered_filter = HoveredFilter()
-        self.hovered_filter.SetInputDataObject(0, self.data)
-
-        self.mapper = vtk.vtkPolyDataMapper2D()
-        self.mapper.TransformCoordinateUseDoubleOn()
-        self.mapper.SetTransformCoordinate(self.coordinate)
-        self.mapper.SetInputConnection(self.hovered_filter.GetOutputPort())
-
-        self.actor = vtk.vtkActor2D()
+        self.actor = vtk.vtkActor()
         self.actor.SetMapper(self.mapper)
 
         self.actor.GetProperty().SetColor(0.5, 0.5, 0)
         self.actor.GetProperty().SetLineWidth(2)
-        #self.hovered_data_actor.GetProperty().SetOpacity(0.5)
         self.actor.GetProperty().SetPointSize(6)
+        self.actor.GetProperty().SetRepresentationToWireframe()
+        self.actor.GetProperty().LightingOff()
 
         self.renderer = None
 
@@ -110,32 +100,28 @@ class HoveredPipelineHelper(object):
 
         self.renderer.AddActor2D(self.actor)
 
+    def set_renderer(self, renderer):
+        if self.renderer is not None:
+            self.remove_renderer()
+
+        self.renderer = renderer
+
+        self.renderer.AddActor(self.actor)
+
     def remove_renderer(self):
-        self.renderer.RemoveActor2D(self.actor)
+        self.renderer.RemoveActor(self.actor)
 
     def reset_data(self):
-        self.data.Reset()
-        self.data.Modified()
-        self.hovered_filter.Modified()
+        self.global_id_filter.reset()
+
+    def number_of_cells(self):
+        return self.global_id_filter.GetOutputDataObject(0).GetNumberOfCells()
 
     def update_data(self, selection, pick_type):
 
         self.global_id_filter.set_selection_list(selection)
 
-        self.data.ShallowCopy(self.global_id_filter.GetOutputDataObject(0))
-
-        self.data.Modified()
-
-        if pick_type == vtk_globals.VTK_NODE or pick_type == vtk_globals.VTK_VERTEX:
-            self.hovered_filter.set_extract_edges(False)
-        else:
-            self.hovered_filter.set_extract_edges(True)
-
-        #self.parent.renderer.DrawOff()
-        #self.parent.renderer_picked.DrawOff()
         self.parent.render()
-        #self.parent.renderer.DrawOn()
-        #self.parent.renderer_picked.DrawOn()
 
 
 class SelectedPipelineHelper(object):
@@ -146,64 +132,47 @@ class SelectedPipelineHelper(object):
 
         self.global_id_filter = GlobalIdFilter()
 
-        self.data = vtk.vtkUnstructuredGrid()
-
         self.split_data_filter = SplitDataFilter()
-        self.split_data_filter.SetInputDataObject(0, self.data)
+        self.split_data_filter.SetInputConnection(0, self.global_id_filter.GetOutputPort(0))
 
-        self.coordinate = vtk.vtkCoordinate()
-        self.coordinate.SetCoordinateSystem(5)
+        self.node_mapper = vtk.vtkDataSetMapper()
+        self.node_mapper.SetInputConnection(self.split_data_filter.node_port())
 
-        self.node_filter = vtk.vtkGeometryFilter()
-        self.node_filter.SetInputConnection(self.split_data_filter.node_port())
-
-        self.node_mapper = vtk.vtkPolyDataMapper2D()
-        self.node_mapper.TransformCoordinateUseDoubleOn()
-        self.node_mapper.SetTransformCoordinate(self.coordinate)
-        self.node_mapper.SetInputConnection(self.node_filter.GetOutputPort())
-
-        self.node_actor = vtk.vtkActor2D()
+        self.node_actor = vtk.vtkActor()
         self.node_actor.SetMapper(self.node_mapper)
         self.node_actor.GetProperty().SetPointSize(6)
         self.node_actor.GetProperty().SetColor(0, 0.5, 0.5)
+        self.node_actor.GetProperty().SetRepresentationToWireframe()
+        self.node_actor.GetProperty().LightingOff()
 
-        self.vertex_filter = vtk.vtkGeometryFilter()
-        self.vertex_filter.SetInputConnection(self.split_data_filter.vertex_port())
+        self.vertex_mapper = vtk.vtkDataSetMapper()
+        self.vertex_mapper.SetInputConnection(self.split_data_filter.vertex_port())
 
-        self.vertex_mapper = vtk.vtkPolyDataMapper2D()
-        self.vertex_mapper.TransformCoordinateUseDoubleOn()
-        self.vertex_mapper.SetTransformCoordinate(self.coordinate)
-        self.vertex_mapper.SetInputConnection(self.vertex_filter.GetOutputPort())
-
-        self.vertex_actor = vtk.vtkActor2D()
+        self.vertex_actor = vtk.vtkActor()
         self.vertex_actor.SetMapper(self.vertex_mapper)
         self.vertex_actor.GetProperty().SetPointSize(1)
+        self.vertex_actor.GetProperty().SetRepresentationToWireframe()
+        self.vertex_actor.GetProperty().LightingOff()
 
-        self.element_edges = vtk.vtkExtractEdges()
-        self.element_edges.SetInputConnection(self.split_data_filter.element_port())
+        self.element_mapper = vtk.vtkDataSetMapper()
+        self.element_mapper.SetInputConnection(self.split_data_filter.element_port())
 
-        self.element_mapper = vtk.vtkPolyDataMapper2D()
-        self.element_mapper.TransformCoordinateUseDoubleOn()
-        self.element_mapper.SetTransformCoordinate(self.coordinate)
-        self.element_mapper.SetInputConnection(self.element_edges.GetOutputPort())
-
-        self.element_actor = vtk.vtkActor2D()
+        self.element_actor = vtk.vtkActor()
         self.element_actor.SetMapper(self.element_mapper)
         self.element_actor.GetProperty().SetColor(0, 0.5, 0.5)
-        self.element_actor.GetProperty().SetLineWidth(2)
+        self.element_actor.GetProperty().SetLineWidth(1)
         #self.element_actor.GetProperty().SetOpacity(0.5)
+        self.element_actor.GetProperty().SetRepresentationToWireframe()
+        self.element_actor.GetProperty().LightingOff()
 
-        self.mpc_filter = vtk.vtkGeometryFilter()
-        self.mpc_filter.SetInputConnection(self.split_data_filter.mpc_port())
+        self.mpc_mapper = vtk.vtkDataSetMapper()
+        self.mpc_mapper.SetInputConnection(self.split_data_filter.mpc_port())
 
-        self.mpc_mapper = vtk.vtkPolyDataMapper2D()
-        self.mpc_mapper.TransformCoordinateUseDoubleOn()
-        self.mpc_mapper.SetTransformCoordinate(self.coordinate)
-        self.mpc_mapper.SetInputConnection(self.mpc_filter.GetOutputPort())
-
-        self.mpc_actor = vtk.vtkActor2D()
+        self.mpc_actor = vtk.vtkActor()
         self.mpc_actor.SetMapper(self.mpc_mapper)
         self.mpc_actor.GetProperty().SetPointSize(1)
+        self.mpc_actor.GetProperty().SetRepresentationToWireframe()
+        self.mpc_actor.GetProperty().LightingOff()
 
         self.renderer = None
 
@@ -216,34 +185,28 @@ class SelectedPipelineHelper(object):
 
         self.renderer = renderer
 
-        self.renderer.AddActor2D(self.node_actor)
-        self.renderer.AddActor2D(self.vertex_actor)
-        self.renderer.AddActor2D(self.element_actor)
-        self.renderer.AddActor2D(self.mpc_actor)
+        self.renderer.AddActor(self.node_actor)
+        self.renderer.AddActor(self.vertex_actor)
+        self.renderer.AddActor(self.element_actor)
+        self.renderer.AddActor(self.mpc_actor)
 
     def remove_renderer(self):
-        self.renderer.RemoveActor2D(self.node_actor)
-        self.renderer.RemoveActor2D(self.vertex_actor)
-        self.renderer.RemoveActor2D(self.element_actor)
-        self.renderer.RemoveActor2D(self.mpc_actor)
+        self.renderer.RemoveActor(self.node_actor)
+        self.renderer.RemoveActor(self.vertex_actor)
+        self.renderer.RemoveActor(self.element_actor)
+        self.renderer.RemoveActor(self.mpc_actor)
 
     def reset_data(self):
-        self.data.Reset()
-        self.data.Modified()
-        self.split_data_filter.Modified()
+        self.global_id_filter.reset()
+
+    def number_of_cells(self):
+        return self.global_id_filter.GetOutputDataObject(0).GetNumberOfCells()
 
     def update_data(self, selection):
 
         self.global_id_filter.set_selection_list(selection)
 
-        self.data.ShallowCopy(self.global_id_filter.GetOutputDataObject(0))
-
-        self.data.Modified()
-        self.split_data_filter.Modified()
-
-        #self.parent.renderer.DrawOff()
         self.parent.render()
-        #self.parent.renderer.DrawOn()
 
 
 class VTKWidget(object):

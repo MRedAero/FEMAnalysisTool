@@ -38,6 +38,10 @@ class GlobalIdFilter(VTKPythonAlgorithmBase):
         self.Modified()
         self.Update()
 
+    def reset(self):
+        self.selection_list.Reset()
+        self.Modified()
+
     def RequestData(self, request, inInfo, outInfo):
 
         inp = vtk.vtkUnstructuredGrid.GetData(inInfo[0])
@@ -52,6 +56,8 @@ class GlobalIdFilter(VTKPythonAlgorithmBase):
         self.ex.Update()
 
         new_output = self.ex.GetOutputDataObject(0)
+        # to remove warnings, not used, seems to be a bug in vtk
+        new_output.GetPointData().RemoveArray("vtkOriginalPointIds")
 
         opt.ShallowCopy(new_output)
 
