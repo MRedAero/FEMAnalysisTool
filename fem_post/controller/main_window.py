@@ -100,6 +100,8 @@ class MainWindow(QtGui.QMainWindow):
         # noinspection PyUnresolvedReferences
         self.app.restoreOverrideCursor()
 
+        self.bdf = None
+
     def on_toggle_perspective(self):
         self.vtk_widget.toggle_perspective()
 

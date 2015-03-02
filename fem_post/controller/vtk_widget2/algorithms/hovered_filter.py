@@ -14,7 +14,9 @@ class HoveredFilter(VTKPythonAlgorithmBase):
 
         self.extract_edges = False
         self.edge_filter = vtk.vtkExtractEdges()
+        self.edge_filter.ReleaseDataFlagOn()
         self.geom_filter = vtk.vtkGeometryFilter()
+        self.geom_filter.ReleaseDataFlagOn()
 
     def set_extract_edges(self, value):
         self.extract_edges = value

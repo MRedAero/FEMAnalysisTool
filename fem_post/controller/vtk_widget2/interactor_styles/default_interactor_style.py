@@ -3,7 +3,10 @@ __author__ = 'Michael Redmond'
 import vtk
 from PySide import QtCore
 
+from .model_picker import ModelPicker
 
+
+# can be deleted
 class InteractorSignals(QtCore.QObject):
 
     """Helper class that adds QT signals to DefaultInteractorStyle"""
@@ -37,6 +40,10 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleRubberBandPick):
 
         self.vtk_widget = vtk_widget
 
+        self.model_picker = ModelPicker(self.vtk_widget, self)
+
+        self.active_picker = self.model_picker.single_picker
+
         self.AddObserver("MouseMoveEvent", self.on_mouse_move)
         self.AddObserver("LeftButtonPressEvent", self.on_left_button_down)
         self.AddObserver("LeftButtonReleaseEvent", self.on_left_button_up)
@@ -46,9 +53,8 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleRubberBandPick):
         self.AddObserver("RightButtonReleaseEvent", self.on_right_button_up)
         self.AddObserver("MouseWheelForwardEvent", self.on_mouse_wheel_forward)
         self.AddObserver("MouseWheelBackwardEvent", self.on_mouse_wheel_backward)
-        #self.AddObserver("CharEvent", self.on_char)
 
-        self.signals = InteractorSignals()
+        #self.signals = InteractorSignals()
 
         self.rotate_begin = self.OnLeftButtonDown
         self.pan_begin = self.OnMiddleButtonDown
@@ -57,7 +63,11 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleRubberBandPick):
         self.pan_end = self.OnMiddleButtonUp
         self.zoom_end = self.OnRightButtonUp
 
-        self.ctrl_pressed = False
+        self.single_picking_active = False
+        self.box_picking_active = False
+        self.poly_picking_active = False
+
+        self.mouse_button_pressed = False
 
         self.actions = {'left_down': self.rotate_begin,
                         'ctrl_left_down': None,
@@ -86,6 +96,9 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleRubberBandPick):
                         'ctrl_left_up': False,
                         'middle_up': False,
                         'right_up': False}
+
+    def set_selection_type(self, selection_type):
+        self.model_picker.set_selection_type(selection_type)
 
     def set_left_button(self, action):
         self._set_button('left_down', 'left_up', action)
@@ -119,67 +132,111 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleRubberBandPick):
         self.actions[button_down] = begin
         self.actions[button_up] = end
 
-    def on_char(self, obj, event):
-        self.OnChar()
-        print 'on char'
-
     def on_left_button_down(self, obj, event):
 
-        if self.GetInteractor().GetControlKey():
-            self.ctrl_pressed = True
-            self.on_ctrl_left_button_click(obj, event)
+        self.mouse_button_pressed = True
+
+        ctrl_key = self.GetInteractor().GetControlKey()
+        shift_key = self.GetInteractor().GetShiftKey()
+
+        # give box picking priority over poly picking
+        if ctrl_key:
+            shift_key = False
+
+        #if ctrl_key and shift_key:
+        #    self.ctrl_shift_pressed = True
+        #    self.on_ctrl_shift_button_click(obj, event)
+        #    return
+
+        if ctrl_key:
+            self.box_picking_active = True
+            self.model_picker.box_picker.begin_picking(self.GetInteractor())
+            return
+        else:
+            self.box_picking_active = False
+
+        if self.poly_picking_active:
+            if self.model_picker.poly_picker.add_point(self.GetInteractor()):
+                self.poly_picking_active = False
             return
 
-        self.ctrl_pressed = False
+        elif shift_key:
+            self.poly_picking_active = True
+            self.model_picker.poly_picker.begin_picking(self.GetInteractor())
+            return
 
         if self.GetInteractor().GetRepeatCount():
             self.on_left_button_double_click(obj, event)
             return
 
-        self.signals.left_button_down.emit(obj, event, self.GetInteractor(),
-                                           self.actions['left_down'], self.picking['left_down'])
+        self.model_picker.single_picker.begin_picking(self.GetInteractor())
+        self.single_picking_active = True
+
+        self.actions['left_down']()
 
     def on_ctrl_left_button_click(self, obj, event):
-        self.signals.ctrl_left_button_down.emit(obj, event, self.GetInteractor(),
-                                                self.actions['ctrl_left_down'], self.picking['ctrl_left_down'])
+        self.active_picker.ctrl_left_button_down(obj, event, self.GetInteractor(),
+                                            self.actions['ctrl_left_down'], self.picking['ctrl_left_down'])
 
     def on_left_button_double_click(self, obj, event):
-        self.signals.left_button_double_click.emit(obj, event, self.GetInteractor(), None)
+        pass
+        #self.active_picker.left_button_double_click(obj, event, self.GetInteractor(), None, None)
 
     def on_left_button_up(self, obj, event):
-        if self.ctrl_pressed:
-            self.ctrl_pressed = False
-            self.signals.ctrl_left_button_up.emit(obj, event, self.GetInteractor(),
-                                                  self.actions['ctrl_left_up'], self.picking['ctrl_left_up'])
-            return
+        if self.box_picking_active:
+            self.box_picking_active = False
+            self.model_picker.box_picker.end_picking(self.GetInteractor())
 
-        self.signals.left_button_up.emit(obj, event, self.GetInteractor(),
-                                         self.actions['left_up'], self.picking['left_up'])
+        #elif self.poly_picking_active:
+            #self.poly_picking_active = False
+            #self.model_picker.poly_picker.end_picking(self.GetInteractor())
+
+        elif self.single_picking_active:
+            self.model_picker.single_picker.end_picking(self.GetInteractor())
+
+        self.actions['left_up']()
+
+        self.mouse_button_pressed = False
 
     def on_middle_button_down(self, obj, event):
-        self.signals.middle_button_down.emit(obj, event, self.GetInteractor(),
-                                             self.actions['middle_down'], self.picking['middle_down'])
+        self.actions['middle_down']()
+
+        self.mouse_button_pressed = False
 
     def on_middle_button_up(self, obj, event):
-        self.signals.middle_button_up.emit(obj, event, self.GetInteractor(),
-                                           self.actions['middle_up'], self.picking['middle_up'])
+        self.actions['middle_up']()
+
+        self.mouse_button_pressed = False
 
     def on_right_button_down(self, obj, event):
-        self.signals.right_button_down.emit(obj, event, self.GetInteractor(),
-                                            self.actions['right_down'], self.picking['right_down'])
+        self.actions['right_down']()
+
+        self.mouse_button_pressed = True
 
     def on_right_button_up(self, obj, event):
-        self.signals.right_button_up.emit(obj, event, self.GetInteractor(),
-                                          self.actions['right_up'], self.picking['right_up'])
+        self.actions['right_up']()
+
+        self.mouse_button_pressed = False
 
     def on_mouse_wheel_forward(self, obj, event):
-        self.signals.mouse_wheel_forward.emit(obj, event, self.GetInteractor(), self.OnMouseWheelForward)
+        self.OnMouseWheelForward()
 
     def on_mouse_wheel_backward(self, obj, event):
-        self.signals.mouse_wheel_backward.emit(obj, event, self.GetInteractor(), self.OnMouseWheelBackward)
+        self.OnMouseWheelBackward()
 
     def on_mouse_move(self, obj, event):
-        self.signals.mouse_move.emit(obj, event, self.GetInteractor(), self.OnMouseMove)
+        if self.box_picking_active:
+            self.model_picker.box_picker.mouse_move(self.GetInteractor())
+            return
+
+        elif self.poly_picking_active:
+            self.model_picker.poly_picker.mouse_move(self.GetInteractor())
+            return
+
+        elif not self.mouse_button_pressed:
+            self.model_picker.single_picker.mouse_move(self.GetInteractor())
+
+        self.OnMouseMove()
 
     def set_default_renderer(self, renderer):
         self.SetDefaultRenderer(renderer)

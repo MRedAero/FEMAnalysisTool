@@ -15,6 +15,7 @@ class SplitDataFilter(VTKPythonAlgorithmBase):
         self.selection_node = vtk.vtkSelectionNode()
         self.selection = vtk.vtkSelection()
         self.ex = vtk.vtkExtractSelection()
+        self.ex.ReleaseDataFlagOn()
 
         self.selection_node.SetContentType(vtk.vtkSelectionNode.THRESHOLDS)
         self.selection.AddNode(self.selection_node)

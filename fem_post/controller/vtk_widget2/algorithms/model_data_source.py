@@ -173,6 +173,8 @@ class BDFDataSource(VTKPythonAlgorithmBase):
 
         self._opt.ShallowCopy(new_data)
 
+        self._bdf = None
+
 
 if __name__ == '__main__':
     data = BDFDataSource()

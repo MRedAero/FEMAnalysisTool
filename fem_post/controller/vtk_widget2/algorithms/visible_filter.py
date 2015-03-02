@@ -28,6 +28,7 @@ class VisibleFilter(VTKPythonAlgorithmBase):
         self.selection_vis.AddNode(self.selection_vis_node)
 
         self.ex_vis = vtk.vtkExtractSelection()
+        self.ex_vis.ReleaseDataFlagOn()
         self.ex_vis.SetInputDataObject(1, self.selection_vis)
 
         self._callbacks = []

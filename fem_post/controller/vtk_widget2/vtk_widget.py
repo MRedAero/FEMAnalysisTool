@@ -10,7 +10,6 @@ from .widgets import *
 from .interactor_styles import *
 from .algorithms import *
 from vtk_globals import vtk_globals
-from .model_picker import ModelPicker
 
 
 class MainPipelineHelper(object):
@@ -205,12 +204,23 @@ class VTKWidget(object):
     def __init__(self, main_window):
         super(VTKWidget, self).__init__()
 
-        self.set_up_view(main_window)
-        self.set_up_pipeline()
+        self.renderer = vtk.vtkRenderer()
+        self.renderer_picked = vtk.vtkRenderer()
+        self.renderer_hovered = vtk.vtkRenderer()
 
-        self.model_picker = ModelPicker(self, self.interactor_style)
-        self.visible_filter.add_callback(self.model_picker.single_picker.set_data)
-        self.visible_filter.add_callback(self.model_picker.box_picker.set_data)
+        self.data_source = BDFDataSource()
+        self.group_selections_ = vtk.vtkPolyData()
+        self.group_filter = GroupFilter()
+        self.visible_filter = VisibleFilter()
+
+        self.main_pipeline = MainPipelineHelper(self.renderer)
+        self.selected_pipeline = SelectedPipelineHelper(self, self.renderer_picked)
+        self.hovered_pipeline = HoveredPipelineHelper(self, self.renderer_hovered)
+
+        self.set_up_pipeline()
+        self.set_up_view(main_window)
+
+        self.visible_filter.add_callback(self.interactor_style.model_picker.set_data)
 
         ui = self.main_window.ui
 
@@ -238,17 +248,14 @@ class VTKWidget(object):
         self.main_window = main_window
         self.interactor = QVTKRenderWindowInteractor(self.main_window.ui.frame)
 
-        self.renderer = vtk.vtkRenderer()
         self.renderer.SetLayer(0)
         self.renderer.SetInteractive(1)
         #self.renderer.BackingStoreOn()
 
-        self.renderer_picked = vtk.vtkRenderer()
         self.renderer_picked.SetLayer(1)
         self.renderer_picked.SetInteractive(1)
         #self.renderer_picked.BackingStoreOn()
 
-        self.renderer_hovered = vtk.vtkRenderer()
         self.renderer_hovered.SetLayer(2)
         self.renderer_hovered.SetInteractive(1)
 
@@ -300,28 +307,20 @@ class VTKWidget(object):
 
     def set_up_pipeline(self):
 
-        self.data_source = BDFDataSource()
-
-        self.group_selections_ = vtk.vtkPolyData()
         self.group_selections = self.group_selections_.GetCellData()
 
         # this is temporary for now until grouping features are added
         self.group_selections.AddArray(self.data_source.default_group)
 
-        self.group_filter = GroupFilter()
         self.group_filter.SetInputConnection(0, self.data_source.GetOutputPort(0))
         self.group_filter.set_group_selections(self.group_selections)
 
-        self.visible_filter = VisibleFilter()
         self.visible_filter.SetInputConnection(0, self.group_filter.GetOutputPort(0))
 
-        self.main_pipeline = MainPipelineHelper(self.renderer)
         self.main_pipeline.split_data_filter.SetInputConnection(self.visible_filter.all_port())
 
-        self.selected_pipeline = SelectedPipelineHelper(self, self.renderer_picked)
         self.selected_pipeline.global_id_filter.SetInputConnection(self.visible_filter.all_port())
 
-        self.hovered_pipeline = HoveredPipelineHelper(self, self.renderer_hovered)
         self.hovered_pipeline.global_id_filter.SetInputConnection(self.visible_filter.all_port())
 
     def render(self):
@@ -330,6 +329,7 @@ class VTKWidget(object):
     def set_bdf_data(self, bdf):
         self.bdf = bdf
         self.data_source.set_bdf(self.bdf)
+        self.bdf = None
         self.data_source.Update()
 
         self.render()
@@ -343,7 +343,7 @@ class VTKWidget(object):
     def toggle_selected(self):
         # toggles selected between shown and hidden
 
-        self.toggle_selection_node.SetSelectionList(self.model_picker.picked_selection.all_selection_vtk_array())
+        self.toggle_selection_node.SetSelectionList(self.interactor_style.model_picker.picked_selection.all_selection_vtk_array())
         self.toggle_selection_node.Modified()
         self.toggle_selection.Modified()
         self.toggle_filter.Modified()
@@ -355,6 +355,7 @@ class VTKWidget(object):
         original_data = self.group_filter.GetOutputDataObject(0)
         visible_array = original_data.GetCellData().GetArray("visible")
 
+        # TODO: speed this up using numpy?
         for i in xrange(original_ids.GetNumberOfTuples()):
             id = int(original_ids.GetValue(i))
             previous_value = int(visible_array.GetTuple1(id))
@@ -364,25 +365,25 @@ class VTKWidget(object):
         self.render()
 
     def toggle_picking(self, entity_type, index=None):
-        self.model_picker.toggle_picking(entity_type, index)
+        self.interactor_style.model_picker.toggle_picking(entity_type, index)
 
     def update_ui_selection(self, selection):
         self.main_window.ui.selection_box.setText(selection)
 
     def replace_selection_button(self):
-        self.model_picker.picked_selection.selection_type = vtk_globals.SELECTION_REPLACE
+        self.interactor_style.model_picker.picked_selection.selection_type = vtk_globals.SELECTION_REPLACE
 
     def append_selection_button(self):
-        self.model_picker.picked_selection.selection_type = vtk_globals.SELECTION_APPEND
+        self.interactor_style.model_picker.picked_selection.selection_type = vtk_globals.SELECTION_APPEND
 
     def remove_selection_button(self):
-        self.model_picker.picked_selection.selection_type = vtk_globals.SELECTION_REMOVE
+        self.interactor_style.model_picker.picked_selection.selection_type = vtk_globals.SELECTION_REMOVE
 
     def single_pick_button(self):
-        self.model_picker.set_selection_type(vtk_globals.SELECTION_SINGLE)
+        self.interactor_style.set_selection_type(vtk_globals.SELECTION_SINGLE)
 
     def box_pick_button(self):
-        self.model_picker.set_selection_type(vtk_globals.SELECTION_BOX)
+        self.interactor_style.set_selection_type(vtk_globals.SELECTION_BOX)
 
     def poly_pick_button(self):
-        self.model_picker.set_selection_type(vtk_globals.SELECTION_POLY)
+        self.interactor_style.set_selection_type(vtk_globals.SELECTION_POLY)

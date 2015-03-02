@@ -16,6 +16,7 @@ class GroupFilter(VTKPythonAlgorithmBase):
         self.selection_group = vtk.vtkSelection()
 
         self.ex_group = vtk.vtkExtractSelection()
+        self.ex_group.ReleaseDataFlagOn()
         self.ex_group.SetInputDataObject(1, self.selection_group)
 
     def set_group_selections(self, selections):

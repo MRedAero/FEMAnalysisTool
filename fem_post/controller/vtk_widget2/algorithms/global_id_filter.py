@@ -20,6 +20,7 @@ class GlobalIdFilter(VTKPythonAlgorithmBase):
         self.selection.AddNode(self.selection_node)
 
         self.ex = vtk.vtkExtractSelection()
+        self.ex.ReleaseDataFlagOn()
         self.ex.SetInputDataObject(1, self.selection)
 
     def set_selection_list(self, selection_list):
