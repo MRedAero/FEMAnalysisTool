@@ -57,9 +57,6 @@ class PolyPickFilter(VTKPythonAlgorithmBase):
 
         self.ex.SetInputData(inp)
 
-        # doing it 3 times with coordinates in different order because for some reason the filter won't extract all
-        # even still, it has inconsistent performance, sometimes triangular holes are present in the results
-
         for i in xrange(triangles.GetNumberOfCells()):
 
             tri = triangles.GetCell(i)
@@ -77,37 +74,7 @@ class PolyPickFilter(VTKPythonAlgorithmBase):
             self.ex.Update()
 
             out = vtk.vtkUnstructuredGrid()
-            out.DeepCopy(self.ex.GetOutput())
-
-            self.append_filter.AddInputData(out)
-
-            p1 = triangles.GetPoint(ids.GetId(0))
-            p2 = triangles.GetPoint(ids.GetId(1))
-            p3 = triangles.GetPoint(ids.GetId(2))
-
-            frustum = create_triangle_frustum(p3, p1, p2, self.renderer)
-
-            self.ex.SetFrustum(frustum)
-            self.ex.Modified()
-            self.ex.Update()
-
-            out = vtk.vtkUnstructuredGrid()
-            out.DeepCopy(self.ex.GetOutput())
-
-            self.append_filter.AddInputData(out)
-
-            p1 = triangles.GetPoint(ids.GetId(0))
-            p2 = triangles.GetPoint(ids.GetId(1))
-            p3 = triangles.GetPoint(ids.GetId(2))
-
-            frustum = create_triangle_frustum(p2, p3, p1, self.renderer)
-
-            self.ex.SetFrustum(frustum)
-            self.ex.Modified()
-            self.ex.Update()
-
-            out = vtk.vtkUnstructuredGrid()
-            out.DeepCopy(self.ex.GetOutput())
+            out.ShallowCopy(self.ex.GetOutput())
 
             self.append_filter.AddInputData(out)
 

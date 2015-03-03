@@ -299,7 +299,16 @@ def create_box_frustum(x0_, y0_, x1_, y1_, renderer):
     return extract_selected_frustum.GetFrustum()
 
 
+def calculate_normal_from_points(p1, p2, p3):
+    v1 = vector_between_points(p1, p2)
+    v2 = vector_between_points(p1, p3)
+
+    return cross_product(v1, v2)
+
+
 def create_triangle_frustum(wp1, wp2, wp3, renderer):
+
+    camera = renderer.GetActiveCamera()
 
     renderer.SetWorldPoint(wp1[0], wp1[1], wp1[2], 1)
     renderer.WorldToDisplay()
@@ -344,13 +353,15 @@ def create_triangle_frustum(wp1, wp2, wp3, renderer):
     points = vtk.vtkPoints()
     points.SetNumberOfPoints(6)
 
-    front_vector = vector_between_points(wp1_, wp1)
+    dp1 = [dp1[0], dp1[1], 0]
+    dp2 = [dp2[0], dp2[1], 0]
+    dp3 = [dp3[0], dp3[1], 0]
 
-    check1 = vector_between_points(wp2, wp1)
-    check2 = vector_between_points(wp2, wp3)
-    check3 = cross_product(check2, check1)
+    check = calculate_normal_from_points(dp1, dp2, dp3)
 
-    if front_vector[0]*check3[0] < 0 or front_vector[1]*check3[1] < 0 or front_vector[2]*check3[2] < 0:
+    print check
+
+    if check[2] < 0:
         tmp = wp3
         wp3 = wp2
         wp2 = tmp
@@ -359,42 +370,28 @@ def create_triangle_frustum(wp1, wp2, wp3, renderer):
         wp3_ = wp2_
         wp2_ = tmp
 
-    back_vector = [-front_vector[0], -front_vector[1], -front_vector[2]]
-
+    normal1 = calculate_normal_from_points(wp1, wp2, wp3)
     points.SetPoint(0, wp1[:3])
-    normals.SetTuple3(0, *front_vector)
+    normals.SetTuple3(0, *normal1)
 
+    normal2 = calculate_normal_from_points(wp1_, wp3_, wp2_)
     points.SetPoint(1, wp1_[:3])
-    normals.SetTuple3(1, *back_vector)
+    normals.SetTuple3(1, *normal2)
 
-    # face wp1/wp3/wp3_/wp1_
-    vector31 = vector_between_points(wp1, wp3)
-    vector32 = back_vector
-    normal3 = cross_product(vector31, vector32)
-
+    normal3 = calculate_normal_from_points(wp1, wp3, wp1_)
     points.SetPoint(2, wp1[:3])
     normals.SetTuple3(2, *normal3)
 
-    # face wp1/wp1_/wp2_/wp2
-    vector41 = back_vector
-    vector42 = vector_between_points(wp1_, wp2_)
-    normal4 = cross_product(vector41, vector42)
-
+    normal4 = calculate_normal_from_points(wp1, wp1_, wp2)
     points.SetPoint(3, wp1[:3])
     normals.SetTuple3(3, *normal4)
 
-    # face wp2/wp2_/wp3_/wp3
-    vector51 = back_vector
-    vector52 = vector_between_points(wp2, wp3)
-    normal5 = cross_product(vector51, vector52)
-
+    normal5 = calculate_normal_from_points(wp2, wp2_, wp3)
     points.SetPoint(4, wp2[:3])
     normals.SetTuple3(4, *normal5)
 
-    # made up plane
-    points.SetPoint(5, wp1[:3])
-    normal6 = [-normal5[0], -normal5[1], -normal5[2]]
-    normals.SetTuple3(5, *normal6)
+    points.SetPoint(5, wp2[:3])
+    normals.SetTuple3(5, *normal5)
 
     planes = vtk.vtkPlanes()
     planes.SetNormals(normals)

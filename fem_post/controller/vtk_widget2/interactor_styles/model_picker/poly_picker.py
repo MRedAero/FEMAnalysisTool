@@ -165,8 +165,8 @@ class PolyPicker(object):
 
         self.set_data()
 
-        self.helper = HelperFilter()
-        self.helper.set_renderer(self.renderer)
+        #self.helper = HelperFilter()
+        #self.helper.set_renderer(self.renderer)
 
     def add_renderer(self, renderer):
         if self.renderer is not None:
@@ -318,7 +318,7 @@ class PolyPicker(object):
 
         pos = interactor.GetEventPosition()
 
-        if distance(pos, self._last_point) < 5 or distance(pos, self._first_point) < 5:
+        if self._points > 2 and (distance(pos, self._last_point) < 5 or distance(pos, self._first_point) < 5):
             self.end_picking(interactor)
             return True
 
@@ -373,17 +373,17 @@ class PolyPicker(object):
         self.poly_picker.set_poly_pick_data(self.poly_data)
         self.poly_picker.Modified()
 
-        triangles = vtk.vtkTriangleFilter()
-        triangles.SetInputData(self.poly_data)
-        triangles.Modified()
-        triangles.Update()
+        #triangles = vtk.vtkTriangleFilter()
+        #triangles.SetInputData(self.poly_data)
+        #triangles.Modified()
+        #triangles.Update()
 
-        self.helper.SetInputDataObject(0, triangles.GetOutput())
-        self.helper.Modified()
-        self.helper.Update()
+        #self.helper.SetInputDataObject(0, triangles.GetOutput())
+        #self.helper.Modified()
+        #self.helper.Update()
 
-        self.polygon_mapper.SetInputData(self.helper.GetOutputDataObject(0))
-        self.polygon_mapper.Modified()
+        #self.polygon_mapper.SetInputData(self.helper.GetOutputDataObject(0))
+        #self.polygon_mapper.Modified()
 
         self.something_picked()
 
@@ -397,7 +397,7 @@ class PolyPicker(object):
 
         data = self.ex.GetOutput()
 
-        #self.reset_polygon()
+        self.reset_polygon()
 
         global_ids = data.GetCellData().GetArray("global_ids")
         self.reset_selection()
