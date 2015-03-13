@@ -48,7 +48,7 @@ class GRID(SimpleCard):
 
     def to_global(self):
         xyz = [self.X1, self.X2, self.X3]
-        if self.CP == 0:
+        if self.CP == 0 or self.CP == '' or self.CP is None:
             return xyz
 
         return self.model.coordinate_systems[self.CP].to_global(xyz)

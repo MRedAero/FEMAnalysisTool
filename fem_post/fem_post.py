@@ -8,6 +8,7 @@ from controller import MainWindow
 
 
 def main():
+
     app = QtGui.QApplication(sys.argv)
     # model ... fem data and other user data?
     view = Ui_MainWindow()
@@ -16,4 +17,15 @@ def main():
 
 
 if __name__ == '__main__':
+
     main()
+
+    #import cProfile
+    #filename = "fem_post_profile.stats"
+    #cProfile.run('main()', filename)
+
+
+    #from pycallgraph import PyCallGraph
+    #from pycallgraph.output import GraphvizOutput
+    #with PyCallGraph(output=GraphvizOutput()):
+    #    main()

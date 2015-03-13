@@ -1,6 +1,6 @@
 __author__ = 'Michael Redmond'
 
-"""Various utilities used for reading BDF's.
+"""Various model_data used for reading BDF's.
 
 """
 
