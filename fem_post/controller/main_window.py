@@ -1,10 +1,14 @@
 __author__ = 'Michael Redmond'
 
-from PySide import QtGui, QtCore
+import os
+from PyQt4 import QtGui, QtCore
 
 from .vtk_widget2 import VTKWidget
 from fem_reader.nastran.bdf.reader import BDFReader
 
+from dock_control import Dock_Picking
+from dock_control import Dock_View
+from dock_control import Dock_Message
 
 class MainWindow(QtGui.QMainWindow):
  
@@ -17,34 +21,52 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.setupUi(self)
         self.ui.menubar.setNativeMenuBar(False)
 
-        self.ui.btn_bgcolor1.clicked.connect(self.on_color1)
-        self.ui.btn_bgcolor2.clicked.connect(self.on_color2)
-        self.ui.actionOpen.triggered.connect(self.on_open)
-        self.ui.btn_perspectivetoggle.clicked.connect(self.on_toggle_perspective)
 
-        self.ui.toggle_view_button.clicked.connect(self.toggle_visible)
-        self.ui.toggle_hidden_button.clicked.connect(self.toggle_selected)
+        self.picking = Dock_Picking()
+        self.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.picking)
+        self.view = Dock_View()
+        self.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.view)
+        self.message = Dock_Message()
+        self.addDockWidget(QtCore.Qt.DockWidgetArea(8), self.message)
 
-        self.ui.single_pick_button.clicked.connect(self.single_pick_button)
-        self.ui.box_pick_button.clicked.connect(self.box_pick_button)
-        self.ui.poly_pick_button.clicked.connect(self.poly_pick_button)
+        self.tabifyDockWidget(self.picking, self.view)
+        self.view.raise_()
 
-        self.ui.any_button.clicked.connect(self.any_button)
-        self.ui.nodes_button.clicked.connect(self.nodes_button)
-        self.ui.elements_button.clicked.connect(self.elements_button)
-        self.ui.points_button.clicked.connect(self.points_button)
-        self.ui.bars_button.clicked.connect(self.bars_button)
-        self.ui.tris_button.clicked.connect(self.tris_button)
-        self.ui.quads_button.clicked.connect(self.quads_button)
 
-        self.ui.replace_selection_button.clicked.connect(self.replace_selection_button)
-        self.ui.append_selection_button.clicked.connect(self.append_selection_button)
-        self.ui.remove_selection_button.clicked.connect(self.remove_selection_button)
+        # Initialize style if available
+        self.usrstylefile = r'stylesheet.dat'
+        self.usrstyle()
 
-        self.ui.left_click_combo.setCurrentIndex(0)
-        self.ui.middle_click_combo.setCurrentIndex(1)
-        self.ui.right_click_combo.setCurrentIndex(2)
-        self.ui.ctrl_left_click_combo.setCurrentIndex(3)
+        # Setup Connections
+        self.ui.action_Open.triggered.connect(self.on_open)
+
+        self.view.ui.btn_bgcolor1.clicked.connect(self.on_color1)
+        self.view.ui.btn_bgcolor2.clicked.connect(self.on_color2)
+        self.view.ui.btn_perspectivetoggle.clicked.connect(self.on_toggle_perspective)
+
+        self.picking.ui.btn_toggle_view.clicked.connect(self.toggle_visible)
+        self.picking.ui.btn_toggle_hidden.clicked.connect(self.toggle_selected)
+
+        self.picking.ui.btn_single_pick.clicked.connect(self.single_pick_button)
+        self.picking.ui.btn_box_pick.clicked.connect(self.box_pick_button)
+        self.picking.ui.btn_poly_pick.clicked.connect(self.poly_pick_button)
+
+        self.picking.ui.btn_any.clicked.connect(self.any_button)
+        self.picking.ui.btn_nodes.clicked.connect(self.nodes_button)
+        self.picking.ui.btn_elements.clicked.connect(self.elements_button)
+        self.picking.ui.btn_points.clicked.connect(self.points_button)
+        self.picking.ui.btn_bars.clicked.connect(self.bars_button)
+        self.picking.ui.btn_tris.clicked.connect(self.tris_button)
+        self.picking.ui.btn_quads.clicked.connect(self.quads_button)
+
+        self.picking.ui.btn_replace_selection.clicked.connect(self.replace_selection_button)
+        self.picking.ui.btn_append_selection.clicked.connect(self.append_selection_button)
+        self.picking.ui.btn_remove_selection.clicked.connect(self.remove_selection_button)
+
+        self.picking.ui.cbx_left_click.setCurrentIndex(0)
+        self.picking.ui.cbx_middle_click.setCurrentIndex(1)
+        self.picking.ui.cbx_right_click.setCurrentIndex(2)
+        self.picking.ui.cbx_ctrl_left_click.setCurrentIndex(3)
 
         self.bdf = None
 
@@ -55,6 +77,18 @@ class MainWindow(QtGui.QMainWindow):
         #self.show()
 
         self.vtk_widget = VTKWidget(self)
+
+    def usrstyle(self):
+
+        print(self.usrstylefile)
+        if os.path.isfile(self.usrstylefile):
+            print "usrstyle file found, reading"
+            with open(self.usrstylefile, 'r') as fsty:
+                style = fsty.read()
+            fsty.close()
+
+            self.setStyleSheet(style)
+
 
     def on_color1(self):
         color = self.vtk_widget.bg_color_1
@@ -86,7 +120,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def on_open(self):
         # noinspection PyCallByClass
-        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File', None, "BDF Files (*.bdf);;DAT Files (*.dat)")
+
+        # For PySide, dir as None ok... For PyQt, dir must be QString()
+        #filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File', None, "BDF Files (*.bdf);;DAT Files (*.dat)")
+        filename = QtGui.QFileDialog.getOpenFileName(self,'Open File','',"BDF Files (*.bdf);;DAT Files (*.dat)")
 
         if filename[0] == '':
             return
@@ -95,7 +132,11 @@ class MainWindow(QtGui.QMainWindow):
 
         # noinspection PyUnresolvedReferences
         self.app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
-        self.bdf.read_bdf(filename[0])
+
+        # For PyQt - send reader "filename" .. for PySide - send reader "filename[0]"
+        #self.bdf.read_bdf(filename[0])
+        self.bdf.read_bdf(filename)
+
         self.vtk_widget.set_bdf_data(self.bdf)
         # noinspection PyUnresolvedReferences
         self.app.restoreOverrideCursor()

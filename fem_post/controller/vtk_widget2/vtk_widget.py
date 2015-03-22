@@ -222,12 +222,12 @@ class VTKWidget(object):
 
         self.visible_filter.add_callback(self.interactor_style.model_picker.set_data)
 
-        ui = self.main_window.ui
+        ui = self.main_window.picking.ui
 
-        ui.left_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_left_button)
-        ui.middle_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_middle_button)
-        ui.right_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_right_button)
-        ui.ctrl_left_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_ctrl_left_button)
+        ui.cbx_left_click.currentIndexChanged[str].connect(self.interactor_style.set_left_button)
+        ui.cbx_middle_click.currentIndexChanged[str].connect(self.interactor_style.set_middle_button)
+        ui.cbx_right_click.currentIndexChanged[str].connect(self.interactor_style.set_right_button)
+        ui.cbx_ctrl_left_click.currentIndexChanged[str].connect(self.interactor_style.set_ctrl_left_button)
 
         self.show_hide = False
         self.show = True
@@ -368,7 +368,7 @@ class VTKWidget(object):
         self.interactor_style.model_picker.toggle_picking(entity_type, index)
 
     def update_ui_selection(self, selection):
-        self.main_window.ui.selection_box.setText(selection)
+        self.main_window.picking.ui.lnedt_selection.setText(selection)
 
     def replace_selection_button(self):
         self.interactor_style.model_picker.picked_selection.selection_type = vtk_globals.SELECTION_REPLACE

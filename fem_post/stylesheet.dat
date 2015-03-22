@@ -1,0 +1,230 @@
+
+QMainWindow::separator
+{
+    background-color: #000;
+    width: 1px;
+    border: none;
+}
+
+QToolBar {
+
+    background-color: rgb(240, 240, 240);
+    /*
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                            stop: 0 #000, stop: 0.08 #D8D8D8,
+                            stop: 0.4 #DDDDDD, stop: 1.0 #f0f0f0);
+    */
+
+    /*
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                            stop: 0 #f0f0f0, stop: 0.5 #DDDDDD,
+                            stop: 0.9 #D8D8D8, stop: 1.0 #000);
+    */
+
+    /*
+    border-radius: 0px;
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-right-color: #ff6600;
+    */
+
+    border-radius: 0px;
+    border-style: solid;
+    border-width: 0px;
+    border-color: #000;
+
+
+    /*border-left-style: solid;
+    border-left-width: 1px;
+    border-left-colo
+    */
+
+
+    /*border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(0, 0, 0);
+    padding-top: 20px;
+    */
+}
+
+
+/*QToolBar::handle {
+    image: url('C:/Users/ra053866/AppData/Roaming/StressHUD/img/handle.png');
+}
+*/
+
+
+QStatusBar {
+    /*  background-color: #ff6600;*/
+
+    background-color: rgb(110, 110, 110);
+
+    color: #fff;
+    border-top-style: solid;
+    border-top-width: 0px;
+    border-top-color: rgb(217, 89, 0);
+}
+
+
+QListWidget {
+    /*
+    background: url('C:/Users/ra053866/AppData/Roaming/StressHUD/img/pete_150_30per.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    */
+    color: rgb(248, 248, 255);
+    font-size: 10pt;
+}
+QListWidget {
+    background-color: rgb(240, 240, 240);
+}
+QListWidget::item {
+    color: rgb(0, 0, 0);
+}
+QListWidget::item:selected {
+    color: rgb(217, 89, 0);
+}
+QMenu {
+     background-color: white;
+     margin: 5px; /* some spacing around the menu */
+}
+QMenu::item {
+    padding: 2px 25px 2px 20px;
+    border: 1px solid transparent; /* reserve space for selection border */
+}
+QMenu::item:selected {
+    border-color: rgb(255, 0, 0);
+    background-color: rgb(222, 222, 222);
+}
+QMenu::icon:checked { /* appearance of a 'checked' icon */
+    background: rgba(255, 255, 255, 1);
+    border: 1px inset #ff6600;
+    border-radius: 2px;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    left: 1px;
+}
+QMenu::separator {
+    height: 2px;
+    background: lightblue;
+    margin-left: 10px;
+    margin-right: 5px;
+}
+QMenu::indicator {
+    width: 13px;
+    height: 13px;
+}
+QMenuBar {
+    /*
+    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                               stop:0 #000, stop:0.2 darkgrey, stop:0.5 lightgrey, stop:1 #dedede);
+    */
+    background_color: #dedede;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #000;  /* #ff6600 */
+
+    padding: 2px 0px 0px 2px;
+
+}
+QMenuBar::item {
+    spacing: 4px; /* spacing between menu bar items */
+    padding: 2px 4px;
+    background: transparent;
+    border-radius: 1px;
+}
+QMenuBar::item:selected { /* when selected using mouse or keyboard */
+    background: #a8a8a8;
+}
+QMenuBar::item:pressed {
+    background: #888888;
+    color: #fff;
+}
+QDockWidget {
+    border: 1px solid lightgray;
+}
+QDockWidget::title {
+    text-align: left; /* align the text to the left */
+    background: lightgray;
+    padding-left: 5px;
+}
+QComboBox {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 18px 1px 3px;
+    min-width: 6em;
+    font: 10pt "Arial";
+}
+QComboBox:editable {
+    background: white;
+}
+QComboBox:!editable, QComboBox::drop-down:editable {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                              stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+                              stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+}
+/* QComboBox gets the "on" state when the popup is open */
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                             stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
+                             stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+}
+QComboBox::down-arrow {
+    image: url('C:/Users/ra053866/AppData/Roaming/StressHUD/img/dwnorange.png');
+}
+
+
+QComboBox:on { /* shift the text when the popup opens */
+    padding-top: 3px;
+    padding-left: 4px;
+}
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 3px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 3px;
+}
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}
+QPushButton {
+    border: 1px solid #8f8f91;
+    border-radius: 3px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                   stop: 0 #f6f7fa, stop: 1 #dadbde);
+    /*min-width: 80px;*/
+    font: 10pt "MS Shell Dlg 2";
+    padding: 2px;
+}
+
+QPushButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                   stop: 0 #dadbde, stop: 1 #f6f7fa);
+}
+QPushButton:flat {
+    border: none; /* no border for a flat push button */
+}
+QToolBox::tab {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                 stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
+                                 stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+    border-radius: 3px;
+    color: rgb(0, 0, 0);
+    font: 12pt "Arial Narrow";
+}
+QToolBox::tab:selected { /* italicize selected tabs */
+    font: 12pt "Arial Narrow";
+    font: bold;
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(50, 50, 50, 255), stop:1 rgba(234, 234, 234, 255));
+    color: #ff6600;
+}
+QToolBox: {
+    background-color: rgb(0, 0, 0);
+}
