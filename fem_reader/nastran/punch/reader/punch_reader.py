@@ -3,6 +3,7 @@ __author__ = 'Michael Redmond'
 import tables
 import os
 import gc
+import logging
 
 from ..table_readers import table_readers
 
@@ -17,15 +18,21 @@ class PunchReader(object):
         self.h5filename = None
         self.h5file = None
 
+        self.logfilename = None
+
         self.set_pch_filename(pchfilename)
 
         self.data_lines = None
+
+        self.header_data = None
 
     def set_pch_filename(self, filename):
 
         self.pchfilename = filename
 
         self.h5filename = filename.replace(".pch", ".h5")
+
+        self.logfilename = filename.replace(".pch", ".log")
 
     def get_table_reader(self, first):
         skip_i = 0
@@ -50,6 +57,8 @@ class PunchReader(object):
                 table_reader = table_reader_cls(self.h5file, header_data)
                 break
 
+        self.header_data = header_data
+
         return table_reader, skip_i-1
 
     def skip_table(self, first):
@@ -61,6 +70,12 @@ class PunchReader(object):
                 break
 
             skip_i += 1
+
+        if self.header_data is not None:
+            header_format = ""
+            for i in xrange(len(self.header_data)):
+                header_format += self.header_data[i][:72].strip() + '\n'
+            logging.info("Table not supported with the following format:\n%s", header_format)
 
         return skip_i-1
 
@@ -79,6 +94,15 @@ class PunchReader(object):
             self.pchfilename = None
             self.pchfile = None
             self.h5file.close()
+            return
+
+        try:
+            logging.basicConfig(filename=self.logfilename, level=logging.DEBUG, filemode='w')
+        except Exception:
+            print "Unable to open %s!" % self.logfilename
+            self.logfilename = None
+            self.h5file.close()
+            self.pchfile.close()
             return
 
         file_size = float(os.path.getsize(self.pchfilename))

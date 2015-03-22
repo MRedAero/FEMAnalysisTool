@@ -2,7 +2,7 @@ __author__ = 'Michael Redmond'
 
 import tables
 
-from fem_reader.nastran.punch.table_readers import table_readers
+from .....table_readers import table_readers
 
 
 class DisplacementsReal(object):

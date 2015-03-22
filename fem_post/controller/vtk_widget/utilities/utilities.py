@@ -173,6 +173,21 @@ def vector_between_points(p1, p2):
         return [dx/len, dy/len, dz/len]
 
 
+def cross_product(v1, v2):
+    v3 = [0, 0, 0]
+
+    v3[0] = v1[1]*v2[2] - v1[2]*v2[1]
+    v3[1] = -(v1[0]*v2[2] - v1[2]*v2[0])
+    v3[2] = v1[0]*v2[1] - v1[1]*v2[0]
+
+    len = (v3[0]**2 + v3[1]**2 + v3[2]**2)**0.5
+
+    if len == 0:
+        return [0, 0, 0]
+    else:
+        return [v3[0]/len, v3[1]/len, v3[2]/len]
+
+
 def points_to_poly_data(poly_data, points, cells):
 
     poly_data = poly_data['poly_data']
@@ -282,3 +297,104 @@ def create_box_frustum(x0_, y0_, x1_, y1_, renderer):
     extract_selected_frustum.CreateFrustum(verts)
 
     return extract_selected_frustum.GetFrustum()
+
+
+def calculate_normal_from_points(p1, p2, p3):
+    v1 = vector_between_points(p1, p2)
+    v2 = vector_between_points(p1, p3)
+
+    return cross_product(v1, v2)
+
+
+def create_triangle_frustum(wp1, wp2, wp3, renderer):
+
+    camera = renderer.GetActiveCamera()
+
+    renderer.SetWorldPoint(wp1[0], wp1[1], wp1[2], 1)
+    renderer.WorldToDisplay()
+    dp1 = renderer.GetDisplayPoint()
+
+    renderer.SetWorldPoint(wp2[0], wp2[1], wp2[2], 1)
+    renderer.WorldToDisplay()
+    dp2 = renderer.GetDisplayPoint()
+
+    renderer.SetWorldPoint(wp3[0], wp3[1], wp3[2], 1)
+    renderer.WorldToDisplay()
+    dp3 = renderer.GetDisplayPoint()
+
+    renderer.SetDisplayPoint(dp1[0], dp1[1], 0)
+    renderer.DisplayToWorld()
+    wp1 = renderer.GetWorldPoint()[:4]
+
+    renderer.SetDisplayPoint(dp2[0], dp2[1], 0)
+    renderer.DisplayToWorld()
+    wp2 = renderer.GetWorldPoint()[:4]
+
+    renderer.SetDisplayPoint(dp3[0], dp3[1], 0)
+    renderer.DisplayToWorld()
+    wp3 = renderer.GetWorldPoint()[:4]
+
+    renderer.SetDisplayPoint(dp1[0], dp1[1], 1)
+    renderer.DisplayToWorld()
+    wp1_ = renderer.GetWorldPoint()[:4]
+
+    renderer.SetDisplayPoint(dp2[0], dp2[1], 1)
+    renderer.DisplayToWorld()
+    wp2_ = renderer.GetWorldPoint()[:4]
+
+    renderer.SetDisplayPoint(dp3[0], dp3[1], 1)
+    renderer.DisplayToWorld()
+    wp3_ = renderer.GetWorldPoint()[:4]
+
+    normals = vtk.vtkFloatArray()
+    normals.SetNumberOfComponents(3)
+    normals.SetNumberOfTuples(6)
+
+    points = vtk.vtkPoints()
+    points.SetNumberOfPoints(6)
+
+    dp1 = [dp1[0], dp1[1], 0]
+    dp2 = [dp2[0], dp2[1], 0]
+    dp3 = [dp3[0], dp3[1], 0]
+
+    check = calculate_normal_from_points(dp1, dp2, dp3)
+
+    print check
+
+    if check[2] < 0:
+        tmp = wp3
+        wp3 = wp2
+        wp2 = tmp
+
+        tmp = wp3_
+        wp3_ = wp2_
+        wp2_ = tmp
+
+    normal1 = calculate_normal_from_points(wp1, wp2, wp3)
+    points.SetPoint(0, wp1[:3])
+    normals.SetTuple3(0, *normal1)
+
+    normal2 = calculate_normal_from_points(wp1_, wp3_, wp2_)
+    points.SetPoint(1, wp1_[:3])
+    normals.SetTuple3(1, *normal2)
+
+    normal3 = calculate_normal_from_points(wp1, wp3, wp1_)
+    points.SetPoint(2, wp1[:3])
+    normals.SetTuple3(2, *normal3)
+
+    normal4 = calculate_normal_from_points(wp1, wp1_, wp2)
+    points.SetPoint(3, wp1[:3])
+    normals.SetTuple3(3, *normal4)
+
+    normal5 = calculate_normal_from_points(wp2, wp2_, wp3)
+    points.SetPoint(4, wp2[:3])
+    normals.SetTuple3(4, *normal5)
+
+    points.SetPoint(5, wp2[:3])
+    normals.SetTuple3(5, *normal5)
+
+    planes = vtk.vtkPlanes()
+    planes.SetNormals(normals)
+    planes.SetPoints(points)
+
+    return planes
