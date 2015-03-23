@@ -171,10 +171,11 @@ QComboBox:!editable:on, QComboBox::drop-down:editable:on {
                              stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
                              stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
 }
-QComboBox::down-arrow {
+
+/*QComboBox::down-arrow {
     image: url('C:/Users/ra053866/AppData/Roaming/StressHUD/img/dwnorange.png');
 }
-
+*/
 
 QComboBox:on { /* shift the text when the popup opens */
     padding-top: 3px;

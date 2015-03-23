@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>741</width>
-    <height>652</height>
+    <width>876</width>
+    <height>624</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="qrc/viewqrc.qrc">
+    <normaloff>:/qrc/074.png</normaloff>:/qrc/074.png</iconset>
   </property>
   <property name="dockNestingEnabled">
    <bool>true</bool>
@@ -62,7 +66,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>741</width>
+     <width>876</width>
      <height>21</height>
     </rect>
    </property>
@@ -148,6 +152,19 @@
    <addaction name="action_A2"/>
    <addaction name="action_A3"/>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_nodevis"/>
+   <addaction name="action_elementvis"/>
+  </widget>
   <action name="action_A1">
    <property name="checkable">
     <bool>true</bool>
@@ -214,6 +231,22 @@
   <action name="action_Quit">
    <property name="text">
     <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="action_nodevis">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>NodeVis</string>
+   </property>
+  </action>
+  <action name="action_elementvis">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>ElementVis</string>
    </property>
   </action>
  </widget>

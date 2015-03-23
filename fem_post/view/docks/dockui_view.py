@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\CODE\10_PROJECT\FEMAnalysisTool\fem_post\view\docks\dockui_view.ui'
 #
-# Created: Sun Mar 22 06:53:04 2015
+# Created: Sun Mar 22 18:19:04 2015
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -59,7 +59,7 @@ class Ui_Dock_View(object):
         self.btn_edgecolor.setObjectName(_fromUtf8("btn_edgecolor"))
         self.gridLayout.addWidget(self.btn_edgecolor, 3, 0, 1, 1)
         self.btn_bgcolor1 = QtGui.QPushButton(self.dockWidgetContents)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.btn_bgcolor1.sizePolicy().hasHeightForWidth())

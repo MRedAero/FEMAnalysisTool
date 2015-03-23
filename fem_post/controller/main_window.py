@@ -39,6 +39,11 @@ class MainWindow(QtGui.QMainWindow):
 
         # Setup Connections
         self.ui.action_Open.triggered.connect(self.on_open)
+        self.ui.action_elementvis.triggered.connect(self.on_elementvis)
+        self.ui.action_nodevis.triggered.connect(self.on_nodevis)
+        self.ui.action_elementvis.setChecked(True)
+        self.ui.action_nodevis.setChecked(True)
+
 
         self.view.ui.btn_bgcolor1.clicked.connect(self.on_color1)
         self.view.ui.btn_bgcolor2.clicked.connect(self.on_color2)
@@ -67,6 +72,13 @@ class MainWindow(QtGui.QMainWindow):
         self.picking.ui.cbx_middle_click.setCurrentIndex(1)
         self.picking.ui.cbx_right_click.setCurrentIndex(2)
         self.picking.ui.cbx_ctrl_left_click.setCurrentIndex(3)
+
+
+
+
+
+
+
 
         self.bdf = None
 
@@ -191,3 +203,14 @@ class MainWindow(QtGui.QMainWindow):
     def remove_selection_button(self):
         self.vtk_widget.remove_selection_button()
 
+    def on_elementvis(self):
+        if self.ui.action_elementvis.isChecked():
+            self.vtk_widget.toggle_elements('ON')
+        else:
+            self.vtk_widget.toggle_elements('OFF')
+
+    def on_nodevis(self):
+        if self.ui.action_nodevis.isChecked():
+            self.vtk_widget.toggle_nodes('ON')
+        else:
+            self.vtk_widget.toggle_nodes('OFF')

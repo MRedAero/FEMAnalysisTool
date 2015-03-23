@@ -40,6 +40,7 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleRubberBandPick):
 
         self.vtk_widget = vtk_widget
 
+
         self.model_picker = ModelPicker(self.vtk_widget, self)
 
         self.active_picker = self.model_picker.single_picker

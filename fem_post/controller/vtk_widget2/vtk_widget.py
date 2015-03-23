@@ -387,3 +387,38 @@ class VTKWidget(object):
 
     def poly_pick_button(self):
         self.interactor_style.set_selection_type(vtk_globals.SELECTION_POLY)
+
+
+    # N.Wilson  Vis. Control Defs.
+
+    #def fit_all(self):
+    #    self.renderer.
+
+    def set_background_color(self,color1=None,color2=None):
+        if color1 != None:
+            self.renderer.SetBackground(color1)
+
+        if color2 != None:
+            self.renderer.SetBackground2(color2)
+
+    def toggle_perspective(self):
+        self.camera.ParallelProjectionOff()
+        #self.perspective = 0
+
+        #self.camera.ParallelProjectionOn()
+        #self.perspective = 1
+
+
+    # NEED TO BE ABLE TO TOGGLE THE VIS FOR EIDs, NIDs... not sure where that control is
+    def toggle_elements(self,vis):
+        if "ON" in vis:
+            self.main_pipeline.element_actor.GetProperty().VisibilityOn()
+        elif "OFF" in vis:
+            self.main_pipeline.element_actor.GetProperty().VisibilityOff()
+
+    def toggle_nodes(self,vis):
+        if "ON" in vis:
+            self.main_pipeline.node_actor.GetProperty().VisibilityOn()
+        elif "OFF" in vis:
+            self.main_pipeline.node_actor.GetProperty().VisibilityOff()
+

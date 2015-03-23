@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\CODE\10_PROJECT\FEMAnalysisTool\fem_post\view\view.ui'
 #
-# Created: Sun Mar 22 15:23:21 2015
+# Created: Mon Mar 23 05:12:41 2015
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,10 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(741, 652)
+        MainWindow.resize(876, 624)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/qrc/074.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         MainWindow.setDockNestingEnabled(True)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
@@ -54,7 +57,7 @@ class Ui_MainWindow(object):
         self.gridLayout_4.addWidget(self.splitter_2, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 741, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 876, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -80,10 +83,11 @@ class Ui_MainWindow(object):
         self.tbar_1.setFloatable(True)
         self.tbar_1.setObjectName(_fromUtf8("tbar_1"))
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.tbar_1)
+        self.toolBar = QtGui.QToolBar(MainWindow)
+        self.toolBar.setObjectName(_fromUtf8("toolBar"))
+        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.action_A1 = QtGui.QAction(MainWindow)
         self.action_A1.setCheckable(True)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/qrc/074.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_A1.setIcon(icon)
         self.action_A1.setObjectName(_fromUtf8("action_A1"))
         self.action_A2 = QtGui.QAction(MainWindow)
@@ -111,6 +115,12 @@ class Ui_MainWindow(object):
         self.action_Picking.setObjectName(_fromUtf8("action_Picking"))
         self.action_Quit = QtGui.QAction(MainWindow)
         self.action_Quit.setObjectName(_fromUtf8("action_Quit"))
+        self.action_nodevis = QtGui.QAction(MainWindow)
+        self.action_nodevis.setCheckable(True)
+        self.action_nodevis.setObjectName(_fromUtf8("action_nodevis"))
+        self.action_elementvis = QtGui.QAction(MainWindow)
+        self.action_elementvis.setCheckable(True)
+        self.action_elementvis.setObjectName(_fromUtf8("action_elementvis"))
         self.menuFile.addAction(self.action_Open)
         self.menuFile.addAction(self.action_Quit)
         self.menu_Toolbars.addAction(self.action_View)
@@ -126,6 +136,8 @@ class Ui_MainWindow(object):
         self.tbar_1.addAction(self.action_A1)
         self.tbar_1.addAction(self.action_A2)
         self.tbar_1.addAction(self.action_A3)
+        self.toolBar.addAction(self.action_nodevis)
+        self.toolBar.addAction(self.action_elementvis)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -141,6 +153,7 @@ class Ui_MainWindow(object):
         self.tbar_grp.setToolTip(_translate("MainWindow", "Group Toolbar", None))
         self.tbar_grp.setStatusTip(_translate("MainWindow", "Group Tools", None))
         self.tbar_1.setWindowTitle(_translate("MainWindow", "toolBar_2", None))
+        self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar", None))
         self.action_A1.setText(_translate("MainWindow", "&A1", None))
         self.action_A2.setText(_translate("MainWindow", "&A2", None))
         self.action_A3.setText(_translate("MainWindow", "&A3", None))
@@ -151,6 +164,8 @@ class Ui_MainWindow(object):
         self.action_View.setText(_translate("MainWindow", "&View", None))
         self.action_Picking.setText(_translate("MainWindow", "&Picking", None))
         self.action_Quit.setText(_translate("MainWindow", "&Quit", None))
+        self.action_nodevis.setText(_translate("MainWindow", "NodeVis", None))
+        self.action_elementvis.setText(_translate("MainWindow", "ElementVis", None))
 
 import viewqrc_rc
 

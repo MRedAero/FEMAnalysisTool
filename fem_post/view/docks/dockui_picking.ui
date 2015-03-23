@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>285</width>
-    <height>527</height>
+    <width>188</width>
+    <height>493</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="toolTip">
    <string>Picking Dock</string>
@@ -24,8 +30,14 @@
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="3" column="2">
+    <item row="5" column="2">
      <widget class="QPushButton" name="btn_box_pick">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Box Pick</string>
       </property>
@@ -34,8 +46,14 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="3">
+    <item row="4" column="3">
      <widget class="QPushButton" name="btn_any">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Any</string>
       </property>
@@ -44,8 +62,14 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="2">
+    <item row="4" column="2">
      <widget class="QPushButton" name="btn_single_pick">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Single Pick</string>
       </property>
@@ -54,8 +78,14 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="3">
+    <item row="5" column="3">
      <widget class="QPushButton" name="btn_nodes">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Nodes</string>
       </property>
@@ -64,8 +94,14 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="2">
+    <item row="8" column="2">
      <widget class="QPushButton" name="btn_replace_selection">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Replace</string>
       </property>
@@ -74,8 +110,14 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="2">
+    <item row="6" column="2">
      <widget class="QPushButton" name="btn_poly_pick">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Poly Pick</string>
       </property>
@@ -90,8 +132,14 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="3">
+    <item row="10" column="3">
      <widget class="QPushButton" name="btn_quads">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Quads</string>
       </property>
@@ -106,8 +154,14 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="3">
+    <item row="9" column="3">
      <widget class="QPushButton" name="btn_tris">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Tris</string>
       </property>
@@ -122,8 +176,14 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="3">
+    <item row="6" column="3">
      <widget class="QPushButton" name="btn_elements">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Elements</string>
       </property>
@@ -138,11 +198,14 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="2" colspan="2">
-     <widget class="QLineEdit" name="lnedt_selection"/>
-    </item>
-    <item row="6" column="3">
+    <item row="8" column="3">
      <widget class="QPushButton" name="btn_bars">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Bars</string>
       </property>
@@ -157,8 +220,14 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="2">
+    <item row="10" column="2">
      <widget class="QPushButton" name="btn_remove_selection">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Remove</string>
       </property>
@@ -173,21 +242,14 @@
       </property>
      </widget>
     </item>
-    <item row="10" column="2">
-     <widget class="QPushButton" name="btn_toggle_hidden">
+    <item row="7" column="3">
+     <widget class="QPushButton" name="btn_points">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="text">
-       <string>Toggle Hidden</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="3">
-     <widget class="QPushButton" name="btn_points">
       <property name="text">
        <string>Points</string>
       </property>
@@ -202,8 +264,14 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="2">
+    <item row="9" column="2">
      <widget class="QPushButton" name="btn_append_selection">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Append</string>
       </property>
@@ -212,202 +280,243 @@
       </property>
      </widget>
     </item>
-    <item row="11" column="2">
-     <layout class="QVBoxLayout" name="verticalLayout">
+    <item row="14" column="3">
+     <widget class="QComboBox" name="cbx_left_click">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="minimumSize">
-           <size>
-            <width>71</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Left-Click</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="cbx_left_click">
-          <property name="minimumSize">
-           <size>
-            <width>69</width>
-            <height>22</height>
-           </size>
-          </property>
-          <item>
-           <property name="text">
-            <string>Rotate</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Pan</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Zoom</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-       </layout>
+       <property name="text">
+        <string>Rotate</string>
+       </property>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="minimumSize">
-           <size>
-            <width>71</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Middle-Click</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="cbx_middle_click">
-          <property name="minimumSize">
-           <size>
-            <width>69</width>
-            <height>22</height>
-           </size>
-          </property>
-          <item>
-           <property name="text">
-            <string>Rotate</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Pan</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Zoom</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-       </layout>
+       <property name="text">
+        <string>Pan</string>
+       </property>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="minimumSize">
-           <size>
-            <width>71</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Right-Click</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="cbx_right_click">
-          <property name="minimumSize">
-           <size>
-            <width>69</width>
-            <height>22</height>
-           </size>
-          </property>
-          <item>
-           <property name="text">
-            <string>Rotate</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Pan</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Zoom</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-       </layout>
+       <property name="text">
+        <string>Zoom</string>
+       </property>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QLabel" name="label_4">
-          <property name="minimumSize">
-           <size>
-            <width>71</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Ctrl-Left-Click</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="cbx_ctrl_left_click">
-          <property name="minimumSize">
-           <size>
-            <width>69</width>
-            <height>22</height>
-           </size>
-          </property>
-          <item>
-           <property name="text">
-            <string>Rotate</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Pan</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Zoom</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-       </layout>
+       <property name="text">
+        <string>Select</string>
+       </property>
       </item>
-     </layout>
+     </widget>
     </item>
-    <item row="0" column="2">
+    <item row="16" column="3">
+     <widget class="QComboBox" name="cbx_right_click">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <item>
+       <property name="text">
+        <string>Rotate</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Pan</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Zoom</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Select</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="17" column="3">
+     <widget class="QComboBox" name="cbx_ctrl_left_click">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <item>
+       <property name="text">
+        <string>Rotate</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Pan</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Zoom</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Select</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="17" column="2">
+     <widget class="QLabel" name="label_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Ctrl-Left-Click</string>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="3">
+     <widget class="QComboBox" name="cbx_middle_click">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <item>
+       <property name="text">
+        <string>Rotate</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Pan</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Zoom</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Select</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="14" column="2">
+     <widget class="QLabel" name="label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Left-Click</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="2">
+     <widget class="QLabel" name="label_3">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Right-Click</string>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="2">
+     <widget class="QLabel" name="label_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Middle-Click</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <widget class="QPushButton" name="btn_toggle_hidden">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Toggle Hidden</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
      <widget class="QPushButton" name="btn_toggle_view">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -416,6 +525,29 @@
        <string>Toggle View</string>
       </property>
      </widget>
+    </item>
+    <item row="12" column="2" colspan="2">
+     <widget class="QLineEdit" name="lnedt_selection">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="2" colspan="2">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>
