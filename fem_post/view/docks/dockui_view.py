@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\CODE\10_PROJECT\FEMAnalysisTool\fem_post\view\docks\dockui_view.ui'
 #
-# Created: Sun Mar 22 18:19:04 2015
+# Created: Tue Mar 24 05:06:49 2015
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!

@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="qrc">
+    <file>folder32.png</file>
+    <file>exit-256.png</file>
+    <file>user_man_settings_setting_options_gear-512.png</file>
     <file>074.png</file>
     <file>027.png</file>
     <file>026.png</file>

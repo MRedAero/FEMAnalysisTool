@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>876</width>
-    <height>624</height>
+    <width>859</width>
+    <height>647</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,41 +21,69 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_4">
-    <property name="margin">
-     <number>0</number>
-    </property>
-    <property name="spacing">
-     <number>0</number>
-    </property>
+   <layout class="QGridLayout" name="gridLayout_6">
     <item row="0" column="0">
-     <widget class="QSplitter" name="splitter_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+     <widget class="QTabWidget" name="tab_model">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <widget class="QSplitter" name="splitter">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <widget class="QFrame" name="frame">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <property name="margin">
-          <number>0</number>
-         </property>
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <layout class="QVBoxLayout" name="vl"/>
-         </item>
-        </layout>
-       </widget>
+      <property name="documentMode">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="tab_1">
+       <attribute name="title">
+        <string>Model 1</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QSplitter" name="splitter_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <widget class="QSplitter" name="splitter">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <widget class="QFrame" name="frame">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="acceptDrops">
+             <bool>true</bool>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>0</number>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <layout class="QVBoxLayout" name="vl"/>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Model 2</string>
+       </attribute>
       </widget>
      </widget>
     </item>
@@ -66,7 +94,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>876</width>
+     <width>859</width>
      <height>21</height>
     </rect>
    </property>
@@ -75,6 +103,7 @@
      <string>File</string>
     </property>
     <addaction name="action_Open"/>
+    <addaction name="action_Preferences"/>
     <addaction name="action_Quit"/>
    </widget>
    <widget class="QMenu" name="menu_Group">
@@ -152,7 +181,7 @@
    <addaction name="action_A2"/>
    <addaction name="action_A3"/>
   </widget>
-  <widget class="QToolBar" name="toolBar">
+  <widget class="QToolBar" name="tbar_showhide">
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -211,6 +240,10 @@
    </property>
   </action>
   <action name="action_Open">
+   <property name="icon">
+    <iconset resource="qrc/viewqrc.qrc">
+     <normaloff>:/qrc/folder32.png</normaloff>:/qrc/folder32.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Open...</string>
    </property>
@@ -229,8 +262,15 @@
    </property>
   </action>
   <action name="action_Quit">
+   <property name="icon">
+    <iconset resource="qrc/viewqrc.qrc">
+     <normaloff>:/qrc/exit-256.png</normaloff>:/qrc/exit-256.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="action_nodevis">
@@ -247,6 +287,15 @@
    </property>
    <property name="text">
     <string>ElementVis</string>
+   </property>
+  </action>
+  <action name="action_Preferences">
+   <property name="icon">
+    <iconset resource="qrc/viewqrc.qrc">
+     <normaloff>:/qrc/user_man_settings_setting_options_gear-512.png</normaloff>:/qrc/user_man_settings_setting_options_gear-512.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Preferences</string>
    </property>
   </action>
  </widget>

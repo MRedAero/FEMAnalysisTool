@@ -9,6 +9,7 @@ from fem_reader.nastran.bdf.reader import BDFReader
 from dock_control import Dock_Picking
 from dock_control import Dock_View
 from dock_control import Dock_Message
+from dock_control import Dock_Preferences
 
 class MainWindow(QtGui.QMainWindow):
  
@@ -22,18 +23,48 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.menubar.setNativeMenuBar(False)
 
 
+        # Setup Dock Ui(s)
         self.picking = Dock_Picking()
         self.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.picking)
+
         self.view = Dock_View()
         self.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.view)
+
         self.message = Dock_Message()
         self.addDockWidget(QtCore.Qt.DockWidgetArea(8), self.message)
+        self.message.show()
+        self.msg_minsize = [50,50]
+        self.msg_defaultsize = [50,50]
+
+
+        self.preferences = Dock_Preferences()
+        self.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.preferences)
+        self.preferences.setFloating(True)
+        self.preferences.hide()
+        self.connect(self.ui.action_Preferences, QtCore.SIGNAL('triggered()'), self.on_preferences)
+        self.connect(self.preferences, QtCore.SIGNAL('topLevelChanged(bool)'), self.on_dockpreflvlchange)
+        self.prefdocksize = [500,500]
+        self.prefdockgutter = 50
+        self.connect(self.preferences.ui.dial_iconsize, QtCore.SIGNAL('valueChanged(int)'), self.on_icondial)
+        self.connect(self.preferences.ui.lnedt_iconsize, QtCore.SIGNAL('returnPressed()'), self.on_manualicon)
+
+        self.default_iconsize = 24
 
         self.tabifyDockWidget(self.picking, self.view)
         self.view.raise_()
 
 
+        # Resize the Window
+        self.minsize = [150,100]
+        self.defaultsize = [1000,800] # not golden ratio
+        self.setMinimumSize(self.minsize[0], self.minsize[1])
+        self.resize(self.defaultsize[0], self.defaultsize[1])
+
+
+
+
         # Initialize style if available
+        # todo: possibly class the stylesheet instead of reading a file
         self.usrstylefile = r'stylesheet.dat'
         self.usrstyle()
 
@@ -43,7 +74,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.action_nodevis.triggered.connect(self.on_nodevis)
         self.ui.action_elementvis.setChecked(True)
         self.ui.action_nodevis.setChecked(True)
-
+        self.ui.action_Quit.triggered.connect(self.on_close)
 
         self.view.ui.btn_bgcolor1.clicked.connect(self.on_color1)
         self.view.ui.btn_bgcolor2.clicked.connect(self.on_color2)
@@ -75,6 +106,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
 
+        self.dock_resize()
 
 
 
@@ -89,6 +121,63 @@ class MainWindow(QtGui.QMainWindow):
         #self.show()
 
         self.vtk_widget = VTKWidget(self)
+
+
+    def on_icondial(self):
+
+        val = self.preferences.ui.dial_iconsize.value()
+        self.set_iconsize(val)
+        self.preferences.ui.lnedt_iconsize.setText(str(val))
+
+    def on_manualicon(self):
+
+        try:
+            val = float(self.preferences.ui.lnedt_iconsize.text())
+        except ValueError:
+            self.preferences.ui.lnedt_iconsize.setText(str(self.default_iconsize))
+            self.set_iconsize(self.default_iconsize)
+            return
+
+        if val >= 16 and val <= 56:
+            self.set_iconsize(val)
+        else:
+            # todo: redundant with above... rework
+            self.preferences.ui.lnedt_iconsize.setText(str(self.default_iconsize))
+            self.set_iconsize(self.default_iconsize)
+
+    def set_iconsize(self,size):
+        print("sizing")
+        self.ui.tbar_grp.setIconSize(QtCore.QSize(size,size))
+        self.ui.tbar_1.setIconSize(QtCore.QSize(size,size))
+        self.ui.tbar_showhide.setIconSize(QtCore.QSize(size,size))
+
+
+    def dock_resize(self):
+        # todo:  why is this not resizing the msg dock?
+        self.message.setMinimumSize(self.msg_minsize[0], self.msg_minsize[1])
+        self.message.resize(self.msg_defaultsize[0], self.msg_defaultsize[1])
+
+    def on_close(self):
+        self.close()
+
+    def on_dockpreflvlchange(self):
+        """ pref dock level change.... handle accordingly
+        """
+        # If its not floating... its docked.. and we don't want it docked
+        if not self.preferences.isFloating():
+            self.preferences.setEnabled(False)
+            self.preferences.hide()
+
+    def on_preferences(self):
+        self.preferences.setEnabled(True)
+        self.preferences.show()
+        self.preferences.raise_()
+        self.preferences.setFloating(True)
+        self.preferences.setMinimumSize(QtCore.QSize(self.prefdocksize[0],self.prefdocksize[1]))
+        self.preferences.resize(QtCore.QSize(self.prefdocksize[0],self.prefdocksize[1]))
+        #self.preferences.move(self.x()+self.size().width()+self.dock_gutter,self.y())
+        self.preferences.move(self.x()+self.prefdockgutter,self.y()+self.prefdockgutter)
+
 
     def usrstyle(self):
 
@@ -204,13 +293,27 @@ class MainWindow(QtGui.QMainWindow):
         self.vtk_widget.remove_selection_button()
 
     def on_elementvis(self):
+        # todo: add vtk_widget function to toggle element visibility
         if self.ui.action_elementvis.isChecked():
             self.vtk_widget.toggle_elements('ON')
         else:
             self.vtk_widget.toggle_elements('OFF')
 
     def on_nodevis(self):
+        # todo: add vtk_widget function to toggle node visibility
         if self.ui.action_nodevis.isChecked():
             self.vtk_widget.toggle_nodes('ON')
         else:
             self.vtk_widget.toggle_nodes('OFF')
+
+    # todo: add vtk_widget function to adjust model rotation (pivot) point
+    # todo: add vtk_widget function to change element color
+    # todo: add vtk_widget function to change node color / size
+    # todo: add vtk_widget function to change element filled edge line color / thickness
+    # todo: add vtk_widget function to change show / hide element filled edges
+    # todo: add vtk_widget function to support wireframe view
+    # todo: add vtk_widget function to fit view all in window ... this should be the default open behavior
+    # todo: add vtk_widget functions for zoom in / zoom out (for buttons in toolbar)
+
+
+
