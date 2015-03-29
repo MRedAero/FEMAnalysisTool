@@ -1,0 +1,8 @@
+[Core]
+Name = Plugin2
+Module = plugin2
+Category = category2
+Mount = Plugin2
+
+[Description]
+Author = nw

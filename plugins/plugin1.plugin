@@ -1,0 +1,8 @@
+[Core]
+Name = Plugin1
+Module = plugin1
+Category = category1
+Mount = Plugin1
+
+[Description]
+Author = Michael Redmond

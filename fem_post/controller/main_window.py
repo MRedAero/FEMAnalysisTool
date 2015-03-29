@@ -11,6 +11,8 @@ from dock_control import Dock_View
 from dock_control import Dock_Message
 from dock_control import Dock_Preferences
 
+from dock_control import Dialog_Plugins
+
 class MainWindow(QtGui.QMainWindow):
  
     def __init__(self, app, ui):
@@ -61,6 +63,12 @@ class MainWindow(QtGui.QMainWindow):
         self.resize(self.defaultsize[0], self.defaultsize[1])
 
 
+        # Plugins Dialog
+        self.manager = Dialog_Plugins()
+        self.connect(self.ui.action_Plugin_Manager, QtCore.SIGNAL('triggered()'), self.on_plugin_manager)
+        # Connect the custom signal from the txt_edit
+        self.connect(self.manager.ui.tedt_plugindir, QtCore.SIGNAL('dropped'), self.on_drop_plugin_dir)
+        self.plugin_dir = os.path.abspath('../plugins')
 
 
         # Initialize style if available
@@ -121,6 +129,154 @@ class MainWindow(QtGui.QMainWindow):
         #self.show()
 
         self.vtk_widget = VTKWidget(self)
+
+
+    def on_drop_plugin_dir(self,drpfile):
+        self.manager.ui.tedt_plugindir.clear()
+        self.manager.ui.tedt_plugindir.setText(drpfile)
+
+    def on_check_plugins(self):
+        """ Checks the specified location for plugs and populates the available plugins table
+
+            Note:  still in development.. need to clean up
+
+
+        :returns
+           empty if user cancels dialog
+                note:  need to store initial checked states
+
+           list of checked items in order to run plugin activation on if user selects ok
+        """
+
+
+        # clear the table
+        self.manager.ui.tbl_plugins.clear()
+
+
+        # todo:  where to instantiate the manager?
+        from manager import PluginManager
+        pm = PluginManager()
+
+        pm.add_plugin_folder(self.plugin_dir)
+        pm.collect_plugins()
+
+        plugins = pm.get_plugins()
+        print plugins
+
+        columns = 3
+        categories = plugins.keys()
+
+        # list comprehension to get plugin name list... need number of plugins for setting table ros
+        plugin_names = [plugin for category in categories for plugin in plugins[category].keys()]
+        print plugin_names
+
+        num_plugins = len(plugin_names)
+
+        print('Found %s Total Plugins' % num_plugins)
+
+        rows = num_plugins
+        self.manager.ui.tbl_plugins.setRowCount(rows)
+        self.manager.ui.tbl_plugins.setColumnCount(columns)
+        self.manager.ui.tbl_plugins.verticalHeader().setVisible(False)
+
+        self.manager.ui.tbl_plugins.setHorizontalHeaderLabels(['Activate','Plugin Name','Category'])
+
+
+        #todo: print remove
+        print('Number of Plugins found: %s' % str(rows))
+
+
+        #todo: ... maybe use a tree
+        #
+        # plugins is ordereddict where [0] is category
+        #       [1] is another ordereddict
+
+        # list plugins in table
+        row=0
+        for category in categories:
+            category_plugins = plugins[category].keys()
+            for plugin in category_plugins:
+
+                item0 = QtGui.QTableWidgetItem('')
+                item1 = QtGui.QTableWidgetItem('%s' % plugin)
+                item2 = QtGui.QTableWidgetItem('%s' % category)
+
+                #if row % 2:
+                #if row > 0:
+                item0.setFlags(QtCore.Qt.ItemIsUserCheckable |
+                              QtCore.Qt.ItemIsEnabled)
+                item0.setCheckState(QtCore.Qt.Unchecked)
+
+                self.manager.ui.tbl_plugins.setItem(row, 0, item0)
+                self.manager.ui.tbl_plugins.setItem(row, 1, item1)
+                self.manager.ui.tbl_plugins.setItem(row, 2, item2)
+
+                print('added item')
+                row += 1
+
+        self._list = []
+        self.manager.ui.tbl_plugins.itemClicked.connect(self.handleItemClicked)
+
+
+    def handleItemClicked(self, item):
+        # todo:  still buggy
+        if item.checkState() == QtCore.Qt.Checked:
+            print('"%s" Checked' % item.text())
+            self._list.append(item.row())
+            print(self._list)
+        elif item.checkState() == QtCore.Qt.Unchecked:
+            print('"%s" Un-Checked' % item.text())
+            self._list.remove(item.row())
+            print(self._list)
+        else:
+            print('"%s" Clicked' % item.text())
+            print(self._list)
+
+
+    def print_check(self):
+        print('something happened')
+
+
+    def on_get_plugin_dir(self):
+        user_dir = str(QtGui.QFileDialog.getExistingDirectory(self, "Specify Plugin Directory.", self.plugin_dir))
+        if user_dir:
+            self.plugin_dir = user_dir
+
+        self.on_set_plugin_dir(self.plugin_dir)
+
+        self.manager.activateWindow()
+
+
+    def on_set_plugin_dir(self,dir):
+        self.manager.ui.tedt_plugindir.setText(dir)
+
+    def on_plugin_manager(self):
+
+        # Set the plugin directory.... default if not changed
+        self.on_set_plugin_dir(self.plugin_dir)
+
+        #Connect
+        self.manager.ui.btn_setplugindir.pressed.connect(self.on_get_plugin_dir)
+        self.manager.ui.btn_checkplugins.pressed.connect(self.on_check_plugins)
+
+        # check for plugins when manager opens (default the directory)
+        self.on_check_plugins()
+
+        self.manager.ui.splitter.setSizes([500,300])
+
+
+        # Set the Window Title
+        self.manager.setWindowTitle("Plugin Manager")
+        #icon = QtGui.QIcon(self.iconpath)
+        #manager.setWindowIcon(icon)
+        ret = self.manager.exec_()
+        print('User Selected: %s' % ret)
+
+        if ret == 0:
+            return # Cancel Flag is 0
+
+        self.on_check_plugins()
+
 
 
     def on_icondial(self):
@@ -190,6 +346,8 @@ class MainWindow(QtGui.QMainWindow):
 
             self.setStyleSheet(style)
 
+            #TODO: Style for manager dialog
+            self.manager.setStyleSheet(style)
 
     def on_color1(self):
         color = self.vtk_widget.bg_color_1

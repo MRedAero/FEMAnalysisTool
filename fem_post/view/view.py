@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\CODE\10_PROJECT\FEMAnalysisTool\fem_post\view\view.ui'
 #
-# Created: Tue Mar 24 05:07:04 2015
+# Created: Sat Mar 28 06:40:59 2015
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -149,9 +149,12 @@ class Ui_MainWindow(object):
         icon5.addPixmap(QtGui.QPixmap(_fromUtf8(":/qrc/user_man_settings_setting_options_gear-512.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_Preferences.setIcon(icon5)
         self.action_Preferences.setObjectName(_fromUtf8("action_Preferences"))
+        self.action_Plugin_Manager = QtGui.QAction(MainWindow)
+        self.action_Plugin_Manager.setObjectName(_fromUtf8("action_Plugin_Manager"))
         self.menuFile.addAction(self.action_Open)
         self.menuFile.addAction(self.action_Preferences)
         self.menuFile.addAction(self.action_Quit)
+        self.menu_Tools.addAction(self.action_Plugin_Manager)
         self.menu_Toolbars.addAction(self.action_View)
         self.menu_Toolbars.addAction(self.action_Picking)
         self.menu_View.addAction(self.menu_Toolbars.menuAction())
@@ -200,6 +203,7 @@ class Ui_MainWindow(object):
         self.action_nodevis.setText(_translate("MainWindow", "NodeVis", None))
         self.action_elementvis.setText(_translate("MainWindow", "ElementVis", None))
         self.action_Preferences.setText(_translate("MainWindow", "&Preferences", None))
+        self.action_Plugin_Manager.setText(_translate("MainWindow", "Plugin Manager", None))
 
 import viewqrc_rc
 

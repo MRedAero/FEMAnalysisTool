@@ -6,6 +6,27 @@ QMainWindow::separator
     border: none;
 }
 
+QSplitter::handle:horizontal
+{
+    /*background-color: #000;*/
+    color: #000;
+    width: 2px;
+    border: 2px;
+}
+
+QSplitter::handle:vertical
+{
+    /*background-color: #000;*/
+    color: #000;
+    height: 2px;
+    border: 2px;
+}
+
+QFrame::HLine
+{
+    color: #000;
+}
+
 QToolBar {
 
     background-color: rgb(240, 240, 240);
