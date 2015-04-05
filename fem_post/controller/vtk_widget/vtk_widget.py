@@ -327,11 +327,12 @@ class VTKWidget(object):
         self.interactor.GetRenderWindow().Render()
 
     def set_bdf_data(self, bdf):
-        self.bdf = bdf
-        self.data_source.set_bdf(self.bdf)
-        self.bdf = None
+        print bdf
+        print 'set bdf'
+        self.data_source.set_bdf(bdf)
+        print 'update'
         self.data_source.Update()
-
+        print 'render'
         self.render()
 
     # needs to be renamed

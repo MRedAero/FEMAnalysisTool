@@ -1,6 +1,6 @@
 __author__ = 'Michael Redmond'
 
-from model_data_source import BDFDataSource
+from model_data_source2 import BDFDataSource
 from visible_filter import VisibleFilter
 from global_id_filter import GlobalIdFilter
 from hovered_filter import HoveredFilter

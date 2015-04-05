@@ -1,3 +1,3 @@
 __author__ = 'Michael Redmond'
 
-from model_data import ModelDataHelper
+from model_data import ModelDataHelper, ModelDataHelper2

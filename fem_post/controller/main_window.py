@@ -91,12 +91,9 @@ class MainWindow(QtGui.QMainWindow):
         if filename[0] == '':
             return
 
-        self.bdf = BDFReader()
-
         # noinspection PyUnresolvedReferences
         self.app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
-        self.bdf.read_bdf(filename[0])
-        self.vtk_widget.set_bdf_data(self.bdf)
+        self.vtk_widget.set_bdf_data(str(filename[0]))
         # noinspection PyUnresolvedReferences
         self.app.restoreOverrideCursor()
 
