@@ -6,12 +6,9 @@ from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 from controller.vtk_widget.vtk_globals import vtk_globals
 from controller.vtk_widget.model_data import ModelDataHelper2
 
-from external_tools import fem_utilities
-
-BDFH5Writer = fem_utilities.nastran.bdf.h5.BDFH5Writer
-BDFH5Reader = fem_utilities.nastran.bdf.h5.BDFH5Reader
-BDFReader = fem_utilities.nastran.bdf.reader.BDFReader
-bdf_card_numbering = fem_utilities.nastran.bdf.utilities.bdf_card_numbering
+from fem_utilities.nastran.bdf.h5 import BDFH5Reader
+from fem_utilities.nastran.bdf.reader import BDFReader
+from fem_utilities.nastran.bdf.utilities.bdf_card_numbering import bdf_card_numbering
 
 
 class BDFDataSource(VTKPythonAlgorithmBase):

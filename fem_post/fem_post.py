@@ -1,5 +1,8 @@
 __author__ = 'Michael Redmond'
 
+# modifies sys.path for external_tools
+import external_tools
+
 import sys
 from PySide import QtGui
 
