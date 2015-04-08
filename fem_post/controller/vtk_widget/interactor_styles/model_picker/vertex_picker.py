@@ -3,7 +3,7 @@ __author__ = 'Michael Redmond'
 
 import vtk
 
-from ...vtk_globals import vtk_globals
+from controller.vtk_widget.vtk_globals import vtk_globals
 
 
 class VertexPicker(vtk.vtkCellPicker):

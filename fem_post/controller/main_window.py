@@ -2,8 +2,7 @@ __author__ = 'Michael Redmond'
 
 from PySide import QtGui, QtCore
 
-from .vtk_widget import VTKWidget
-from fem_reader.nastran.bdf.reader import BDFReader
+from vtk_widget import VTKWidget
 
 
 class MainWindow(QtGui.QMainWindow):

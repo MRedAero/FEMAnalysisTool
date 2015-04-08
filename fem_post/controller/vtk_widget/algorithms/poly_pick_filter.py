@@ -3,7 +3,7 @@ __author__ = 'Michael Redmond'
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
-from ..utilities import *
+from controller.vtk_widget.utilities import *
 
 #import traceback
 

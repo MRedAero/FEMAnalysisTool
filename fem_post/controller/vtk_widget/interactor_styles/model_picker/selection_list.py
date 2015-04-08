@@ -3,7 +3,7 @@ __author__ = 'Michael Redmond'
 from PySide import QtCore
 import vtk
 
-from ...vtk_globals import vtk_globals
+from controller.vtk_widget.vtk_globals import vtk_globals
 
 import re
 

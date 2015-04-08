@@ -162,7 +162,9 @@ class ModelDataHelper2(object):
 
     def squeeze(self):
         self.data.Squeeze()
+        self.card_ids.Squeeze()
         self.global_ids1.Squeeze()
+        self.global_ids2.Squeeze()
         self.visible.Squeeze()
         self.original_ids.Squeeze()
         self.basic_types.Squeeze()

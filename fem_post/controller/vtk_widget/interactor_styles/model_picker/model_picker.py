@@ -1,15 +1,15 @@
 __author__ = 'Michael Redmond'
 
-from ...vtk_globals import vtk_globals
-from ...algorithms import GlobalIdFilter
+from controller.vtk_widget.vtk_globals import vtk_globals
+from controller.vtk_widget.algorithms import GlobalIdFilter
 
-from .no_picker import NoPicker
-from .single_picker import SinglePicker
-from .box_picker import BoxPicker
-from .poly_picker import PolyPicker
+from no_picker import NoPicker
+from single_picker import SinglePicker
+from box_picker import BoxPicker
+from poly_picker import PolyPicker
 
-from .active_selections import ActiveSelections
-from .selection_list import SelectionList
+from active_selections import ActiveSelections
+from selection_list import SelectionList
 
 
 class ModelPicker(object):

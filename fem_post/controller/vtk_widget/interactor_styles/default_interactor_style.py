@@ -3,7 +3,7 @@ __author__ = 'Michael Redmond'
 import vtk
 from PySide import QtCore
 
-from .model_picker import ModelPicker
+from model_picker import ModelPicker
 
 
 # can be deleted

@@ -3,10 +3,15 @@ __author__ = 'Michael Redmond'
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
-from ..vtk_globals import vtk_globals
-from ..model_data import ModelDataHelper
+from controller.vtk_widget.vtk_globals import vtk_globals
+from controller.vtk_widget.model_data import ModelDataHelper2
 
-from fem_reader import BDFReader
+from external_tools import fem_utilities
+
+BDFH5Writer = fem_utilities.nastran.bdf.h5.BDFH5Writer
+BDFH5Reader = fem_utilities.nastran.bdf.h5.BDFH5Reader
+BDFReader = fem_utilities.nastran.bdf.reader.BDFReader
+bdf_card_numbering = fem_utilities.nastran.bdf.utilities.bdf_card_numbering
 
 
 class BDFDataSource(VTKPythonAlgorithmBase):
@@ -35,28 +40,31 @@ class BDFDataSource(VTKPythonAlgorithmBase):
 
     def read_bdf(self):
 
-        new_data = vtk.vtkUnstructuredGrid()
-
-        self._data = ModelDataHelper(new_data)
-
-        data_helper = self._data
-
-        bdf = self._bdf
-
-        if bdf is None:
+        if self._bdf is None:
             return
 
-        nid_map = {}
-        eid_map = {}
+        bdf_reader = BDFReader(self._bdf)
+        bdf_reader.read_bdf()
 
-        grids = bdf.nodes.keys()
+        h5filename = bdf_reader.h5filename
+
+        h5_reader = BDFH5Reader(h5filename)
+        ugrid = h5_reader.create_vtk_data()
+        h5_reader.close()
+
+        grid = bdf_card_numbering['GRID']
+        cbeam = bdf_card_numbering['CBEAM']
+        ctria3 = bdf_card_numbering['CTRIA3']
+        cquad4 = bdf_card_numbering['CQUAD4']
+
+        self._data = ModelDataHelper2(ugrid)
+
+        data_helper = self._data
 
         OFFSET_NODE = vtk_globals.OFFSET_NODE
         OFFSET_ELEMENT = vtk_globals.OFFSET_ELEMENT
 
         self.default_group.Reset()
-
-        original_id = 0
 
         VTK_NODE = vtk_globals.VTK_NODE
         VTK_VERTEX = vtk_globals.VTK_VERTEX
@@ -65,113 +73,64 @@ class BDFDataSource(VTKPythonAlgorithmBase):
         VTK_QUAD = vtk_globals.VTK_QUAD
         VTK_POLY_LINE = vtk_globals.VTK_POLY_LINE
 
-        for i in xrange(len(grids)):
-            node = bdf.nodes[grids[i]]
-            """:type : fem_reader.GRID"""
-            # noinspection PyArgumentList
-            data_helper.points.InsertNextPoint(node.to_global())
-            nid_map[node.ID] = i
+        card_ids = data_helper.card_ids
+        get_card_id = card_ids.GetValue
+        get_global_id = data_helper.global_ids2.GetValue
+        global_id1_insert = data_helper.global_ids1.InsertNextValue
+        set_global_id2 = data_helper.global_ids2.SetValue
+        visible_insert = data_helper.visible.InsertNextValue
+        basic_types_insert = data_helper.basic_types.InsertNextValue
+        basic_shapes_insert = data_helper.basic_shapes.InsertNextValue
+        default_group_insert = self.default_group.InsertNextValue
 
-            cell = vtk.vtkVertex()
-            ids = cell.GetPointIds()
-            ids.SetId(0, i)
+        for i in xrange(ugrid.GetNumberOfCells()):
 
-            data_helper.data.InsertNextCell(cell.GetCellType(), ids)
-            data_helper.global_ids1.InsertNextValue(node.ID + OFFSET_NODE)
-            data_helper.global_ids2.InsertNextValue(node.ID + OFFSET_NODE)
-            data_helper.visible.InsertNextValue(1)
-            data_helper.basic_types.InsertNextValue(0)
-            data_helper.basic_shapes.InsertNextValue(VTK_NODE)
-            data_helper.original_ids.InsertNextValue(original_id)
-            original_id += 1
+            card_id = get_card_id(i)
 
-            # add to default group
-            self.default_group.InsertNextValue(node.ID + OFFSET_NODE)
+            original_id = get_global_id(i)
 
-        elements = bdf.elements.keys()
+            visible_insert(1)
 
-        for i in xrange(len(elements)):
-            element = bdf.elements[elements[i]]
-            card_name = element.card_name
+            if card_id == grid:
+                new_id = original_id + OFFSET_NODE
+                global_id1_insert(new_id)
+                set_global_id2(i, new_id)
+                basic_types_insert(0)
+                basic_shapes_insert(VTK_NODE)
 
-            eid_map[element.ID] = i
+            elif card_id == cbeam:
+                new_id = original_id + OFFSET_ELEMENT
+                global_id1_insert(new_id)
+                set_global_id2(i, new_id)
+                basic_types_insert(2)
+                basic_shapes_insert(VTK_LINE)
 
-            number_of_nodes = len(element.nodes)
+            elif card_id == ctria3:
+                new_id = original_id + OFFSET_ELEMENT
+                global_id1_insert(new_id)
+                set_global_id2(i, new_id)
+                basic_types_insert(2)
+                basic_shapes_insert(VTK_TRI)
 
-            if number_of_nodes == 1:
-                #  some 1 node elements, add to data.vertices.data
-                #data.elements.basic_types.InsertNextValue(1)
-                pass
+            elif card_id == cquad4:
+                new_id = original_id + OFFSET_ELEMENT
+                global_id1_insert(new_id)
+                set_global_id2(i, new_id)
+                basic_types_insert(2)
+                basic_shapes_insert(VTK_QUAD)
 
-            elif card_name == 'CBEAM':
-                nodes = element.nodes
-                cell = vtk.vtkLine()
-                ids = cell.GetPointIds()
-                ids.SetId(0, nid_map[nodes[0]])
-                ids.SetId(1, nid_map[nodes[1]])
+            else:
+                # skip unsupported cell
+                continue
 
-                data_helper.data.InsertNextCell(cell.GetCellType(), ids)
-                data_helper.visible.InsertNextValue(1)
-                data_helper.global_ids1.InsertNextValue(element.ID + OFFSET_ELEMENT)
-                data_helper.global_ids2.InsertNextValue(element.ID + OFFSET_ELEMENT)
-                data_helper.original_ids.InsertNextValue(original_id)
-                original_id += 1
-
-                # add to default group
-                self.default_group.InsertNextValue(element.ID + OFFSET_ELEMENT)
-
-                data_helper.basic_types.InsertNextValue(2)
-                data_helper.basic_shapes.InsertNextValue(VTK_LINE)
-
-            elif card_name == 'CTRIA3':
-                nodes = element.nodes
-                cell = vtk.vtkTriangle()
-                ids = cell.GetPointIds()
-                ids.SetId(0, nid_map[nodes[0]])
-                ids.SetId(1, nid_map[nodes[1]])
-                ids.SetId(2, nid_map[nodes[2]])
-
-                data_helper.data.InsertNextCell(cell.GetCellType(), ids)
-                data_helper.visible.InsertNextValue(1)
-                data_helper.global_ids1.InsertNextValue(element.ID + OFFSET_ELEMENT)
-                data_helper.global_ids2.InsertNextValue(element.ID + OFFSET_ELEMENT)
-                data_helper.original_ids.InsertNextValue(original_id)
-                original_id += 1
-
-                # add to default group
-                self.default_group.InsertNextValue(element.ID + OFFSET_ELEMENT)
-
-                data_helper.basic_types.InsertNextValue(2)
-                data_helper.basic_shapes.InsertNextValue(VTK_TRI)
-
-            elif card_name == 'CQUAD4':
-                nodes = element.nodes
-                cell = vtk.vtkQuad()
-                ids = cell.GetPointIds()
-                ids.SetId(0, nid_map[nodes[0]])
-                ids.SetId(1, nid_map[nodes[1]])
-                ids.SetId(2, nid_map[nodes[2]])
-                ids.SetId(3, nid_map[nodes[3]])
-
-                data_helper.data.InsertNextCell(cell.GetCellType(), ids)
-                data_helper.visible.InsertNextValue(1)
-                data_helper.global_ids1.InsertNextValue(element.ID + OFFSET_ELEMENT)
-                data_helper.global_ids2.InsertNextValue(element.ID + OFFSET_ELEMENT)
-                data_helper.original_ids.InsertNextValue(original_id)
-                original_id += 1
-
-                # add to default group
-                self.default_group.InsertNextValue(element.ID + OFFSET_ELEMENT)
-
-                data_helper.basic_types.InsertNextValue(2)
-                data_helper.basic_shapes.InsertNextValue(VTK_QUAD)
+            default_group_insert(new_id)
 
         data_helper.squeeze()
 
         self.default_group.Squeeze()
         self.default_group.Modified()
 
-        self._opt.ShallowCopy(new_data)
+        self._opt.ShallowCopy(ugrid)
 
         self._bdf = None
 

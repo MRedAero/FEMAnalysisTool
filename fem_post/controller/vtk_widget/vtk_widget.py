@@ -6,9 +6,9 @@ import vtk
 
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-from .widgets import *
-from .interactor_styles import *
-from .algorithms import *
+from widgets import *
+from interactor_styles import *
+from algorithms import *
 from vtk_globals import vtk_globals
 
 
@@ -327,12 +327,8 @@ class VTKWidget(object):
         self.interactor.GetRenderWindow().Render()
 
     def set_bdf_data(self, bdf):
-        print bdf
-        print 'set bdf'
         self.data_source.set_bdf(bdf)
-        print 'update'
         self.data_source.Update()
-        print 'render'
         self.render()
 
     # needs to be renamed

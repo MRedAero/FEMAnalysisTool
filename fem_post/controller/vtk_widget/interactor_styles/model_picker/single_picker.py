@@ -1,9 +1,9 @@
 __author__ = 'Michael Redmond'
 
-from ...vtk_globals import vtk_globals
+from controller.vtk_widget.vtk_globals import vtk_globals
 
-from .cell_picker import CellPicker
-from .vertex_picker import VertexPicker
+from cell_picker import CellPicker
+from vertex_picker import VertexPicker
 
 
 class SinglePicker(object):
