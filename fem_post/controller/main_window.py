@@ -7,11 +7,14 @@ from vtk_widget import VTKWidget
 
 class MainWindow(QtGui.QMainWindow):
  
-    def __init__(self, app, ui):
+    def __init__(self, app, model, ui):
         QtGui.QMainWindow.__init__(self)
 
         self.app = app
         """:type : QApplication"""
+
+        self.model = model
+
         self.ui = ui
         self.ui.setupUi(self)
         self.ui.menubar.setNativeMenuBar(False)
@@ -54,6 +57,12 @@ class MainWindow(QtGui.QMainWindow):
         #self.show()
 
         self.vtk_widget = VTKWidget(self)
+
+    def get_model(self):
+        return self.model
+
+    def get_view(self):
+        return self.ui
 
     def on_color1(self):
         color = self.vtk_widget.bg_color_1

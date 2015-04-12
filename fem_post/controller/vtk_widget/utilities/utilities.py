@@ -2,7 +2,7 @@ __author__ = 'Michael Redmond'
 
 import vtk
 
-from controller.vtk_widget.vtk_globals import *
+from fem_post.controller.vtk_widget.vtk_globals import *
 
 
 def project_cell_from_screen(cell, points, renderer, dist):

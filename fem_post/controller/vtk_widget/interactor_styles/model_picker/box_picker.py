@@ -1,6 +1,6 @@
 __author__ = 'Michael Redmond'
 
-from controller.vtk_widget.utilities import *
+from fem_post.controller.vtk_widget.utilities import *
 
 
 class BoxPicker(object):

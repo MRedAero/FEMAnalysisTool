@@ -6,29 +6,20 @@ import external_tools
 import sys
 from PySide import QtGui
 
+from base_app.application import BaseApplication
+
 from view import Ui_MainWindow
 from controller import MainWindow
 
 
 def main():
 
-    app = QtGui.QApplication(sys.argv)
-    # model ... fem data and other user data?
+    app = BaseApplication(sys.argv)
+
+    model = None
     view = Ui_MainWindow()
-    controller = MainWindow(app, view)
-    sys.exit(app.exec_())
+    controller = MainWindow(app, model, view)
 
+    app.build(controller)
 
-if __name__ == '__main__':
-
-    main()
-
-    #import cProfile
-    #filename = "fem_post_profile.stats"
-    #cProfile.run('main()', filename)
-
-
-    #from pycallgraph import PyCallGraph
-    #from pycallgraph.output import GraphvizOutput
-    #with PyCallGraph(output=GraphvizOutput()):
-    #    main()
+    app.start()

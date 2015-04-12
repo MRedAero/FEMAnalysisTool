@@ -1,6 +1,6 @@
 __author__ = 'Michael Redmond'
 
-from controller.vtk_widget.vtk_globals import vtk_globals
+from fem_post.controller.vtk_widget.vtk_globals import vtk_globals
 
 from cell_picker import CellPicker
 from vertex_picker import VertexPicker

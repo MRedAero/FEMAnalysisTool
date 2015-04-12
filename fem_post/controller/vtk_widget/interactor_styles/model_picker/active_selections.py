@@ -3,7 +3,7 @@ __author__ = 'Michael Redmond'
 from PySide import QtCore
 import vtk
 
-from controller.vtk_widget.vtk_globals import vtk_globals
+from fem_post.controller.vtk_widget.vtk_globals import vtk_globals
 
 
 class ActiveSelections(QtCore.QObject):

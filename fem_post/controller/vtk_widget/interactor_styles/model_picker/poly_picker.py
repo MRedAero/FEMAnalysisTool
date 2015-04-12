@@ -2,8 +2,8 @@ __author__ = 'Michael Redmond'
 
 from vtk.vtkCommonCorePython import mutable
 
-from controller.vtk_widget.utilities import *
-from controller.vtk_widget.algorithms import PolyPickFilter
+from fem_post.controller.vtk_widget.utilities import *
+from fem_post.controller.vtk_widget.algorithms import PolyPickFilter
 
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 

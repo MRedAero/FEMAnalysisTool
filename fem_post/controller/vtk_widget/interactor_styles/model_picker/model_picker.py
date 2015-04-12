@@ -1,7 +1,7 @@
 __author__ = 'Michael Redmond'
 
-from controller.vtk_widget.vtk_globals import vtk_globals
-from controller.vtk_widget.algorithms import GlobalIdFilter
+from fem_post.controller.vtk_widget.vtk_globals import vtk_globals
+from fem_post.controller.vtk_widget.algorithms import GlobalIdFilter
 
 from no_picker import NoPicker
 from single_picker import SinglePicker

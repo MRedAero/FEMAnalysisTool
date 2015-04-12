@@ -3,8 +3,8 @@ __author__ = 'Michael Redmond'
 
 import vtk
 from vtk.vtkCommonCorePython import mutable
-from controller.vtk_widget.utilities import *
-from controller.vtk_widget.vtk_globals import vtk_globals
+from fem_post.controller.vtk_widget.utilities import *
+from fem_post.controller.vtk_widget.vtk_globals import vtk_globals
 
 
 class CellPicker(vtk.vtkCellLocator):

@@ -3,8 +3,8 @@ __author__ = 'Michael Redmond'
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
-from controller.vtk_widget.vtk_globals import vtk_globals
-from controller.vtk_widget.model_data import ModelDataHelper2
+from fem_post.controller.vtk_widget.vtk_globals import vtk_globals
+from fem_post.controller.vtk_widget.model_data import ModelDataHelper2
 
 from fem_utilities.nastran.bdf.h5 import BDFH5Reader
 from fem_utilities.nastran.bdf.reader import BDFReader
