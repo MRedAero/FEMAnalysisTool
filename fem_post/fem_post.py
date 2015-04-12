@@ -4,7 +4,6 @@ __author__ = 'Michael Redmond'
 import external_tools
 
 import sys
-from PySide import QtGui
 
 from base_app.application import BaseApplication
 

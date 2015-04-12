@@ -1,6 +1,6 @@
 __author__ = 'Michael Redmond'
 
-from PySide import QtGui, QtCore
+from PyQt4 import QtGui, QtCore
 
 from vtk_widget import VTKWidget
 
@@ -94,15 +94,18 @@ class MainWindow(QtGui.QMainWindow):
 
     def on_open(self):
         # noinspection PyCallByClass
-        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File', None,
+        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File', "",
                                                      "BDF Files (*.bdf);;DAT Files (*.dat);;Database Files (*.h5)")
 
-        if filename[0] == '':
+        if isinstance(filename, list):
+            filename = filename[0]
+
+        if filename == '':
             return
 
         # noinspection PyUnresolvedReferences
         self.app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
-        self.vtk_widget.set_bdf_data(str(filename[0]))
+        self.vtk_widget.set_bdf_data(str(filename))
         # noinspection PyUnresolvedReferences
         self.app.restoreOverrideCursor()
 

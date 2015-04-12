@@ -1,6 +1,6 @@
 __author__ = 'Michael Redmond'
 
-from PySide import QtCore
+from PyQt4 import QtCore
 import vtk
 
 from fem_post.controller.vtk_widget.vtk_globals import vtk_globals
