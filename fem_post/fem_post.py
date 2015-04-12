@@ -18,7 +18,7 @@ def main():
 
     model = None
     view = Ui_MainWindow()
-    controller = MainWindow(app, model, view)
+    controller = MainWindow(app.get_qapp(), model, view)
 
     app.build(controller)
 

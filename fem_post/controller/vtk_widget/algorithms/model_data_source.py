@@ -2,6 +2,7 @@ __author__ = 'Michael Redmond'
 
 import vtk
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
+import tables
 
 from fem_post.controller.vtk_widget.vtk_globals import vtk_globals
 from fem_post.controller.vtk_widget.model_data import ModelDataHelper2
@@ -40,12 +41,14 @@ class BDFDataSource(VTKPythonAlgorithmBase):
         if self._bdf is None:
             return
 
-        bdf_reader = BDFReader(self._bdf)
-        bdf_reader.read_bdf()
+        if tables.is_pytables_file(self._bdf):
+            h5_reader = BDFH5Reader(self._bdf)
+        else:
+            bdf_reader = BDFReader(self._bdf)
+            bdf_reader.read_bdf()
+            h5filename = bdf_reader.h5filename
+            h5_reader = BDFH5Reader(h5filename)
 
-        h5filename = bdf_reader.h5filename
-
-        h5_reader = BDFH5Reader(h5filename)
         ugrid = h5_reader.create_vtk_data()
         h5_reader.close()
 

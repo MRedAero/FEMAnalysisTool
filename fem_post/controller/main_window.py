@@ -94,7 +94,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def on_open(self):
         # noinspection PyCallByClass
-        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File', None, "BDF Files (*.bdf);;DAT Files (*.dat)")
+        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File', None,
+                                                     "BDF Files (*.bdf);;DAT Files (*.dat);;Database Files (*.h5)")
 
         if filename[0] == '':
             return
