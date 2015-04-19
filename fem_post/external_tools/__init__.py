@@ -1,9 +1,16 @@
 __author__ = 'Michael Redmond'
 
 import sys
+import getpass
 
-# for base_app
-sys.path.append(r'C:/Users/Michael/PycharmProjects/BaseApp')
+user = getpass.getuser()
 
-# for fem_utilities
-sys.path.append(r'C:/Users/Michael/PycharmProjects/fem_utilities')
+if user == 'Michael':
+    # for base_app
+    sys.path.append(r'C:/Users/Michael/PycharmProjects/BaseApp')
+
+    # for fem_utilities
+    sys.path.append(r'C:/Users/Michael/PycharmProjects/fem_utilities')
+
+elif user == 'Nick':
+    pass
