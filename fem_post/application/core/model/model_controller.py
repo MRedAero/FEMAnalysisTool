@@ -1,16 +1,13 @@
 __author__ = 'Michael Redmond'
 
-from base_app.application.controller.model import BaseAppModelController
+from base_app.application.core.model import BaseAppModelController
 
-from fem_post.application.core.model import FemAnalysisToolModelCore
+from model_core import FemAnalysisToolModelCore
 
 
 class FemAnalysisToolModelController(BaseAppModelController):
-    def __init__(self, adaptor):
-        super(FemAnalysisToolModelController, self).__init__(adaptor)
-
-        self._adaptor = self._adaptor
-        """:type: fem_post.application.adaptor.FemAnalysisToolAdaptor"""
+    def __init__(self):
+        super(FemAnalysisToolModelController, self).__init__()
 
         self._models = self._models
         """:type: list [FemAnalysisToolModelCore]"""

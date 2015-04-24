@@ -10,7 +10,7 @@ import sys
 
 from base_app.application import BaseApplication
 
-from fem_post.application.adaptor import FemAnalysisToolAdaptor
+from fem_post.application.core import FemAnalysisToolProgramController
 
 
 class FEMAnalysisToolApplication(BaseApplication):
@@ -18,8 +18,8 @@ class FEMAnalysisToolApplication(BaseApplication):
         super(FEMAnalysisToolApplication, self).__init__()
 
     @property
-    def create_adaptor_object(self):
-        return FemAnalysisToolAdaptor
+    def create_program_controller_object(self):
+        return FemAnalysisToolProgramController
 
 
 if __name__ == "__main__":

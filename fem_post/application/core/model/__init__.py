@@ -1,3 +1,3 @@
 __author__ = 'Michael Redmond'
 
-from model_core import FemAnalysisToolModelCore
+from model_controller import FemAnalysisToolModelController

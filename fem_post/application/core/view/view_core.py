@@ -2,7 +2,7 @@ __author__ = 'Michael Redmond'
 
 from PyQt4 import QtGui, QtCore
 
-from base_app.application.core.view import BaseAppViewCore
+from base_app.application.core.view.view_core import BaseAppViewCore
 from base_app.utilities.menus import MenuController
 
 

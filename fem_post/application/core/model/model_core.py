@@ -1,7 +1,7 @@
 __author__ = 'Michael Redmond'
 
 
-from base_app.application.core.model import BaseAppModelCore
+from base_app.application.core.model.model_core import BaseAppModelCore
 
 
 class FemAnalysisToolModelCore(BaseAppModelCore):

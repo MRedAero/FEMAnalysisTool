@@ -1,3 +1,3 @@
 __author__ = 'Michael Redmond'
 
-import vtk_selections_test
+from plugin_controller import PluginController
