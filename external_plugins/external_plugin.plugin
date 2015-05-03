@@ -1,0 +1,8 @@
+[Core]
+Name = Some External Plugin
+Module = external_plugin
+Category = Misc
+Mount = ExternalPlugin
+
+[Description]
+Author = Michael Redmond

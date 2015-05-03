@@ -17,9 +17,8 @@ class FEMAnalysisToolApplication(BaseApplication):
     def __init__(self):
         super(FEMAnalysisToolApplication, self).__init__()
 
-    @property
-    def create_program_controller_object(self):
-        return FemAnalysisToolProgramController
+    def create_program_controller_object(self, app):
+        return FemAnalysisToolProgramController(app)
 
 
 if __name__ == "__main__":

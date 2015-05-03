@@ -1,17 +1,15 @@
 __author__ = 'Michael Redmond'
 
+from base_app.application.core.plugins import BaseAppPluginController
+
 from vtk_selections_test import VTKSelectionsTestController
 
 
-class PluginController(object):
+class FemAnalysisToolPluginController(BaseAppPluginController):
     def __init__(self, program_controller):
-        super(PluginController, self).__init__()
+        super(FemAnalysisToolPluginController, self).__init__(program_controller)
 
-        self._program_controller = program_controller
+        self._program_controller = self._program_controller
         """:type: fem_post.application.core.program_controller.FemAnalysisToolProgramController"""
-
-        self._view_controller = self._program_controller.get_view_controller()
-
-        self._vtk_controller = self._program_controller.get_vtk_controller()
 
         self._vtk_selections_test = VTKSelectionsTestController(self._program_controller)

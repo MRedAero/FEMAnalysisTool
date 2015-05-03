@@ -12,7 +12,6 @@ class VTKSelectionsTestController(object):
         """:type: fem_post.application.core.program_controller.FemAnalysisToolProgramController"""
 
         self._program_view_controller = self._program_controller.get_view_controller()
-        self._program_vtk_controller = self._program_controller.get_vtk_controller()
 
         self._view = VTKSelectionsTestView()
         self._program_view_controller.add_dock_widget(QtCore.Qt.RightDockWidgetArea, self._view)
@@ -21,7 +20,7 @@ class VTKSelectionsTestController(object):
         self._view.ui.btn_switch_view.clicked.connect(self._switch_view)
 
     def _show_hide(self):
-        self._program_vtk_controller.show_hide()
+        self._program_controller.show_hide()
 
     def _switch_view(self):
-        self._program_vtk_controller.switch_view()
+        self._program_controller.switch_view()

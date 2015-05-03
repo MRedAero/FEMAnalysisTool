@@ -33,6 +33,8 @@ class VTKWidgetController(object):
         except IndexError:
             pass
 
+        self._active_vtk.unload()
+
         try:
             self._active_vtk = self._vtk_widgets[self._current_index]
         except IndexError:
@@ -43,7 +45,8 @@ class VTKWidgetController(object):
                 self._active_vtk = None
 
     def set_active_vtk(self, index):
-        self._active_vtk = self._vtk_widgets[index]
+        if index >= 0:
+            self._active_vtk = self._vtk_widgets[index]
 
     def get_active_vtk(self):
         return self._active_vtk
@@ -54,5 +57,5 @@ class VTKWidgetController(object):
     def show_hide(self):
         self._active_vtk.toggle_selected()
 
-
-
+    def __getattr__(self, attr):
+        return getattr(self._active_vtk, attr)

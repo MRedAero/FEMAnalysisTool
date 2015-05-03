@@ -1,3 +1,3 @@
 __author__ = 'Michael Redmond'
 
-from vtk_widget_controller import VTKWidgetController
+from vtk_widget import VTKWidget

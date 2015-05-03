@@ -1,6 +1,7 @@
 __author__ = 'Michael Redmond'
 
 import vtk
+import weakref
 
 #vtk.vtkAlgorithm.SetDefaultExecutivePrototype(vtk.vtkCompositeDataPipeline())
 
@@ -220,7 +221,7 @@ class VTKWidget(object):
         self.hovered_pipeline = HoveredPipelineHelper(self, self.renderer_hovered)
 
         self.set_up_pipeline()
-        self.set_up_view(self._parent)
+        self.set_up_view(main_window)
 
         self.visible_filter.add_callback(self.interactor_style.model_picker.set_data)
 
@@ -263,11 +264,14 @@ class VTKWidget(object):
     def set_up_view(self, main_window):
         self.main_window = main_window
 
+        print "vtk = %s" % str(self)
+        print "view = %s" % str(main_window)
+
         try:
-            self.interactor = QVTKRenderWindowInteractor(self.main_window.ui.frame)
+            self.interactor = QVTKRenderWindowInteractor(main_window.ui.frame)
         except AttributeError:
             # probably a frame or other type of widget?
-            self.interactor = QVTKRenderWindowInteractor(self.main_window)
+            self.interactor = QVTKRenderWindowInteractor(main_window)
 
         self.renderer.SetLayer(0)
         self.renderer.SetInteractive(1)
@@ -289,7 +293,7 @@ class VTKWidget(object):
         try:
             self.main_window.ui.vl.addWidget(self.interactor)
         except AttributeError:
-            self.main_window.grid_layout.addWidget(self.interactor, 0, 0, 1, 1)
+            self.main_window.layout().addWidget(self.interactor)
 
         self.iren = self.interactor.GetRenderWindow().GetInteractor()
 
@@ -354,13 +358,11 @@ class VTKWidget(object):
     def render(self):
         self.interactor.GetRenderWindow().Render()
 
-    # needs to be renamed
-    def toggle_visible(self):
+    def switch_view(self):
         self.visible_filter.toggle_visible()
         self.render()
 
-    # needs to be renamed
-    def toggle_selected(self):
+    def show_hide_selection(self):
         # toggles selected between shown and hidden
 
         self.toggle_selection_node.SetSelectionList(self.interactor_style.model_picker.picked_selection.all_selection_vtk_array())
@@ -374,6 +376,9 @@ class VTKWidget(object):
 
         original_data = self.group_filter.GetOutputDataObject(0)
         visible_array = original_data.GetCellData().GetArray("visible")
+
+        if original_ids is None:
+            return
 
         # TODO: speed this up using numpy?
         for i in xrange(original_ids.GetNumberOfTuples()):
@@ -410,3 +415,15 @@ class VTKWidget(object):
 
     def poly_pick_button(self):
         self.interactor_style.set_selection_type(vtk_globals.SELECTION_POLY)
+
+    def unload(self):
+        # this is required so that the vtk widget will release its memory
+        #  this gives an error sometimes because main_window is None
+
+        print "vtk = %s" % str(self)
+        print "view = %s" % str(self.main_window)
+
+        self.main_window.layout().removeWidget(self.interactor)
+        self.interactor.Finalize()
+        self.main_window = None
+        self._parent = None

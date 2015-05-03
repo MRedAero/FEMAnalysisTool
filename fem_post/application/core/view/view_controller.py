@@ -15,9 +15,8 @@ class FemAnalysisToolViewController(BaseAppViewController):
         self._view = self._view
         """:type: FemAnalysisToolViewCore"""
 
-    @property
     def create_view_object(self):
-        return FemAnalysisToolViewCore
+        return FemAnalysisToolViewCore()
 
     def _file_open(self):
         # noinspection PyCallByClass
@@ -37,15 +36,6 @@ class FemAnalysisToolViewController(BaseAppViewController):
             pub.publish('program.open_file', filename=filename)
         finally:
             self._app.restoreOverrideCursor()
-
-    def set_file(self, file):
-        self._active_vtk.set_file(file)
-
-    def show_hide(self):
-        self._active_vtk.toggle_selected()
-
-    def switch_view(self):
-        self._active_vtk.toggle_visible()
 
     def get_central_widget(self):
         return self._view.central_widget
