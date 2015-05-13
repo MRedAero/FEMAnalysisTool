@@ -1,207 +1,115 @@
 __author__ = 'Michael Redmond'
 
 import vtk
-import weakref
-
-#vtk.vtkAlgorithm.SetDefaultExecutivePrototype(vtk.vtkCompositeDataPipeline())
 
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-from fem_post.application.vtk_widget.widgets import *
-from fem_post.application.vtk_widget.interactor_styles import *
-from fem_post.application.vtk_widget.algorithms import *
+from base_app.simple_pubsub import pub
+from base_app.utilities import BaseObject
+
 from fem_post.application.vtk_widget import vtk_globals
+from fem_post.application.vtk_widget.algorithms import (BDFDataSource, VisibleFilter, GroupFilter)
+from fem_post.application.vtk_widget.interactor_styles import DefaultInteractorStyle
+from fem_post.application.vtk_widget.pipelines import \
+    (MainPipelineHelper, SelectedPipelineHelper, HoveredPipelineHelper)
+from fem_post.application.vtk_widget.widgets import CoordinateAxes
 
 
-class MainPipelineHelper(object):
-    def __init__(self, renderer):
-        super(MainPipelineHelper, self).__init__()
+class VTKWidget(BaseObject):
+    def __new__(cls, *args, **kwargs):
+        instance = BaseObject.__new__(cls, *args, **kwargs)
 
-        self.split_data_filter = SplitDataFilter()
+        if "_actions" not in cls.__dict__:
+            cls._actions = {'left_down': 'rotate_begin',
+                            'ctrl_left_down': None,
+                            'middle_down': 'pan_begin',
+                            'right_down': 'zoom_begin',
+                            'left_up': 'rotate_end',
+                            'ctrl_left_up': None,
+                            'middle_up': 'pan_end',
+                            'right_up': 'zoom_end'}
 
-        self.node_mapper = vtk.vtkDataSetMapper()
-        self.node_mapper.SetInputConnection(self.split_data_filter.node_port())
+        if "_picking" not in cls.__dict__:
+            cls._picking = {'left_down': False,
+                            'ctrl_left_down': True,
+                            'middle_down': False,
+                            'right_down': False,
+                            'left_up': False,
+                            'ctrl_left_up': True,
+                            'middle_up': False,
+                            'right_up': False}
 
-        self.node_actor = vtk.vtkActor()
-        self.node_actor.SetMapper(self.node_mapper)
+        return instance
 
-        self.vertex_mapper = vtk.vtkDataSetMapper()
-        self.vertex_mapper.SetInputConnection(self.split_data_filter.vertex_port())
+    @classmethod
+    def reset_picking(cls):
+        cls._picking = {'left_down': False,
+                        'ctrl_left_down': False,
+                        'middle_down': False,
+                        'right_down': False,
+                        'left_up': False,
+                        'ctrl_left_up': False,
+                        'middle_up': False,
+                        'right_up': False}
 
-        self.vertex_actor = vtk.vtkActor()
-        self.vertex_actor.SetMapper(self.vertex_mapper)
+    @classmethod
+    def set_button_action(cls, button, action):
+        """
 
-        self.element_mapper = vtk.vtkDataSetMapper()
-        self.element_mapper.SetInputConnection(self.split_data_filter.element_port())
+        :param button:
+        :param action:
+        :type button: str
+        :type action: str
+        :return:
+        """
 
-        self.element_actor = vtk.vtkActor()
-        self.element_actor.SetMapper(self.element_mapper)
-        self.element_actor.GetProperty().EdgeVisibilityOn()
+        button = button.upper()
+        action = action.upper()
 
-        self.mpc_mapper = vtk.vtkDataSetMapper()
-        self.mpc_mapper.SetInputConnection(self.split_data_filter.mpc_port())
+        if button == 'LEFT':
+            down = 'left_down'
+            up = 'left_up'
+        elif button == 'RIGHT':
+            down = 'right_down'
+            up = 'right_up'
+        elif button == 'MIDDLE':
+            down = 'middle_down'
+            up = 'middle_up'
+        elif button == 'CTRL_LEFT':
+            down = 'ctrl_left_down'
+            up = 'ctrl_left_up'
+        else:
+            return
 
-        self.mpc_actor = vtk.vtkActor()
-        self.mpc_actor.SetMapper(self.mpc_mapper)
+        picking = False
 
-        self.renderer = None
+        if action == 'ROTATE':
+            begin = 'rotate_begin'
+            end = 'rotate_end'
+        elif action == 'PAN':
+            begin = 'pan_begin'
+            end = 'pan_end'
+        elif action == 'ZOOM':
+            begin = 'zoom_begin'
+            end = 'zoom_end'
+        elif action == 'SELECT':
+            begin = None
+            end = None
+            picking = True
+        else:
+            return
 
-        if renderer is not None:
-            self.set_renderer(renderer)
+        cls._actions[down] = begin
+        cls._actions[up] = end
 
-    def set_renderer(self, renderer):
-        if self.renderer is not None:
-            self.remove_renderer()
+        if picking:
+            cls.reset_picking()
+            cls._picking[down] = picking
+            cls._picking[up] = picking
 
-        self.renderer = renderer
+        for instance in cls._instances:
+            instance.interactor_style.set_button_actions(cls._actions, cls._picking)
 
-        self.renderer.AddActor(self.node_actor)
-        self.renderer.AddActor(self.vertex_actor)
-        self.renderer.AddActor(self.element_actor)
-        self.renderer.AddActor(self.mpc_actor)
-
-    def remove_renderer(self):
-        self.renderer.RemoveActor(self.node_actor)
-        self.renderer.RemoveActor(self.vertex_actor)
-        self.renderer.RemoveActor(self.element_actor)
-        self.renderer.RemoveActor(self.mpc_actor)
-
-
-class HoveredPipelineHelper(object):
-    def __init__(self, parent, renderer):
-        super(HoveredPipelineHelper, self).__init__()
-
-        self.parent = parent
-
-        self.global_id_filter = GlobalIdFilter()
-
-        self.mapper = vtk.vtkDataSetMapper()
-        self.mapper.SetInputConnection(self.global_id_filter.GetOutputPort(0))
-
-        self.actor = vtk.vtkActor()
-        self.actor.SetMapper(self.mapper)
-
-        self.actor.GetProperty().SetColor(0.5, 0.5, 0)
-        self.actor.GetProperty().SetLineWidth(2)
-        self.actor.GetProperty().SetPointSize(6)
-        self.actor.GetProperty().SetRepresentationToWireframe()
-        self.actor.GetProperty().LightingOff()
-
-        self.renderer = None
-
-        if renderer is not None:
-            self.set_renderer(renderer)
-
-    def set_renderer(self, renderer):
-        if self.renderer is not None:
-            self.remove_renderer()
-
-        self.renderer = renderer
-
-        self.renderer.AddActor(self.actor)
-
-    def remove_renderer(self):
-        self.renderer.RemoveActor(self.actor)
-
-    def reset_data(self):
-        self.global_id_filter.reset()
-
-    def number_of_cells(self):
-        return self.global_id_filter.GetOutputDataObject(0).GetNumberOfCells()
-
-    def update_data(self, selection, pick_type):
-
-        self.global_id_filter.set_selection_list(selection)
-
-        self.parent.render()
-
-
-class SelectedPipelineHelper(object):
-    def __init__(self, parent, renderer):
-        super(SelectedPipelineHelper, self).__init__()
-
-        self.parent = parent
-
-        self.global_id_filter = GlobalIdFilter()
-
-        self.split_data_filter = SplitDataFilter()
-        self.split_data_filter.SetInputConnection(0, self.global_id_filter.GetOutputPort(0))
-
-        self.node_mapper = vtk.vtkDataSetMapper()
-        self.node_mapper.SetInputConnection(self.split_data_filter.node_port())
-
-        self.node_actor = vtk.vtkActor()
-        self.node_actor.SetMapper(self.node_mapper)
-        self.node_actor.GetProperty().SetPointSize(6)
-        self.node_actor.GetProperty().SetColor(0, 0.5, 0.5)
-        self.node_actor.GetProperty().SetRepresentationToWireframe()
-        self.node_actor.GetProperty().LightingOff()
-
-        self.vertex_mapper = vtk.vtkDataSetMapper()
-        self.vertex_mapper.SetInputConnection(self.split_data_filter.vertex_port())
-
-        self.vertex_actor = vtk.vtkActor()
-        self.vertex_actor.SetMapper(self.vertex_mapper)
-        self.vertex_actor.GetProperty().SetPointSize(1)
-        self.vertex_actor.GetProperty().SetRepresentationToWireframe()
-        self.vertex_actor.GetProperty().LightingOff()
-
-        self.element_mapper = vtk.vtkDataSetMapper()
-        self.element_mapper.SetInputConnection(self.split_data_filter.element_port())
-
-        self.element_actor = vtk.vtkActor()
-        self.element_actor.SetMapper(self.element_mapper)
-        self.element_actor.GetProperty().SetColor(0, 0.5, 0.5)
-        self.element_actor.GetProperty().SetLineWidth(1)
-        #self.element_actor.GetProperty().SetOpacity(0.5)
-        self.element_actor.GetProperty().SetRepresentationToWireframe()
-        self.element_actor.GetProperty().LightingOff()
-
-        self.mpc_mapper = vtk.vtkDataSetMapper()
-        self.mpc_mapper.SetInputConnection(self.split_data_filter.mpc_port())
-
-        self.mpc_actor = vtk.vtkActor()
-        self.mpc_actor.SetMapper(self.mpc_mapper)
-        self.mpc_actor.GetProperty().SetPointSize(1)
-        self.mpc_actor.GetProperty().SetRepresentationToWireframe()
-        self.mpc_actor.GetProperty().LightingOff()
-
-        self.renderer = None
-
-        if renderer is not None:
-            self.set_renderer(renderer)
-
-    def set_renderer(self, renderer):
-        if self.renderer is not None:
-            self.remove_renderer()
-
-        self.renderer = renderer
-
-        self.renderer.AddActor(self.node_actor)
-        self.renderer.AddActor(self.vertex_actor)
-        self.renderer.AddActor(self.element_actor)
-        self.renderer.AddActor(self.mpc_actor)
-
-    def remove_renderer(self):
-        self.renderer.RemoveActor(self.node_actor)
-        self.renderer.RemoveActor(self.vertex_actor)
-        self.renderer.RemoveActor(self.element_actor)
-        self.renderer.RemoveActor(self.mpc_actor)
-
-    def reset_data(self):
-        self.global_id_filter.reset()
-
-    def number_of_cells(self):
-        return self.global_id_filter.GetOutputDataObject(0).GetNumberOfCells()
-
-    def update_data(self, selection):
-
-        self.global_id_filter.set_selection_list(selection)
-
-        self.parent.render()
-
-
-class VTKWidget(object):
     def __init__(self, main_window):
         super(VTKWidget, self).__init__()
 
@@ -225,15 +133,7 @@ class VTKWidget(object):
 
         self.visible_filter.add_callback(self.interactor_style.model_picker.set_data)
 
-        try:
-            ui = self.main_window.ui
-
-            ui.left_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_left_button)
-            ui.middle_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_middle_button)
-            ui.right_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_right_button)
-            ui.ctrl_left_click_combo.currentIndexChanged[str].connect(self.interactor_style.set_ctrl_left_button)
-        except AttributeError:
-            print "main_window.ui not found"
+        self.interactor_style.set_button_actions(self._actions, self._picking)
 
         self.show_hide = False
         self.show = True
@@ -250,6 +150,8 @@ class VTKWidget(object):
 
         self.toggle_filter.SetInputData(1, self.toggle_selection)
 
+        #self.set_rotation_center(1000, 0, 0)
+
     def set_file(self, file):
         self.data_source.set_file(file)
         self.data_source.Update()
@@ -264,14 +166,7 @@ class VTKWidget(object):
     def set_up_view(self, main_window):
         self.main_window = main_window
 
-        print "vtk = %s" % str(self)
-        print "view = %s" % str(main_window)
-
-        try:
-            self.interactor = QVTKRenderWindowInteractor(main_window.ui.frame)
-        except AttributeError:
-            # probably a frame or other type of widget?
-            self.interactor = QVTKRenderWindowInteractor(main_window)
+        self.interactor = QVTKRenderWindowInteractor(main_window)
 
         self.renderer.SetLayer(0)
         self.renderer.SetInteractive(1)
@@ -311,6 +206,9 @@ class VTKWidget(object):
 
         self.perspective = 0
         self.camera = vtk.vtkCamera()
+        pos = self.camera.GetPosition()
+        focal = self.camera.GetFocalPoint()
+        self.camera_delta = [pos[0]-focal[0], pos[1]-focal[1], pos[2]-focal[2]]
 
         self.renderer.SetActiveCamera(self.camera)
         self.renderer.ResetCamera()
@@ -393,10 +291,7 @@ class VTKWidget(object):
         self.interactor_style.model_picker.toggle_picking(entity_type, index)
 
     def update_ui_selection(self, selection):
-        try:
-            self.main_window.ui.selection_box.setText(selection)
-        except AttributeError:
-            print "selection_box not found"
+        pub.publish("vtk.set_selection_box", selection)
 
     def replace_selection_button(self):
         self.interactor_style.model_picker.picked_selection.selection_type = vtk_globals.SELECTION_REPLACE
@@ -420,10 +315,18 @@ class VTKWidget(object):
         # this is required so that the vtk widget will release its memory
         #  this gives an error sometimes because main_window is None
 
-        print "vtk = %s" % str(self)
-        print "view = %s" % str(self.main_window)
-
         self.main_window.layout().removeWidget(self.interactor)
         self.interactor.Finalize()
         self.main_window = None
         self._parent = None
+
+    def translate_actors(self, x, y, z):
+        self.main_pipeline.translate_actors(x, y, z)
+        self.selected_pipeline.translate_actors(x, y, z)
+        self.hovered_pipeline.translate_actors(x, y, z)
+        #new_pos = list(self.camera_delta)
+        #new_pos[0] += x
+        #new_pos[1] += y
+        #new_pos[2] += z
+
+        #self.camera.SetPosition(*new_pos)

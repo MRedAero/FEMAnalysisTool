@@ -8,7 +8,6 @@ from fem_post.application.core.model import FemAnalysisToolModelCore
 from fem_post.application.vtk_widget import VTKWidget
 
 
-
 class FemAnalysisToolDocument(BaseAppDocument):
     def __init__(self, document_name, mdi_controller):
         super(FemAnalysisToolDocument, self).__init__(document_name, mdi_controller)
@@ -21,12 +20,6 @@ class FemAnalysisToolDocument(BaseAppDocument):
     def unload(self, index):
         self._vtk_widget.unload()
         super(FemAnalysisToolDocument, self).unload(index)
-
-    def show_hide(self):
-        self._vtk_widget.toggle_selected()
-
-    def toggle_visible(self):
-        self._vtk_widget.toggle_visible()
 
     def _create_model(self, document_name):
         return FemAnalysisToolModelCore(document_name)

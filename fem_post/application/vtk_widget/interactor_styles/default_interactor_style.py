@@ -4,6 +4,7 @@ import vtk
 from PyQt4 import QtCore
 
 from fem_post.application.vtk_widget.interactor_styles.model_picker import ModelPicker
+from fem_post.application.vtk_widget.utilities import (world_to_view, view_to_world)
 
 
 
@@ -40,6 +41,8 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleRubberBandPick):
     def __init__(self, vtk_widget):
 
         self.vtk_widget = vtk_widget
+
+        self.rotation_center = [0, 0, 1.]
 
         self.model_picker = ModelPicker(self.vtk_widget, self)
 
@@ -88,6 +91,9 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleRubberBandPick):
                         'middle_up': False,
                         'right_up': False}
 
+        self.center = [0, 0, 0]
+        self.rotation_factor = 1.
+
     def reset_picking(self):
         self.picking = {'left_down': False,
                         'ctrl_left_down': False,
@@ -132,6 +138,18 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleRubberBandPick):
 
         self.actions[button_down] = begin
         self.actions[button_up] = end
+
+    def set_button_actions(self, actions, picking=None):
+        for key in actions.keys():
+            action_id = actions[key]
+
+            if action_id is None:
+                self.actions[key] = None
+            else:
+                self.actions[key] = getattr(self, action_id)
+
+        if picking is not None:
+            self.picking = dict(picking)
 
     def on_left_button_down(self, obj, event):
 
@@ -241,3 +259,118 @@ class DefaultInteractorStyle(vtk.vtkInteractorStyleRubberBandPick):
 
     def set_default_renderer(self, renderer):
         self.SetDefaultRenderer(renderer)
+
+    def OnLeftButtonDown2(self):
+        interactor = self.GetInteractor()
+        self.FindPokedRenderer(interactor.GetEventPosition()[0],
+                               interactor.GetEventPosition()[1])
+
+        if self.GetCurrentRenderer() is None:
+            return
+
+        self.GrabFocus(self.GetEventCallbackCommand())
+
+        if interactor.GetShiftKey():
+            if interactor.GetControlKey():
+                self.StartDolly()
+            else:
+                self.StartPan()
+        else:
+            if interactor.GetControlKey():
+                self.StartSpin()
+            else:
+                self.StartRotate()
+
+    def OnMouseMove(self):
+        interactor = self.GetInteractor()
+
+        x = interactor.GetEventPosition()[0]
+        y = interactor.GetEventPosition()[1]
+
+        state = self.GetState()
+
+        if state == 1:
+            self.FindPokedRenderer(x, y)
+            self.MyRotate()
+            self.InvokeEvent(vtk.vtkCommand.InteractionEvent)
+        elif state == 2:
+            self.FindPokedRenderer(x, y)
+            self.Pan()
+            self.InvokeEvent(vtk.vtkCommand.InteractionEvent)
+        elif state == 4:
+            self.FindPokedRenderer(x, y)
+            self.Dolly()
+            self.InvokeEvent(vtk.vtkCommand.InteractionEvent)
+        elif state == 3:
+            self.FindPokedRenderer(x, y)
+            self.Spin()
+            self.InvokeEvent(vtk.vtkCommand.InteractionEvent)
+
+    def MyRotate(self):
+        ren = self.GetCurrentRenderer()
+
+        if ren is None:
+            return
+
+        transform = vtk.vtkTransform()
+        camera = ren.GetActiveCamera()
+
+        scale = vtk.vtkMath.Norm(camera.GetPosition())
+        if scale <= 0.:
+            scale = vtk.vtkMath.Norm(camera.GetFocalPoint())
+            if scale <= 0.:
+                scale = 1.
+
+        temp = camera.GetFocalPoint()
+        camera.SetFocalPoint(temp[0]/scale, temp[1]/scale, temp[2]/scale)
+        temp = camera.GetPosition()
+        camera.SetPosition(temp[0]/scale, temp[1]/scale, temp[2]/scale)
+
+        # translate to center
+        transform.Identity()
+        transform.Translate(self.center[0]/scale, self.center[1]/scale, self.center[2]/scale)
+
+        rwi = self.GetInteractor()
+
+        dx = rwi.GetLastEventPosition()[0] - rwi.GetEventPosition()[0]
+        dy = rwi.GetLastEventPosition()[1] - rwi.GetEventPosition()[1]
+
+        # azimuth
+        camera.OrthogonalizeViewUp()
+        viewUp = camera.GetViewUp()
+        size = ren.GetSize()
+        transform.RotateWXYZ(360.*dx/size[0]*self.rotation_factor, viewUp[0], viewUp[1], viewUp[2])
+
+        def cross_product(v1, v2):
+            v3 = [0, 0, 0]
+
+            v3[0] = v1[1]*v2[2] - v1[2]*v2[1]
+            v3[1] = -(v1[0]*v2[2] - v1[2]*v2[0])
+            v3[2] = v1[0]*v2[1] - v1[1]*v2[0]
+
+            mag = (v3[0]**2 + v3[1]**2 + v3[2]**2)**0.5
+
+            return [v3[0]/mag, v3[1]/mag, v3[2]/mag]
+
+
+        # elevation
+        v2 = cross_product(camera.GetDirectionOfProjection(), viewUp)
+        transform.RotateWXYZ(-360.*dy/size[1]*self.rotation_factor, v2[0], v2[1], v2[2])
+
+        # translate back
+        transform.Translate(-self.center[0]/scale, -self.center[1]/scale, -self.center[2]/scale)
+
+        camera.ApplyTransform(transform)
+        camera.OrthogonalizeViewUp()
+
+        # for rescale back
+        temp = camera.GetFocalPoint()
+        camera.SetFocalPoint(temp[0]*scale, temp[1]*scale, temp[2]*scale)
+        temp = camera.GetPosition()
+        camera.SetPosition(temp[0]*scale, temp[1]*scale, temp[2]*scale)
+
+        ren.ResetCameraClippingRange()
+
+        rwi.Render()
+
+

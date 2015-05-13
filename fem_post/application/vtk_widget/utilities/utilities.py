@@ -40,6 +40,34 @@ def project_point_from_screen(pos, renderer, dist):
     return renderer.GetWorldPoint()
 
 
+def world_to_view(pos, renderer):
+    """
+
+    :param pos: list
+    :param renderer: vtk.vtkRenderer
+    :return: list
+    """
+
+    renderer.SetWorldPoint(pos[0], pos[1], pos[2], 1.)
+    renderer.WorldToView()
+
+    return renderer.GetViewPoint()
+
+
+def view_to_world(pos, renderer):
+    """
+
+    :param pos: list
+    :param renderer: vtk.vtkRenderer
+    :return: list
+    """
+
+    renderer.SetViewPoint(pos)
+    renderer.ViewToWorld()
+
+    return renderer.GetWorldPoint()
+
+
 def display_to_world(pos, renderer, dist):
     """
 

@@ -6,11 +6,18 @@ from vtk_selections_test import Ui_DockWidget
 
 
 class VTKSelectionsTestView(QtGui.QDockWidget):
+
+    clicked = QtCore.pyqtSignal()
+
     def __init__(self):
         super(VTKSelectionsTestView, self).__init__()
 
         self.ui = Ui_DockWidget()
         self.ui.setupUi(self)
+
+    def mouseReleaseEvent(self, event):
+        event.accept()
+        self.clicked.emit()
 
 
 if __name__ == '__main__':
