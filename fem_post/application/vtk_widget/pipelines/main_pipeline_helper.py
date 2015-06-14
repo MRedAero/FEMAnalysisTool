@@ -36,6 +36,24 @@ class MainPipelineHelper(object):
         self.mpc_actor = vtk.vtkActor()
         self.mpc_actor.SetMapper(self.mpc_mapper)
 
+        self.force_mapper = vtk.vtkDataSetMapper()
+        self.force_mapper.SetInputConnection(self.split_data_filter.force_port())
+
+        self.force_actor = vtk.vtkActor()
+        self.force_actor.SetMapper(self.force_mapper)
+
+        self.disp_mapper = vtk.vtkDataSetMapper()
+        self.disp_mapper.SetInputConnection(self.split_data_filter.disp_port())
+
+        self.disp_actor = vtk.vtkActor()
+        self.disp_actor.SetMapper(self.disp_mapper)
+
+        self.coord_mapper = vtk.vtkDataSetMapper()
+        self.coord_mapper.SetInputConnection(self.split_data_filter.coord_port())
+
+        self.coord_actor = vtk.vtkActor()
+        self.coord_actor.SetMapper(self.coord_mapper)
+
         self.renderer = None
 
         if renderer is not None:
@@ -51,20 +69,15 @@ class MainPipelineHelper(object):
         self.renderer.AddActor(self.vertex_actor)
         self.renderer.AddActor(self.element_actor)
         self.renderer.AddActor(self.mpc_actor)
+        self.renderer.AddActor(self.force_actor)
+        self.renderer.AddActor(self.disp_actor)
+        self.renderer.AddActor(self.coord_actor)
 
     def remove_renderer(self):
         self.renderer.RemoveActor(self.node_actor)
         self.renderer.RemoveActor(self.vertex_actor)
         self.renderer.RemoveActor(self.element_actor)
         self.renderer.RemoveActor(self.mpc_actor)
-
-    def translate_actors(self, x, y, z):
-        origin = list(self.node_actor.GetOrigin())
-        origin[0] += x
-        origin[1] += y
-        origin[2] += z
-
-        self.node_actor.SetOrigin(*origin)
-        self.vertex_actor.SetOrigin(*origin)
-        self.element_actor.SetOrigin(*origin)
-        self.mpc_actor.SetOrigin(*origin)
+        self.renderer.RemoveActor(self.force_actor)
+        self.renderer.RemoveActor(self.disp_actor)
+        self.renderer.RemoveActor(self.coord_actor)

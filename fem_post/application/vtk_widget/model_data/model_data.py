@@ -136,29 +136,20 @@ class ModelDataHelper2(object):
         self.points = self.data.GetPoints()
 
         self.card_ids = self.data.GetCellData().GetArray("card_ids")
+        self.pid_or_cid = self.data.GetCellData().GetArray("pid_or_cid")
+        self.original_ids = self.data.GetCellData().GetArray("original_ids")
+        self.global_ids2 = self.data.GetCellData().GetArray("global_ids")
+        self.basic_types = self.data.GetCellData().GetArray("basic_types")
+        self.basic_shapes = self.data.GetCellData().GetArray("basic_shapes")
 
         self.global_ids1 = vtk.vtkIdTypeArray()
-        #self.global_ids1.SetName("global_ids")
-
-        self.global_ids2 = self.data.GetCellData().GetArray("global_ids")
 
         self.visible = vtk.vtkIntArray()
         self.visible.SetName("visible")
 
-        self.original_ids = self.data.GetCellData().GetArray("original_ids")
-
-        self.basic_types = vtk.vtkIntArray()
-        self.basic_types.SetName("basic_types")
-
-        self.basic_shapes = vtk.vtkIntArray()
-        self.basic_shapes.SetName("basic_shapes")
-
         self.data.GetCellData().SetGlobalIds(self.global_ids1)
         self.data.GetCellData().AddArray(self.visible)
-        self.data.GetCellData().AddArray(self.original_ids)
         self.data.GetCellData().AddArray(self.global_ids2)
-        self.data.GetCellData().AddArray(self.basic_types)
-        self.data.GetCellData().AddArray(self.basic_shapes)
 
     def squeeze(self):
         self.data.Squeeze()
@@ -169,6 +160,7 @@ class ModelDataHelper2(object):
         self.original_ids.Squeeze()
         self.basic_types.Squeeze()
         self.basic_shapes.Squeeze()
+        self.pid_or_cid.Squeeze()
 
     def update(self):
         self.data.Modified()

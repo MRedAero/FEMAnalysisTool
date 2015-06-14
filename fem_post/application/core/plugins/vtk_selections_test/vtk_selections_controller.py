@@ -34,7 +34,11 @@ class VTKSelectionsTestController(object):
         self._view.ui.cbx_right_click.currentIndexChanged[str].connect(self._cbx_right_click)
         self._view.ui.cbx_ctrl_left_click.currentIndexChanged[str].connect(self._cbx_ctrl_left_click)
 
-        self._is_active = True
+        self._view.ui.btn_fit_view.clicked.connect(self.fit_view)
+
+        self._is_active = False
+
+        self.set_inactive()
 
         pub.subscribe(self._set_selection_box, "vtk.set_selection_box")
 
@@ -42,9 +46,22 @@ class VTKSelectionsTestController(object):
 
     def set_active(self):
         self._is_active = True
+        stylesheet = "QDockWidget { \n" \
+                     "border: 10px solid black;\n" \
+                     "background-color: blue;\n" \
+                     "}"
+        self._view.setStyleSheet(stylesheet)
 
     def set_inactive(self):
         self._is_active = False
+        stylesheet = "QDockWidget { \n" \
+                     "border: 1px solid black;\n" \
+                     "background-color: gray;\n" \
+                     "}"
+        self._view.setStyleSheet(stylesheet)
+
+    def fit_view(self):
+        pub.publish("vtk.fit_view")
 
     def _clicked(self):
         self.set_inactive()

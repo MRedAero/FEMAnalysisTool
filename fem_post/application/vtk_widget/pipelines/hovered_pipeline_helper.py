@@ -52,11 +52,3 @@ class HoveredPipelineHelper(object):
         self.global_id_filter.set_selection_list(selection)
 
         self.parent.render()
-
-    def translate_actors(self, x, y, z):
-        origin = list(self.actor.GetOrigin())
-        origin[0] += x
-        origin[1] += y
-        origin[2] += z
-
-        self.actor.SetOrigin(*origin)

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'vtk_selections_test_ui.ui'
 #
-# Created: Sun Apr 19 10:52:57 2015
+# Created: Thu May 14 18:57:43 2015
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DockWidget(object):
     def setupUi(self, DockWidget):
         DockWidget.setObjectName(_fromUtf8("DockWidget"))
-        DockWidget.resize(430, 638)
+        DockWidget.resize(436, 569)
         self.dockWidgetContents = QtGui.QWidget()
         self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
         self.gridLayout_3 = QtGui.QGridLayout(self.dockWidgetContents)
@@ -193,6 +193,18 @@ class Ui_DockWidget(object):
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
         self.verticalLayout_3.addLayout(self.gridLayout)
         self.gridLayout_3.addLayout(self.verticalLayout_3, 0, 0, 1, 1)
+        self.frame = QtGui.QFrame(self.dockWidgetContents)
+        self.frame.setMinimumSize(QtCore.QSize(0, 100))
+        self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtGui.QFrame.Raised)
+        self.frame.setObjectName(_fromUtf8("frame"))
+        self.btn_fit_view = QtGui.QPushButton(self.frame)
+        self.btn_fit_view.setGeometry(QtCore.QRect(20, 20, 75, 23))
+        self.btn_fit_view.setObjectName(_fromUtf8("btn_fit_view"))
+        self.btn_rotation_center = QtGui.QPushButton(self.frame)
+        self.btn_rotation_center.setGeometry(QtCore.QRect(140, 20, 75, 23))
+        self.btn_rotation_center.setObjectName(_fromUtf8("btn_rotation_center"))
+        self.gridLayout_3.addWidget(self.frame, 1, 0, 1, 1)
         DockWidget.setWidget(self.dockWidgetContents)
 
         self.retranslateUi(DockWidget)
@@ -232,4 +244,6 @@ class Ui_DockWidget(object):
         self.cbx_middle_click.setItemText(3, _translate("DockWidget", "Select", None))
         self.label_3.setText(_translate("DockWidget", "Right-Click", None))
         self.label_2.setText(_translate("DockWidget", "Middle-Click", None))
+        self.btn_fit_view.setText(_translate("DockWidget", "Fit View", None))
+        self.btn_rotation_center.setText(_translate("DockWidget", "Rot. Center", None))
 

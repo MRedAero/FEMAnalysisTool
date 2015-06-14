@@ -23,9 +23,11 @@ class FemAnalysisToolPluginController(BaseAppPluginController):
         for plugin in self._core_plugins:
             if plugin is active_plugin:
                 plugin.set_active()
-                return
+            else:
+                plugin.set_inactive()
 
         for plugin in self._external_plugins:
             if plugin is active_plugin:
                 plugin.set_active()
-                return
+            else:
+                plugin.set_inactive()

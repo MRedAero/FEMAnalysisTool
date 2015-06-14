@@ -8,6 +8,8 @@ from base_app.application.core.document import BaseAppDocumentController
 
 from document import FemAnalysisToolDocument
 
+from fem_post.application.vtk_widget import vtk_pub
+
 
 class FemAnalysisToolDocumentController(BaseAppDocumentController):
     def __init__(self, view_controller):
@@ -26,8 +28,13 @@ class FemAnalysisToolDocumentController(BaseAppDocumentController):
 
     def _subscribe_to_pub(self):
         super(FemAnalysisToolDocumentController, self)._subscribe_to_pub()
-        pub.subscribe(self._show_hide, 'vtk.show_hide')
-        pub.subscribe(self._switch_view, 'vtk.switch_view')
+        #pub.subscribe(self._show_hide, 'vtk.show_hide')
+        #pub.subscribe(self._switch_view, 'vtk.switch_view')
+        #pub.subscribe(self._fit_view, "vtk.fit_view")
+
+    def _set_active_document(self, document):
+        super(FemAnalysisToolDocumentController, self)._set_active_document(document)
+        vtk_pub.set_active_vtk(self.get_active_vtk())
 
     def get_active_vtk(self):
         return self._active_document.get_vtk_widget()
@@ -40,4 +47,7 @@ class FemAnalysisToolDocumentController(BaseAppDocumentController):
 
     def _switch_view(self):
         self._active_document.get_vtk_widget().switch_view()
+
+    def _fit_view(self):
+        self._active_document.get_vtk_widget().fit_view()
 

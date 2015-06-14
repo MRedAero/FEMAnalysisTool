@@ -2,18 +2,18 @@ __author__ = 'Michael Redmond'
 
 import tables
 
-from fem_utilities.nastran.bdf.h5 import BDFH5Reader
-from fem_utilities.nastran.bdf.reader import BDFReader
+from fem_utilities.nastran.bdf.bdf_to_h5 import BDFH5
+from fem_utilities.nastran.bdf.bdf_to_h5.bdf_reader import BDFReader
 
 
 def open_file(filename):
     if tables.is_pytables_file(filename):
-        h5_reader = BDFH5Reader(filename)
+        h5_reader = BDFH5()
+        h5_reader.open_file(filename)
     else:
         bdf_reader = BDFReader(filename)
         bdf_reader.read_bdf()
-        h5filename = bdf_reader.h5filename
-        h5_reader = BDFH5Reader(h5filename)
+        h5_reader = bdf_reader.h5file
 
     return h5_reader
 
