@@ -1,6 +1,6 @@
 __author__ = 'Michael Redmond'
 
-from PySide import QtGui, QtCore
+from PyQt4 import QtGui, QtCore
 
 from .vtk_widget import VTKWidget
 from fem_reader.nastran.bdf.reader import BDFReader
@@ -86,16 +86,19 @@ class MainWindow(QtGui.QMainWindow):
 
     def on_open(self):
         # noinspection PyCallByClass
-        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File', None, "BDF Files (*.bdf);;DAT Files (*.dat)")
+        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File', '', "BDF Files (*.bdf);;DAT Files (*.dat)")
 
-        if filename[0] == '':
+        if isinstance(filename, list):
+            filename = filename[0]
+
+        if filename == '':
             return
 
         self.bdf = BDFReader()
 
         # noinspection PyUnresolvedReferences
         self.app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
-        self.bdf.read_bdf(filename[0])
+        self.bdf.read_bdf(filename)
         self.vtk_widget.set_bdf_data(self.bdf)
         # noinspection PyUnresolvedReferences
         self.app.restoreOverrideCursor()

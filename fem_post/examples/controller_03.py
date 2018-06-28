@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 import sys
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 #from PyQt4 import QtCore, QtGui
 
 import vtk

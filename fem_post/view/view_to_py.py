@@ -2,4 +2,4 @@ __author__ = 'Michael Redmond'
 
 import os
 
-os.system('pyside-uic -o view.py view.ui')
+os.system('PyQt4-uic -o view.py view.ui')

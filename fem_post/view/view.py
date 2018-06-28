@@ -3,11 +3,11 @@
 # Form implementation generated from reading ui file 'view.ui'
 #
 # Created: Wed Dec 31 20:00:11 2014
-#      by: pyside-uic 0.2.15 running on PySide 1.2.2
+#      by: PyQt4-uic 0.2.15 running on PyQt4 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):

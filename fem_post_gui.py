@@ -1,10 +1,18 @@
 __author__ = 'Michael Redmond'
 
 import sys
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
-from view import Ui_MainWindow
-from controller import MainWindow
+QtCore.Signal = QtCore.pyqtSignal
+
+from fem_post.view import Ui_MainWindow
+from fem_post.controller import MainWindow
+
+import vtk.qt
+
+
+vtk.qt.PyQtImpl = 'PyQt4'
+
 
 
 def main():

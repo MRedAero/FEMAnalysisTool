@@ -1,7 +1,7 @@
 __author__ = 'Michael Redmond'
 
 import vtk
-from PySide import QtCore
+from PyQt4 import QtCore
 
 from .model_picker import ModelPicker
 
